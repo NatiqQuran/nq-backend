@@ -6,10 +6,10 @@ use diesel::prelude::*;
 use uuid::Uuid;
 
 /// Cascade delete permission
-pub async fn delete_permission<'a>(
+pub async fn delete_permission(
     target_permission: Path<String>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::app_permissions::dsl::{app_permissions, uuid as uuid_from_permission};
 
     let target_permission = target_permission.into_inner();

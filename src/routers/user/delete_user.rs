@@ -7,10 +7,10 @@ use actix_web::web;
 use diesel::prelude::*;
 
 /// Delete's a single user
-pub async fn delete_user<'a>(
+pub async fn delete_user(
     path: web::Path<String>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, id as acc_id, uuid as acc_uuid};
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users};
 

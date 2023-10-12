@@ -9,11 +9,11 @@ use uuid::Uuid;
 use super::SimpleAyah;
 
 /// Update's single ayah
-pub async fn ayah_edit<'a>(
+pub async fn ayah_edit(
     path: web::Path<String>,
     new_ayah: web::Json<SimpleAyah>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::quran_ayahs::dsl::{
         ayah_number, quran_ayahs, sajdeh as ayah_sajdeh,
         surah_id as ayah_surah_id, uuid as ayah_uuid,

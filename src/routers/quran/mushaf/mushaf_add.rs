@@ -7,11 +7,11 @@ use diesel::prelude::*;
 use super::SimpleMushaf;
 
 /// Add's new mushaf
-pub async fn mushaf_add<'a>(
+pub async fn mushaf_add(
     new_mushaf: web::Json<SimpleMushaf>,
     pool: web::Data<DbPool>,
     data: web::ReqData<u32>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::mushafs::dsl::mushafs;
     use crate::schema::app_users::dsl::{app_users, account_id as user_acc_id};
 

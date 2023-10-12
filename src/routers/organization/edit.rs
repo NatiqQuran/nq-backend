@@ -23,7 +23,7 @@ pub async fn edit_organization(
     path: web::Path<String>,
     info: web::Json<OrgInfoUpdatebleFileds>,
     pool: web::Data<DbPool>,
-) -> Result<String, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, username, uuid as acc_uuid};
     use crate::schema::app_organization_names::dsl::{language, name};
     use crate::schema::app_organizations::dsl::*;
@@ -33,7 +33,7 @@ pub async fn edit_organization(
     //let user_id = user_id.into_inner();
     let new_org = info.into_inner();
 
-    let update_result: Result<String, RouterError> = web::block(move || {
+    let update_result: Result<&'static str, RouterError> = web::block(move || {
         let mut conn = pool.get().unwrap();
 
         let account_uuid = Uuid::from_str(&account_uuid)?;
@@ -69,7 +69,7 @@ pub async fn edit_organization(
             .set((name.eq(new_org.name),))
             .execute(&mut conn)?;
 
-        Ok("Updated".to_string())
+        Ok("Updated")
     })
     .await
     .unwrap();

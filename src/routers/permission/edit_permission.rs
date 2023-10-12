@@ -19,12 +19,12 @@ use super::NewPermissionData;
 /// On updating the conditions this router will
 /// remove all related conditions, and insert the new ones
 /// this solution is kind of stupid but it's really simple.
-pub async fn edit_permission<'a>(
+pub async fn edit_permission(
     target_permission: Path<String>,
     new_permission: web::Json<NewPermissionData>,
     pool: web::Data<DbPool>,
     data: web::ReqData<u32>
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::app_permission_conditions::dsl::{
         app_permission_conditions, id as condition_id, name as condition_name,
         value as condition_value,
@@ -38,7 +38,7 @@ pub async fn edit_permission<'a>(
     let new_permission = new_permission.into_inner();
     let data = data.into_inner();
 
-    let result: Result<&'a str, RouterError> = web::block(move || {
+    let result: Result<&'static str, RouterError> = web::block(move || {
         let mut conn = pool.get().unwrap();
         let permission_uuid = Uuid::from_str(&target_permission)?;
 

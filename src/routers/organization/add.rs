@@ -13,11 +13,11 @@ use crate::{
 use super::new_organization_info::NewOrgInfo;
 
 /// Add a new Org
-pub async fn add<'a>(
+pub async fn add(
     conn: web::Data<DbPool>,
     new_org: web::Json<NewOrgInfo>,
     data: ReqData<u32>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::*;
     use crate::schema::app_employees::dsl::app_employees;
     use crate::schema::app_organization_names::dsl::app_organization_names;
@@ -29,7 +29,7 @@ pub async fn add<'a>(
 
     validate(&new_org_info)?;
 
-    let result: Result<&'a str, RouterError> = web::block(move || {
+    let result: Result<&'static str, RouterError> = web::block(move || {
         let mut conn = conn.get().unwrap();
 
         // Check if org already exists

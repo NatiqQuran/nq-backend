@@ -8,11 +8,11 @@ use diesel::prelude::*;
 use uuid::Uuid;
 
 // Add's and new surah
-pub async fn surah_add<'a>(
+pub async fn surah_add(
     new_surah: web::Json<SimpleSurah>,
     pool: web::Data<DbPool>,
     data: web::ReqData<u32>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, uuid as mushaf_uuid};
     use crate::schema::quran_surahs::dsl::quran_surahs;
     use crate::schema::app_users::dsl::{app_users, account_id as user_acc_id};

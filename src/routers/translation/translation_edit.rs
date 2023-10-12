@@ -7,11 +7,11 @@ use uuid::Uuid;
 use super::SimpleTranslation;
 
 /// Update's single Translation
-pub async fn translation_edit<'a>(
+pub async fn translation_edit(
     path: web::Path<Uuid>,
     new_translation: web::Json<SimpleTranslation>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::translations::dsl::{
         language as translation_language, release_date as translation_release_date,
         source as translation_source, translations, uuid as translation_uuid,
