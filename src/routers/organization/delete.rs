@@ -7,10 +7,10 @@ use actix_web::web;
 use diesel::prelude::*;
 
 /// Delete's a single organization
-pub async fn delete_organization<'a>(
+pub async fn delete_organization(
     path: web::Path<String>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, id as acc_id, uuid as account_uuid};
     use crate::schema::app_organizations::dsl::{account_id as org_acc_id, app_organizations};
 

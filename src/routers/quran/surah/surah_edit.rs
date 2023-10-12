@@ -9,11 +9,11 @@ use uuid::Uuid;
 use super::SimpleSurah;
 
 /// Update's single surah
-pub async fn surah_edit<'a>(
+pub async fn surah_edit(
     path: web::Path<String>,
     new_surah: web::Json<SimpleSurah>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, uuid as mushaf_uuid};
     use crate::schema::quran_surahs::dsl::{
         bismillah_status, bismillah_as_first_ayah, mushaf_id as surah_mushaf_id, name, number, period, quran_surahs,

@@ -9,11 +9,11 @@ use uuid::Uuid;
 use super::SimpleMushaf;
 
 /// Update's single mushaf
-pub async fn mushaf_edit<'a>(
+pub async fn mushaf_edit(
     path: web::Path<String>,
     new_mushaf: web::Json<SimpleMushaf>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::mushafs::dsl::{
         bismillah_text, mushafs, name as mushaf_name, source as mushaf_source, uuid as mushaf_uuid,
     };

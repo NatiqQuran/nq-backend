@@ -9,11 +9,11 @@ use crate::models::User;
 
 use super::NewPermissionData;
 
-pub async fn add_permission<'a>(
+pub async fn add_permission(
     data: web::ReqData<u32>,
     new_permission: web::Json<NewPermissionData>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::app_permission_conditions::dsl::app_permission_conditions;
     use crate::schema::app_permissions::dsl::app_permissions;
     use crate::schema::app_users::dsl::{app_users, account_id as user_acc_id};

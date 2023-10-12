@@ -6,10 +6,10 @@ use diesel::prelude::*;
 use uuid::Uuid;
 
 /// Delete's the specific surah
-pub async fn surah_delete<'a>(
+pub async fn surah_delete(
     path: web::Path<String>,
     pool: web::Data<DbPool>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::quran_surahs::dsl::{quran_surahs, uuid as surah_uuid};
 
     let path = path.into_inner();
