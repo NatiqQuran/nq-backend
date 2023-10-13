@@ -149,6 +149,26 @@ async fn main() -> std::io::Result<()> {
                             .wrap(TokenAuth::new(user_id_from_token.clone(), true))
                             .route(web::post().to(translation_edit::translation_edit))
                             .route(web::delete().to(translation_delete::translation_delete)),
+                    )
+                    .service(
+                        web::scope("/text")
+                            .route(
+                                "",
+                                web::get().to(translation_text_view::translation_text_view),
+                            )
+                            .service(
+                                web::resource("/{translation_uuid}")
+                                    .wrap(AuthZ::new(auth_z_controller.clone()))
+                                    .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                                    .route(
+                                        web::post()
+                                            .to(translation_text_modify::translation_text_modify),
+                                    )
+                                    .route(
+                                        web::delete()
+                                            .to(translation_text_delete::translation_text_delete),
+                                    ),
+                            ),
                     ),
             )
             .service(
