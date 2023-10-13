@@ -1,4 +1,3 @@
-use crate::models::User;
 use crate::{
     error::RouterError,
     models::{NewPermission, NewPermissionCondition, Permission},
