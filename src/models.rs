@@ -449,3 +449,37 @@ pub struct NewTranslation {
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
 }
+
+#[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable)]
+#[diesel(table_name = translations_text)]
+#[diesel(belongs_to(Translation))]
+pub struct TranslationText {
+    #[serde(skip_serializing)]
+    pub id: i32,
+    pub uuid: Uuid,
+
+    #[serde(skip_serializing)]
+    pub creator_user_id: i32,
+
+    #[serde(skip_serializing)]
+    pub translation_id: i32,
+
+    #[serde(skip_serializing)]
+    pub ayah_id: i32,
+
+    pub text: String,
+
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = translations_text)]
+pub struct NewTranslationText<'a> {
+    pub creator_user_id: i32,
+    pub translation_id: i32,
+    pub ayah_id: i32,
+    pub text: &'a String,
+}

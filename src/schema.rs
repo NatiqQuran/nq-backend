@@ -203,7 +203,7 @@ diesel::table! {
 diesel::table! {
     translations_text (id) {
         id -> Int4,
-        uuid -> Nullable<Uuid>,
+        uuid -> Uuid,
         creator_user_id -> Int4,
         translation_id -> Int4,
         ayah_id -> Int4,

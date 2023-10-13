@@ -5,7 +5,6 @@ use crate::{
 };
 use actix_web::web;
 use diesel::prelude::*;
-use crate::models::User;
 
 use super::NewPermissionData;
 
@@ -16,7 +15,7 @@ pub async fn add_permission(
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_permission_conditions::dsl::app_permission_conditions;
     use crate::schema::app_permissions::dsl::app_permissions;
-    use crate::schema::app_users::dsl::{app_users, account_id as user_acc_id};
+    use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
 
     let new_permission_data = new_permission.into_inner();
     let data = data.into_inner();
@@ -24,11 +23,14 @@ pub async fn add_permission(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        let user: User = app_users.filter(user_acc_id.eq(data as i32)).get_result(&mut conn)?;
+        let user: i32 = app_users
+            .filter(user_acc_id.eq(data as i32))
+            .select(user_id)
+            .get_result(&mut conn)?;
 
         // First Insert a brand new Permission
         let new_permission: Permission = NewPermission {
-            creator_user_id: user.id,
+            creator_user_id: user,
             subject: &new_permission_data.subject,
             object: &new_permission_data.object,
             action: &new_permission_data.action,
@@ -45,7 +47,7 @@ pub async fn add_permission(
             let _ = condition.validate()?;
 
             insertable_conditions.push(NewPermissionCondition {
-                creator_user_id: user.id,
+                creator_user_id: user,
                 permission_id: new_permission.id,
                 name: condition.name,
                 value: condition.value,
