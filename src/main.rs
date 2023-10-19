@@ -125,7 +125,8 @@ async fn main() -> std::io::Result<()> {
                     .service(
                         web::resource("/{surah_uuid}")
                             .wrap(AuthZ::new(auth_z_controller.clone()))
-                            .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                            // These routers don't need user token.
+                            .wrap(TokenAuth::new(user_id_from_token.clone(), false))
                             .route(web::post().to(surah_edit::surah_edit))
                             .route(web::delete().to(surah_delete::surah_delete)),
                     ),
@@ -146,7 +147,7 @@ async fn main() -> std::io::Result<()> {
                     .service(
                         web::resource("/{translation_uuid}")
                             .wrap(AuthZ::new(auth_z_controller.clone()))
-                            .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                            .wrap(TokenAuth::new(user_id_from_token.clone(), false))
                             .route(web::post().to(translation_edit::translation_edit))
                             .route(web::delete().to(translation_delete::translation_delete)),
                     )
@@ -159,7 +160,7 @@ async fn main() -> std::io::Result<()> {
                             .service(
                                 web::resource("/{translation_uuid}")
                                     .wrap(AuthZ::new(auth_z_controller.clone()))
-                                    .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                                    .wrap(TokenAuth::new(user_id_from_token.clone(), false))
                                     .route(
                                         web::post()
                                             .to(translation_text_modify::translation_text_modify),
@@ -202,7 +203,7 @@ async fn main() -> std::io::Result<()> {
                     .service(
                         web::resource("/{word_uuid}")
                             .wrap(AuthZ::new(auth_z_controller.clone()))
-                            .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                            .wrap(TokenAuth::new(user_id_from_token.clone(), false))
                             .route(web::post().to(word_edit::word_edit))
                             .route(web::delete().to(word_delete::word_delete)),
                     ),
@@ -210,7 +211,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/mushaf")
                     .route("", web::get().to(mushaf_list::mushaf_list))
-                    .route("", web::get().to(mushaf_view::mushaf_view))
+                    .route("/{mushaf_uuid}", web::get().to(mushaf_view::mushaf_view))
                     .service(
                         web::resource("")
                             .wrap(AuthZ::new(auth_z_controller.clone()))
