@@ -126,7 +126,7 @@ where
                 }
                 None => {
                     if header_required {
-                        return Err(ErrorUnauthorized("This Token is not valid"));
+                        return Err(ErrorUnauthorized("Token required"));
                     }
 
                     let res = service.call(req).await?;
