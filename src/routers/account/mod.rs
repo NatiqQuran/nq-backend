@@ -1,6 +1,5 @@
 pub mod logout;
 pub mod send_code;
-mod test;
 pub mod verify;
 
 use chrono::{offset::Utc, DateTime, Duration, NaiveDateTime};

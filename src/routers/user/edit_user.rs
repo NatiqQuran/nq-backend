@@ -24,11 +24,11 @@ pub struct EditableUser {
 
 /// Edit the profile
 /// wants a new profile and token
-pub async fn edit_user<'a>(
+pub async fn edit_user(
     path: web::Path<String>,
     pool: web::Data<DbPool>,
     new_user: web::Json<EditableUser>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, username, uuid as uuid_from_account};
     use crate::schema::app_user_names::dsl::{first_name, last_name, primary_name};
     use crate::schema::app_users::dsl::*;
@@ -36,10 +36,10 @@ pub async fn edit_user<'a>(
     let account_uuid = path.into_inner();
     let new_user = new_user.into_inner();
 
-    let edit_status: Result<&'a str, RouterError> = web::block(move || {
+    let edit_status: Result<&'static str, RouterError> = web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        // First find the org from id
+        // First find the account from id
         let account = app_accounts
             .filter(uuid_from_account.eq(Uuid::from_str(account_uuid.as_str())?))
             .load::<Account>(&mut conn)?;
