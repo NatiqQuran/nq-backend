@@ -137,7 +137,7 @@ impl CheckPermission for AuthZController {
         // We Got the model now we check every condition
         for (cond_name, cond_value) in select_result.1 {
             let Ok(model_attr) = ModelAttrib::try_from(cond_name.as_str()) else {
-                return false
+                return false;
             };
 
             let attr = model.get_attr(model_attr.clone()).await;
@@ -271,7 +271,6 @@ impl<'a> Condition<'a> for Login {
     }
 }
 
-
 #[derive(Debug, Clone)]
 pub enum ModelAttribResult {
     /// Owner Condition Result
@@ -302,7 +301,7 @@ impl<'a> Condition<'a> for ModelAttribResult {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum ModelAttrib {
     Owner,
     Login,
@@ -322,6 +321,7 @@ impl From<ModelAttrib> for ModelAttribResult {
 // Maybe we can use TryFrom
 impl TryFrom<&str> for ModelAttrib {
     type Error = RouterError;
+
     // Returns ModelAttrib from &str (string)
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
@@ -341,7 +341,7 @@ impl ModelPermission<ModelAttrib, i32> for User {
     async fn get_attr(&self, name: ModelAttrib) -> Option<i32> {
         match name {
             ModelAttrib::Owner => Some(self.account_id),
-            ModelAttrib::Login => None
+            ModelAttrib::Login => None,
         }
     }
 }
@@ -351,14 +351,14 @@ impl ModelPermission<ModelAttrib, i32> for Organization {
     async fn get_attr(&self, name: ModelAttrib) -> Option<i32> {
         match name {
             ModelAttrib::Owner => Some(self.owner_account_id),
-            ModelAttrib::Login => None
+            ModelAttrib::Login => None,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Login, Condition, Owner};
+    use super::{Condition, Login, Owner, ModelAttrib};
 
     #[test]
     fn test_login_condition() {
@@ -380,5 +380,16 @@ mod tests {
 
         // This should return false
         assert_eq!(owner.validate(None, None, ""), false);
+
+        assert_eq!(
+            owner.validate(Some(1), Some("1"), "true"),
+            true
+        );
+    }
+
+    #[test]
+    fn test_model_attrib() {
+        assert_eq!(ModelAttrib::try_from("isOwner").unwrap(), ModelAttrib::Owner);
+        assert_eq!(ModelAttrib::try_from("isLoggedIn").unwrap(), ModelAttrib::Login);
     }
 }
