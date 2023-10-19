@@ -355,3 +355,30 @@ impl ModelPermission<ModelAttrib, i32> for Organization {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{Login, Condition, Owner};
+
+    #[test]
+    fn test_login_condition() {
+        let login = Login {};
+
+        // This should return true
+        assert_eq!(login.validate(None, Some("user"), ""), true);
+
+        // This should return false
+        assert_eq!(login.validate(None, None, ""), false);
+    }
+
+    #[test]
+    fn test_owner_condition() {
+        let owner = Owner {};
+
+        // This should return true
+        assert_eq!(owner.validate(None, Some("user"), ""), true);
+
+        // This should return false
+        assert_eq!(owner.validate(None, None, ""), false);
+    }
+}
