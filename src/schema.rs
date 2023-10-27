@@ -137,6 +137,7 @@ diesel::table! {
         id -> Int4,
         uuid -> Uuid,
         creator_user_id -> Int4,
+        short_name -> Nullable<Varchar>,
         name -> Nullable<Varchar>,
         source -> Nullable<Varchar>,
         bismillah_text -> Nullable<Text>,

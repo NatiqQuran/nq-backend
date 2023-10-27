@@ -328,6 +328,7 @@ pub struct QuranMushaf {
     pub uuid: Uuid,
     pub creator_user_id: i32,
 
+    pub short_name: Option<String>,
     pub name: Option<String>,
     pub source: Option<String>,
 
@@ -343,6 +344,7 @@ pub struct QuranMushaf {
 #[diesel(table_name = mushafs)]
 pub struct NewQuranMushaf<'a> {
     pub creator_user_id: i32,
+    pub short_name: Option<&'a str>,
     pub name: Option<&'a str>,
     pub source: Option<&'a str>,
     pub bismillah_text: Option<String>,
