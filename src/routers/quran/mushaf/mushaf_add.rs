@@ -12,8 +12,8 @@ pub async fn mushaf_add(
     pool: web::Data<DbPool>,
     data: web::ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
+    use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users};
     use crate::schema::mushafs::dsl::mushafs;
-    use crate::schema::app_users::dsl::{app_users, account_id as user_acc_id};
 
     let new_mushaf = new_mushaf.into_inner();
     let data = data.into_inner();
@@ -21,9 +21,12 @@ pub async fn mushaf_add(
     let result = web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        let user: User = app_users.filter(user_acc_id.eq(data as i32)).get_result(&mut conn)?;
+        let user: User = app_users
+            .filter(user_acc_id.eq(data as i32))
+            .get_result(&mut conn)?;
 
         NewQuranMushaf {
+            short_name: Some(&new_mushaf.short_name),
             creator_user_id: user.id,
             name: Some(&new_mushaf.name),
             source: Some(&new_mushaf.source),

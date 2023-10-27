@@ -14,6 +14,7 @@ use std::env;
 use std::error::Error;
 use token_checker::UserIdFromToken;
 
+mod filter;
 mod authz;
 mod datetime;
 mod email;

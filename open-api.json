@@ -783,10 +783,15 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "short_name": {
+                                        "type": "string",
+                                        "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
+                                        "example": "hafs"
+                                    },
                                     "name": {
                                         "type": "string",
-                                        "description": "The mushaf name",
-                                        "example": "hafs"
+                                        "description": "The mushaf full name",
+                                        "example": "hafs as asem"
                                     },
                                     "source": {
                                         "type": "string",
@@ -861,10 +866,15 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "short_name": {
+                                        "type": "string",
+                                        "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
+                                        "example": "hafs"
+                                    },
                                     "name": {
                                         "type": "string",
-                                        "description": "The mushaf name",
-                                        "example": "hafs"
+                                        "description": "The mushaf full name",
+                                        "example": "hafs as asem"
                                     },
                                     "source": {
                                         "type": "string",
