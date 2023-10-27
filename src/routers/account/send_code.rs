@@ -42,7 +42,7 @@ impl Test for SendCodeInfo {
     }
 }
 
-/// <data> -> Email,
+/// Data -> Email,
 /// Send Random generated code to user email
 pub async fn send_code(
     pool: web::Data<DbPool>,
