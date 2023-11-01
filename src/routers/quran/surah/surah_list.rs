@@ -16,7 +16,7 @@ pub async fn surah_list<'a>(
 
     let query = query.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Select the specific mushaf
@@ -37,6 +37,7 @@ pub async fn surah_list<'a>(
                 QuranAyah::belonging_to(&s)
                     .select(count(surah_id))
                     .get_result(&mut conn)
+                    //TODO: remove unwrap
                     .unwrap()
             })
             .collect::<Vec<i64>>();
@@ -58,7 +59,5 @@ pub async fn surah_list<'a>(
         Ok(web::Json(surahs))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

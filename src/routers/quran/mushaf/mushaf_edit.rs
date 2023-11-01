@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::error::RouterError;
 use crate::DbPool;
 use actix_web::web;
@@ -10,7 +8,7 @@ use super::SimpleMushaf;
 
 /// Update's single mushaf
 pub async fn mushaf_edit(
-    path: web::Path<String>,
+    path: web::Path<Uuid>,
     new_mushaf: web::Json<SimpleMushaf>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
@@ -20,13 +18,12 @@ pub async fn mushaf_edit(
     };
 
     let new_mushaf = new_mushaf.into_inner();
-    let path = path.into_inner();
+    let target_mushaf_uuid = path.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
-        let uuid = Uuid::from_str(&path)?;
 
-        diesel::update(mushafs.filter(mushaf_uuid.eq(uuid)))
+        diesel::update(mushafs.filter(mushaf_uuid.eq(target_mushaf_uuid)))
             .set((
                 mushaf_name.eq(new_mushaf.name),
                 mushaf_short_name.eq(new_mushaf.short_name),
@@ -38,7 +35,5 @@ pub async fn mushaf_edit(
         Ok("Edited")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

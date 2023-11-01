@@ -52,7 +52,7 @@ pub async fn verify(
     }
 
     // The release mode
-    let result: Result<(String, u32), RouterError> = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         let last_sended_code = app_verify_codes
@@ -169,6 +169,7 @@ pub async fn verify(
                 .set_source(&result_bytes)
                 .generate()
                 .get_result()
+                //TODO: remove the unwrap
                 .unwrap()
         };
 
@@ -182,11 +183,8 @@ pub async fn verify(
             .values(&new_token)
             .execute(&mut conn)?;
 
-        Ok((result, user.account_id as u32))
+        Ok(result)
     })
     .await
-    .unwrap();
-
-    let result = result?;
-    Ok(result.0)
+    .unwrap()
 }

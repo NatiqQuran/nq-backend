@@ -18,7 +18,7 @@ pub async fn add(
     new_org: web::Json<NewOrgInfo>,
     data: ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
-    use crate::schema::app_accounts::dsl::*;
+    use crate::schema::app_accounts::dsl::{app_accounts, id as account_id, username};
     use crate::schema::app_employees::dsl::app_employees;
     use crate::schema::app_organization_names::dsl::app_organization_names;
     use crate::schema::app_organizations::dsl::app_organizations;
@@ -29,7 +29,7 @@ pub async fn add(
 
     validate(&new_org_info)?;
 
-    let result: Result<&'static str, RouterError> = web::block(move || {
+    web::block(move || {
         let mut conn = conn.get().unwrap();
 
         // Check if org already exists
@@ -69,13 +69,14 @@ pub async fn add(
         .get_result::<Organization>(&mut conn)?;
 
         // Now add the creator user as employee to the organization
-        let user_account = app_accounts
-            .filter(id.eq(user_account_id as i32))
-            .get_result::<Account>(&mut conn)?;
+        let user_account: i32 = app_accounts
+            .filter(account_id.eq(user_account_id as i32))
+            .select(account_id)
+            .get_result(&mut conn)?;
 
         NewEmployee {
             creator_user_id: user,
-            employee_account_id: user_account.id,
+            employee_account_id: user_account,
             org_account_id: new_organization.account_id,
         }
         .insert_into(app_employees)
@@ -94,7 +95,5 @@ pub async fn add(
         Ok("Created")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

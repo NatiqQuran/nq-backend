@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::error::RouterError;
 use crate::DbPool;
 use actix_web::web;
@@ -10,7 +8,7 @@ use super::SimpleSurah;
 
 /// Update's single surah
 pub async fn surah_edit(
-    path: web::Path<String>,
+    path: web::Path<Uuid>,
     new_surah: web::Json<SimpleSurah>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
@@ -21,21 +19,19 @@ pub async fn surah_edit(
     };
 
     let new_surah = new_surah.into_inner();
-    let path = path.into_inner();
+    let target_surah_uuid = path.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
-        let new_surah_uuid = Uuid::from_str(&path)?;
-        let new_surah_mushaf_uuid = Uuid::from_str(&new_surah.mushaf_uuid)?;
 
         // Select the mushaf by uuid
         // and get the mushaf id
         let mushaf: i32 = mushafs
-            .filter(mushaf_uuid.eq(new_surah_mushaf_uuid))
+            .filter(mushaf_uuid.eq(new_surah.mushaf_uuid))
             .select(mushaf_id)
             .get_result(&mut conn)?;
 
-        diesel::update(quran_surahs.filter(surah_uuid.eq(new_surah_uuid)))
+        diesel::update(quran_surahs.filter(surah_uuid.eq(target_surah_uuid)))
             .set((
                 number.eq(new_surah.number),
                 surah_mushaf_id.eq(mushaf),
@@ -49,7 +45,5 @@ pub async fn surah_edit(
         Ok("Edited")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

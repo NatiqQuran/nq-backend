@@ -28,7 +28,7 @@ pub async fn get_list_of_organizations(
     };
     use crate::schema::app_organizations::dsl::app_organizations;
 
-    let organizations: Result<web::Json<Vec<OrgWithName>>, RouterError> = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         let select_all = app_organizations
@@ -56,7 +56,5 @@ pub async fn get_list_of_organizations(
         Ok(web::Json(result))
     })
     .await
-    .unwrap();
-
-    organizations
+    .unwrap()
 }

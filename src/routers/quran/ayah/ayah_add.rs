@@ -31,7 +31,7 @@ pub async fn ayah_add(
     let new_ayah = new_ayah.into_inner();
     let user_account_id = data.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Creator user_id
@@ -82,7 +82,5 @@ pub async fn ayah_add(
         Ok("Added")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

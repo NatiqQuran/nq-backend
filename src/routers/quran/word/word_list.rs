@@ -8,7 +8,7 @@ use diesel::prelude::*;
 pub async fn word_list(pool: web::Data<DbPool>) -> Result<web::Json<Vec<QuranWord>>, RouterError> {
     use crate::schema::quran_words::dsl::*;
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the list of words from the database
@@ -17,7 +17,5 @@ pub async fn word_list(pool: web::Data<DbPool>) -> Result<web::Json<Vec<QuranWor
         Ok(web::Json(words_list))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

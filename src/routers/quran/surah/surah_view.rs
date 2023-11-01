@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 /// View Surah
 pub async fn surah_view(
-    path: web::Path<String>,
+    path: web::Path<Uuid>,
     query: web::Query<GetSurahQuery>,
     pool: web::Data<DbPool>,
 ) -> Result<web::Json<QuranResponseData>, RouterError> {
@@ -22,15 +22,13 @@ pub async fn surah_view(
     use crate::schema::quran_words::dsl::quran_words;
 
     let query = query.into_inner();
-    let path = path.into_inner();
+    let requested_surah_uuid = path.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        let uuid = Uuid::parse_str(&path)?;
-
         let result = quran_surahs
-            .filter(surah_uuid.eq(uuid))
+            .filter(surah_uuid.eq(requested_surah_uuid))
             .inner_join(quran_ayahs.inner_join(quran_words))
             .select((QuranAyah::as_select(), QuranWord::as_select()))
             .load::<(QuranAyah, QuranWord)>(&mut conn)?;
@@ -61,7 +59,7 @@ pub async fn surah_view(
 
         // Get the surah
         let surah = quran_surahs
-            .filter(surah_uuid.eq(uuid))
+            .filter(surah_uuid.eq(requested_surah_uuid))
             .get_result::<QuranSurah>(&mut conn)?;
 
         // Get the mushaf
@@ -92,7 +90,5 @@ pub async fn surah_view(
         }))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

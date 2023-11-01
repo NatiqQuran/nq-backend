@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::{
     error::RouterError,
     models::{Permission, PermissionCondition},
@@ -14,19 +12,18 @@ use uuid::Uuid;
 ///
 /// with related Conditions
 pub async fn get_permission(
-    path: web::Path<String>,
+    path: web::Path<Uuid>,
     pool: web::Data<DbPool>,
 ) -> Result<web::Json<PermissionWithConditions>, RouterError> {
     use crate::schema::app_permissions::dsl::{app_permissions, uuid as uuid_from_permissions};
 
-    let path = path.into_inner();
+    let requested_permission_uuid = path.into_inner();
 
     let permission: Result<PermissionWithConditions, RouterError> = web::block(move || {
         let mut conn = pool.get().unwrap();
-        let uuid = Uuid::from_str(&path)?;
 
         let permission_by_uuid: Permission = app_permissions
-            .filter(uuid_from_permissions.eq(uuid))
+            .filter(uuid_from_permissions.eq(requested_permission_uuid))
             .first(&mut conn)?;
 
         let conditions: Vec<PermissionCondition> =

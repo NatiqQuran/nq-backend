@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::error::RouterError;
 use crate::DbPool;
 use actix_web::web;
@@ -10,7 +8,7 @@ use super::SimpleWord;
 
 /// Update's single quran_word
 pub async fn word_edit(
-    path: web::Path<String>,
+    path: web::Path<Uuid>,
     new_word: web::Json<SimpleWord>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
@@ -20,11 +18,10 @@ pub async fn word_edit(
     };
 
     let new_word = new_word.into_inner();
-    let path = path.into_inner();
+    let target_word_uuid = path.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
-        let target_word_uuid = Uuid::from_str(&path)?;
 
         let target_ayah: i32 = quran_ayahs
             .filter(ayah_uuid.eq(new_word.ayah_uuid))
@@ -38,7 +35,5 @@ pub async fn word_edit(
         Ok("Edited")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }
