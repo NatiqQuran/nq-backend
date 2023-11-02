@@ -8,7 +8,7 @@ use diesel::prelude::*;
 pub async fn ayah_list(pool: web::Data<DbPool>) -> Result<web::Json<Vec<QuranAyah>>, RouterError> {
     use crate::schema::quran_ayahs::dsl::*;
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the list of ayahs from the database
@@ -17,7 +17,5 @@ pub async fn ayah_list(pool: web::Data<DbPool>) -> Result<web::Json<Vec<QuranAya
         Ok(web::Json(ayah_list))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

@@ -18,11 +18,11 @@ pub async fn users_list(
     };
     use crate::schema::app_users::dsl::app_users;
 
-    let users_list: Result<Vec<FullUserProfile>, RouterError> = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // What is this :|
-        // I know this is ugly but 
+        // I know this is ugly but
         // this is the best way to make query in this situation
         //
         // good luck if you gonna read this :)
@@ -67,10 +67,8 @@ pub async fn users_list(
             )
             .collect();
 
-        Ok(users)
+        Ok(web::Json(users))
     })
     .await
-    .unwrap();
-
-    Ok(web::Json(users_list?))
+    .unwrap()
 }

@@ -103,5 +103,5 @@ pub struct SimpleSurah {
     pub number: i32,
     pub bismillah_status: bool,
     pub bismillah_as_first_ayah: bool,
-    pub mushaf_uuid: String,
+    pub mushaf_uuid: Uuid,
 }

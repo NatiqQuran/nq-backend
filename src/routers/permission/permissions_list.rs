@@ -21,7 +21,7 @@ pub async fn get_list_of_permissions(
     use crate::schema::app_permission_conditions::dsl::app_permission_conditions;
     use crate::schema::app_permissions::dsl::app_permissions;
 
-    let permissions: Result<Vec<PermissionWithConditions>, RouterError> = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // TODO: fix None Condition
@@ -62,11 +62,8 @@ pub async fn get_list_of_permissions(
                 permission: simple_permission,
             })
             .collect();
-
-        Ok(result)
+        Ok(web::Json(result))
     })
     .await
-    .unwrap();
-
-    Ok(web::Json(permissions?))
+    .unwrap()
 }

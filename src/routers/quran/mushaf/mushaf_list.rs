@@ -8,7 +8,7 @@ use diesel::prelude::*;
 pub async fn mushaf_list(pool: web::Data<DbPool>) -> Result<web::Json<Vec<QuranMushaf>>, RouterError> {
     use crate::schema::mushafs::dsl::*;
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the list of mushafs from the database
@@ -17,7 +17,5 @@ pub async fn mushaf_list(pool: web::Data<DbPool>) -> Result<web::Json<Vec<QuranM
         Ok(web::Json(quran_mushafs))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use actix_web::web;
 use chrono::NaiveDate;
 use diesel::prelude::*;
@@ -22,37 +20,29 @@ pub struct FullUserProfile {
 }
 
 pub async fn view_user(
+    path: web::Path<Uuid>,
     pool: web::Data<DbPool>,
-    path: web::Path<String>,
 ) -> Result<web::Json<FullUserProfile>, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, uuid as uuid_from_accounts};
     use crate::schema::app_user_names::dsl::primary_name;
 
-    let account_uuid = path.into_inner();
+    let requested_account_uuid = path.into_inner();
 
     // select user form db
     // with user_id
-    let user: Result<web::Json<FullUserProfile>, RouterError> = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        let account = app_accounts
-            .filter(uuid_from_accounts.eq(Uuid::from_str(account_uuid.as_str())?))
-            .load::<Account>(&mut conn)?;
+        let account: Account = app_accounts
+            .filter(uuid_from_accounts.eq(requested_account_uuid))
+            .get_result(&mut conn)?;
 
-        let Some(account) = account.get(0) else {
-            return Err(RouterError::NotFound("Account not found".to_string()));
-        };
+        let user: User = User::belonging_to(&account).get_result(&mut conn)?;
 
-        let user = User::belonging_to(account).load::<User>(&mut conn)?;
-
-        let Some(user) = user.get(0) else {
-            return Err(RouterError::NotFound("User not found".to_string()));
-        };
-
-        let email = Email::belonging_to(account).first::<Email>(&mut conn)?;
+        let email = Email::belonging_to(&account).first::<Email>(&mut conn)?;
 
         // Now get the user names
-        let names = UserName::belonging_to(account)
+        let names = UserName::belonging_to(&account)
             .filter(primary_name.eq(true))
             .load::<UserName>(&mut conn)?;
 
@@ -61,7 +51,7 @@ pub async fn view_user(
 
         let profile = match names {
             Some(names) => {
-                // Its must be always 1 element
+                // Its must be always > 1 element
                 let name: &UserName = names.get(0).unwrap();
 
                 FullUserProfile {
@@ -89,7 +79,5 @@ pub async fn view_user(
         Ok(web::Json(profile))
     })
     .await
-    .unwrap();
-
-    user
+    .unwrap()
 }

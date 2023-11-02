@@ -13,8 +13,7 @@ pub async fn logout<'a>(
 
     let req_account_id = data.into_inner();
 
-    // String -> Message
-    let result: Result<&'a str, RouterError> = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the latest token
@@ -38,7 +37,5 @@ pub async fn logout<'a>(
         Ok("Logged Out")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

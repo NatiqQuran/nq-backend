@@ -1,5 +1,5 @@
 use crate::error::RouterError;
-use crate::models::{NewQuranMushaf, User};
+use crate::models::NewQuranMushaf;
 use crate::DbPool;
 use actix_web::web;
 use diesel::prelude::*;
@@ -12,22 +12,23 @@ pub async fn mushaf_add(
     pool: web::Data<DbPool>,
     data: web::ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
-    use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users};
+    use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
     use crate::schema::mushafs::dsl::mushafs;
 
     let new_mushaf = new_mushaf.into_inner();
     let data = data.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        let user: User = app_users
+        let user: i32 = app_users
             .filter(user_acc_id.eq(data as i32))
+            .select(user_id)
             .get_result(&mut conn)?;
 
         NewQuranMushaf {
             short_name: Some(&new_mushaf.short_name),
-            creator_user_id: user.id,
+            creator_user_id: user,
             name: Some(&new_mushaf.name),
             source: Some(&new_mushaf.source),
             bismillah_text: new_mushaf.bismillah_text,
@@ -38,7 +39,5 @@ pub async fn mushaf_add(
         Ok("Added")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

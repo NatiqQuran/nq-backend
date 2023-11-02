@@ -1,5 +1,4 @@
-use std::str::FromStr;
-
+use crate::models::User;
 use crate::{
     difference::{Difference, DifferenceContext, DifferenceResult},
     error::RouterError,
@@ -10,7 +9,6 @@ use crate::{
 use actix_web::web::{self, Path};
 use diesel::prelude::*;
 use uuid::Uuid;
-use crate::models::User;
 
 use super::NewPermissionData;
 
@@ -20,10 +18,10 @@ use super::NewPermissionData;
 /// remove all related conditions, and insert the new ones
 /// this solution is kind of stupid but it's really simple.
 pub async fn edit_permission(
-    target_permission: Path<String>,
+    path: Path<Uuid>,
     new_permission: web::Json<NewPermissionData>,
     pool: web::Data<DbPool>,
-    data: web::ReqData<u32>
+    data: web::ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_permission_conditions::dsl::{
         app_permission_conditions, id as condition_id, name as condition_name,
@@ -32,18 +30,17 @@ pub async fn edit_permission(
     use crate::schema::app_permissions::dsl::{
         action, app_permissions, object, subject, uuid as uuid_of_permission,
     };
-    use crate::schema::app_users::dsl::{app_users, account_id as user_acc_id};
+    use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users};
 
-    let target_permission = target_permission.into_inner();
+    let target_permission = path.into_inner();
     let new_permission = new_permission.into_inner();
     let data = data.into_inner();
 
-    let result: Result<&'static str, RouterError> = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
-        let permission_uuid = Uuid::from_str(&target_permission)?;
 
         let permission: Permission = diesel::update(app_permissions)
-            .filter(uuid_of_permission.eq(permission_uuid))
+            .filter(uuid_of_permission.eq(target_permission))
             .set((
                 subject.eq(new_permission.subject),
                 object.eq(new_permission.object),
@@ -72,7 +69,9 @@ pub async fn edit_permission(
         let difference_result = difference.diff();
 
         // Get the user form account_id so we can set the creator property
-        let user: User = app_users.filter(user_acc_id.eq(data as i32)).get_result(&mut conn)?;
+        let user: User = app_users
+            .filter(user_acc_id.eq(data as i32))
+            .get_result(&mut conn)?;
 
         // Now we gonna walk the results and do what they say :)
         for diff_action in difference_result {
@@ -102,7 +101,5 @@ pub async fn edit_permission(
         Ok("Updated")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }
