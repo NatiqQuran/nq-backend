@@ -204,7 +204,7 @@
                 }
             }
         },
-        "/organizations": {
+        "/organization": {
             "get": {
                 "description": "Return the list of all organizations",
                 "parameters": [
@@ -384,7 +384,7 @@
                 }
             }
         },
-        "/organizations/name": {
+        "/organization/name": {
             "post": {
                 "description": "Add the organization name in another language",
                 "parameters": [
