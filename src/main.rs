@@ -14,12 +14,13 @@ use std::env;
 use std::error::Error;
 use token_checker::UserIdFromToken;
 
-mod filter;
 mod authz;
 mod datetime;
 mod email;
 mod error;
+mod filter;
 pub mod models;
+mod models_filter;
 mod routers;
 mod schema;
 mod select_model;
