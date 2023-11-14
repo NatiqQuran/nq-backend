@@ -4,7 +4,10 @@ pub mod surah_edit;
 pub mod surah_list;
 pub mod surah_view;
 
-use crate::models::QuranWord;
+use crate::{
+    filter::{Filters, Order, Sort},
+    models::QuranWord,
+};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -67,6 +70,30 @@ pub struct GetSurahQuery {
 #[derive(Deserialize)]
 pub struct SurahListQuery {
     mushaf: String,
+
+    sort: Option<Sort>,
+    order: Option<Order>,
+
+    from: Option<u64>,
+    to: Option<u64>,
+}
+
+impl Filters for SurahListQuery {
+    fn sort(&self) -> Option<Sort> {
+        self.sort.clone()
+    }
+
+    fn order(&self) -> Option<Order> {
+        self.order.clone()
+    }
+
+    fn from(&self) -> Option<u64> {
+        self.from
+    }
+
+    fn to(&self) -> Option<u64> {
+        self.to
+    }
 }
 
 /// The response type for /surah/{id}

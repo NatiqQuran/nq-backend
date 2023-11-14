@@ -1,4 +1,5 @@
 use super::{SurahListQuery, SurahListResponse};
+use crate::filter::Filter;
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah};
 use crate::schema::quran_ayahs::surah_id;
 use crate::{error::RouterError, DbPool};
@@ -7,7 +8,7 @@ use diesel::dsl::count;
 use diesel::prelude::*;
 
 /// Get the lists of surah
-pub async fn surah_list<'a>(
+pub async fn surah_list(
     query: web::Query<SurahListQuery>,
     pool: web::Data<DbPool>,
 ) -> Result<web::Json<Vec<SurahListResponse>>, RouterError> {
@@ -25,8 +26,10 @@ pub async fn surah_list<'a>(
             .filter(mushaf_name.eq(&query.mushaf))
             .get_result::<QuranMushaf>(&mut conn)?;
 
+        let filtered_surahs = QuranSurah::filter(Box::from(query))?;
+
         // Get the list of surahs from the database
-        let surahs = quran_surahs
+        let surahs = filtered_surahs
             .filter(mushaf_id.eq(mushaf.id))
             .load::<QuranSurah>(&mut conn)?;
 
