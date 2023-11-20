@@ -1,7 +1,9 @@
-use crate::schema::quran_surahs::{table as quran_surahs_table, BoxedQuery};
+use crate::models::QuranMushaf;
+use crate::schema::mushafs::{table as quran_mushafs_table, BoxedQuery as MushafBoxedQuery};
+use crate::schema::quran_surahs::{table as quran_surahs_table, BoxedQuery as SurahBoxedQuery};
 use crate::{
     error::RouterError,
-    filter::{Filter, Filters, Order, Sort},
+    filter::{Filter, Filters, Order},
     models::QuranSurah,
 };
 use diesel::pg::Pg;
@@ -25,24 +27,61 @@ use diesel::{prelude::*, query_dsl::methods::BoxedDsl};
 //
 // Also there is a macro simular for what we want in macros.rs file
 impl Filter for QuranSurah {
-    type Output = Result<BoxedQuery<'static, Pg>, RouterError>;
+    type Output = Result<SurahBoxedQuery<'static, Pg>, RouterError>;
 
     fn filter(filters: Box<dyn Filters>) -> Self::Output {
         use crate::schema::quran_surahs::dsl::*;
 
         let mut _query = quran_surahs_table.into_boxed();
 
-        _query = match filters.sort().unwrap_or_default() {
-            Sort::Name => match filters.order().unwrap_or_default() {
-                Order::Asc => quran_surahs.order(name.asc()).internal_into_boxed(),
-                Order::Desc => quran_surahs.order(name.desc()).internal_into_boxed(),
+        _query = match filters.sort() {
+            Some(sort_str) => match sort_str.as_str() {
+                "name" => Ok(match filters.order().unwrap_or_default() {
+                    Order::Asc => quran_surahs.order(name.asc()).internal_into_boxed(),
+                    Order::Desc => quran_surahs.order(name.desc()).internal_into_boxed(),
+                }),
+
+                "number" => Ok(match filters.order().unwrap_or_default() {
+                    Order::Asc => quran_surahs.order(number.asc()).internal_into_boxed(),
+                    Order::Desc => quran_surahs.order(number.desc()).internal_into_boxed(),
+                }),
+                _ => Err(RouterError::BadRequest("No such sort value!".to_string())),
             },
 
-            Sort::Number => match filters.order().unwrap_or_default() {
-                Order::Asc => quran_surahs.order(number.asc()).internal_into_boxed(),
-                Order::Desc => quran_surahs.order(number.desc()).internal_into_boxed(),
-            },
+            None => Ok(quran_surahs.internal_into_boxed()),
+        }?;
+
+        _query = match filters.to() {
+            Some(limit) => _query
+                .limit(limit as i64)
+                .offset(filters.from().unwrap_or_default() as i64),
+            None => _query.offset(filters.from().unwrap_or_default() as i64),
         };
+
+        Ok(_query)
+    }
+}
+
+impl Filter for QuranMushaf {
+    type Output = Result<MushafBoxedQuery<'static, Pg>, RouterError>;
+
+    fn filter(filters: Box<dyn Filters>) -> Self::Output {
+        use crate::schema::mushafs::dsl::*;
+
+        let mut _query = quran_mushafs_table.into_boxed();
+
+        _query = match filters.sort() {
+            Some(sort_str) => match sort_str.as_str() {
+                "name" => Ok(match filters.order().unwrap_or_default() {
+                    Order::Asc => mushafs.order(name.asc()).internal_into_boxed(),
+                    Order::Desc => mushafs.order(name.desc()).internal_into_boxed(),
+                }),
+
+                _ => Err(RouterError::BadRequest("No such sort value!".to_string())),
+            },
+
+            None => Ok(mushafs.internal_into_boxed()),
+        }?;
 
         _query = match filters.to() {
             Some(limit) => _query

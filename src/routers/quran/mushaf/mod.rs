@@ -13,3 +13,4 @@ pub struct SimpleMushaf {
     source: String,
     bismillah_text: Option<String>,
 }
+
