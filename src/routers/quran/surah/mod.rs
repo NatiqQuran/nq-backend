@@ -5,7 +5,7 @@ pub mod surah_list;
 pub mod surah_view;
 
 use crate::{
-    filter::{Filters, Order, Sort},
+    filter::{Filters, Order},
     models::QuranWord,
 };
 use serde::{Deserialize, Serialize};
@@ -71,7 +71,7 @@ pub struct GetSurahQuery {
 pub struct SurahListQuery {
     mushaf: String,
 
-    sort: Option<Sort>,
+    sort: Option<String>,
     order: Option<Order>,
 
     from: Option<u64>,
@@ -79,7 +79,7 @@ pub struct SurahListQuery {
 }
 
 impl Filters for SurahListQuery {
-    fn sort(&self) -> Option<Sort> {
+    fn sort(&self) -> Option<String> {
         self.sort.clone()
     }
 
