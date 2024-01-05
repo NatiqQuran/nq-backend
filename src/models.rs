@@ -431,6 +431,8 @@ pub struct Translation {
 
     pub translator_account_id: i32,
 
+    pub mushaf_id: i32,
+
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,

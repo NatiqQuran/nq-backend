@@ -31,6 +31,7 @@ pub struct SimpleTranslationText {
 pub struct TranslationListQuery {
     mushaf: String,
     master_account: Option<Uuid>,
+    language: Option<String>,
 
     sort: Option<String>,
     order: Option<Order>,
