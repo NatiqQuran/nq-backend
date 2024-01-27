@@ -223,31 +223,26 @@ impl Filter for Translation {
 
         let mut _query = translations_table.into_boxed();
 
-        match filters.sort() {
+        _query = match filters.sort() {
             Some(sort_str) => match sort_str.as_str() {
                 "createTime" => match filters.order().unwrap_or_default() {
-                    Order::Asc => {
-                        _query = translations.order(created_at.asc()).internal_into_boxed()
-                    }
-                    Order::Desc => {
-                        _query = translations.order(created_at.desc()).internal_into_boxed()
-                    }
+                    Order::Asc =>
+                         Ok(translations.order(created_at.asc()).internal_into_boxed()),
+                    Order::Desc =>
+                        Ok(translations.order(created_at.desc()).internal_into_boxed())
                 },
 
                 "updateTime" => match filters.order().unwrap_or_default() {
-                    Order::Asc => {
-                        _query = translations.order(updated_at.asc()).internal_into_boxed()
-                    }
-                    Order::Desc => {
-                        _query = translations.order(updated_at.desc()).internal_into_boxed()
-                    }
+                    Order::Asc =>
+                        Ok(translations.order(updated_at.asc()).internal_into_boxed()),
+                    Order::Desc =>
+                        Ok(translations.order(updated_at.desc()).internal_into_boxed())
                 },
 
                 "language" => match filters.order().unwrap_or_default() {
-                    Order::Asc => _query = translations.order(language.asc()).internal_into_boxed(),
-                    Order::Desc => {
-                        _query = translations.order(language.desc()).internal_into_boxed()
-                    }
+                    Order::Asc => Ok(translations.order(language.asc()).internal_into_boxed()),
+                    Order::Desc => 
+                        Ok(translations.order(language.desc()).internal_into_boxed())
                 },
 
                 //"mushaf" => match filters.order().unwrap_or_default() {
@@ -270,16 +265,15 @@ impl Filter for Translation {
                 //    }
                 //},
 
-                value => {
-                    return Err(RouterError::BadRequest(format!(
+                value =>
+                    Err(RouterError::BadRequest(format!(
                         "Sort value {} is not possible!",
                         value
                     )))
-                }
             },
 
-            None => {}
-        };
+            None => Ok(translations.into_boxed())
+        }?;
 
         _query = match filters.to() {
             Some(limit) => _query
