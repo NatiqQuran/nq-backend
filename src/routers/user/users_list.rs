@@ -1,5 +1,5 @@
 use crate::models::User;
-use crate::user::FullUserProfile;
+use super::FullUserProfile;
 use crate::{error::RouterError, DbPool};
 use actix_web::web;
 use diesel::prelude::*;

@@ -1,7 +1,5 @@
 use actix_web::web;
-use chrono::NaiveDate;
 use diesel::prelude::*;
-use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::{
@@ -10,15 +8,7 @@ use crate::{
     DbPool,
 };
 
-#[derive(Deserialize)]
-pub struct EditableUser {
-    pub username: String,
-    pub first_name: String,
-    pub last_name: String,
-    pub birthday: NaiveDate,
-    pub profile_image: String,
-    pub language: String,
-}
+use super::EditableUser;
 
 /// Edit the profile
 /// wants a new profile and token

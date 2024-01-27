@@ -1,23 +1,11 @@
 use actix_web::web;
-use chrono::NaiveDate;
 use diesel::prelude::*;
-use serde::Serialize;
 use uuid::Uuid;
 
 use crate::error::RouterError;
 use crate::models::{Account, Email, User, UserName};
 use crate::DbPool;
-
-#[derive(Serialize)]
-pub struct FullUserProfile {
-    pub uuid: String,
-    pub email: String,
-    pub username: String,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
-    pub birthday: Option<NaiveDate>,
-    pub profile_image: Option<String>,
-}
+use super::FullUserProfile;
 
 pub async fn view_user(
     path: web::Path<Uuid>,
