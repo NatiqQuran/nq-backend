@@ -38,6 +38,7 @@ use routers::organization::{add, delete, edit, list, name, view};
 use routers::permission::{
     add_permission, delete_permission, edit_permission, permissions_list, view_permission,
 };
+use routers::profile::{profile_edit, profile_view};
 use routers::quran::{ayah::*, mushaf::*, surah::*, word::*};
 use routers::translation::*;
 use routers::user::{delete_user, edit_user, user, users_list};
@@ -235,6 +236,12 @@ async fn main() -> std::io::Result<()> {
                     .route("/{uuid}", web::get().to(user::view_user))
                     .route("/{uuid}", web::post().to(edit_user::edit_user))
                     .route("/{uuid}", web::delete().to(delete_user::delete_user)),
+            )
+            .service(
+                web::scope("/profile")
+                    .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                    .route("", web::get().to(profile_view::profile_view))
+                    .route("", web::post().to(profile_edit::profile_edit)),
             )
             .service(
                 web::scope("/organization")
