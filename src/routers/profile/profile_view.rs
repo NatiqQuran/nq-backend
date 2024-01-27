@@ -1,28 +1,24 @@
-use actix_web::web;
 use diesel::prelude::*;
-use uuid::Uuid;
+use actix_web::web;
 
-use crate::error::RouterError;
-use crate::models::{Account, Email, User, UserName};
-use crate::DbPool;
-use super::FullUserProfile;
+use crate::{error::RouterError, routers::user::FullUserProfile, DbPool, models::{Account, User, Email, UserName}};
 
-pub async fn view_user(
-    path: web::Path<Uuid>,
+pub async fn profile_view(
+    user_id: web::ReqData<u32>,
     pool: web::Data<DbPool>,
 ) -> Result<web::Json<FullUserProfile>, RouterError> {
-    use crate::schema::app_accounts::dsl::{app_accounts, uuid as uuid_from_accounts};
+    use crate::schema::app_accounts::dsl::{app_accounts, id as account_id};
     use crate::schema::app_user_names::dsl::primary_name;
 
-    let requested_account_uuid = path.into_inner();
+    let user_id = user_id.into_inner();
 
-    // select user form db
-    // with user_id
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
+        // Get the account from user_id
+        // which is unwraped from token
         let account: Account = app_accounts
-            .filter(uuid_from_accounts.eq(requested_account_uuid))
+            .filter(account_id.eq(user_id as i32))
             .get_result(&mut conn)?;
 
         let user: User = User::belonging_to(&account).get_result(&mut conn)?;

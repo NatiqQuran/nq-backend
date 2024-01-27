@@ -1,27 +1,23 @@
 use actix_web::web;
 use diesel::prelude::*;
-use uuid::Uuid;
 
 use crate::{
     error::RouterError,
     models::{Account, User, UserName},
+    routers::user::EditableUser,
     DbPool,
 };
 
-use super::EditableUser;
-
-/// Edit the profile
-/// wants a new profile and token
-pub async fn edit_user(
-    path: web::Path<Uuid>,
+pub async fn profile_edit(
+    user_id: web::ReqData<u32>,
     pool: web::Data<DbPool>,
     new_user: web::Json<EditableUser>,
 ) -> Result<&'static str, RouterError> {
-    use crate::schema::app_accounts::dsl::{app_accounts, username, uuid as uuid_from_account};
+    use crate::schema::app_accounts::dsl::{app_accounts, id as account_id, username};
     use crate::schema::app_user_names::dsl::{first_name, last_name, primary_name};
     use crate::schema::app_users::dsl::*;
 
-    let target_account_uuid = path.into_inner();
+    let user_id = user_id.into_inner();
     let new_user = new_user.into_inner();
 
     web::block(move || {
@@ -29,7 +25,7 @@ pub async fn edit_user(
 
         // First find the account from id
         let account: Account = app_accounts
-            .filter(uuid_from_account.eq(target_account_uuid))
+            .filter(account_id.eq(user_id as i32))
             .get_result(&mut conn)?;
 
         let user: User = User::belonging_to(&account).get_result(&mut conn)?;

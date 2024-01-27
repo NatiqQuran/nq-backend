@@ -225,35 +225,54 @@ impl Filter for Translation {
 
         _query = match filters.sort() {
             Some(sort_str) => match sort_str.as_str() {
-                "createTime" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => translations.order(created_at.asc()).internal_into_boxed(),
-                    Order::Desc => translations.order(created_at.desc()).internal_into_boxed(),
-                }),
+                "createTime" => match filters.order().unwrap_or_default() {
+                    Order::Asc =>
+                         Ok(translations.order(created_at.asc()).internal_into_boxed()),
+                    Order::Desc =>
+                        Ok(translations.order(created_at.desc()).internal_into_boxed())
+                },
 
-                "updateTime" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => translations.order(updated_at.asc()).internal_into_boxed(),
-                    Order::Desc => translations.order(updated_at.desc()).internal_into_boxed(),
-                }),
+                "updateTime" => match filters.order().unwrap_or_default() {
+                    Order::Asc =>
+                        Ok(translations.order(updated_at.asc()).internal_into_boxed()),
+                    Order::Desc =>
+                        Ok(translations.order(updated_at.desc()).internal_into_boxed())
+                },
 
-                "language" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => translations.order(language.asc()).internal_into_boxed(),
-                    Order::Desc => translations.order(language.desc()).internal_into_boxed(),
-                }),
+                "language" => match filters.order().unwrap_or_default() {
+                    Order::Asc => Ok(translations.order(language.asc()).internal_into_boxed()),
+                    Order::Desc => 
+                        Ok(translations.order(language.desc()).internal_into_boxed())
+                },
 
-                // TODO: This is not working the way we want
-                //       must order the mushaf by mushaf_name
-                "mushaf" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => translations.order(mushaf_id.asc()).internal_into_boxed(),
-                    Order::Desc => translations.order(mushaf_id.desc()).internal_into_boxed(),
-                }),
+                //"mushaf" => match filters.order().unwrap_or_default() {
+                //    Order::Asc => {
+                //        is_mushaf_sort = true;
+                //        _query_with_mushaf = translations
+                //            .select(Translation::as_select())
+                //            .inner_join(mushafs)
+                //            .order(name.asc())
+                //            .internal_into_boxed()
+                //    }
 
-                value => Err(RouterError::BadRequest(format!(
-                    "Sort value {} is not possible!",
-                    value
-                ))),
+                //    Order::Desc => {
+                //        is_mushaf_sort = true;
+                //        _query_with_mushaf = translations
+                //            .select(Translation::as_select())
+                //            .inner_join(mushafs)
+                //            .order(name.desc())
+                //            .internal_into_boxed()
+                //    }
+                //},
+
+                value =>
+                    Err(RouterError::BadRequest(format!(
+                        "Sort value {} is not possible!",
+                        value
+                    )))
             },
 
-            None => Ok(translations.internal_into_boxed()),
+            None => Ok(translations.into_boxed())
         }?;
 
         _query = match filters.to() {
