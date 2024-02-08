@@ -1,7 +1,12 @@
-use diesel::prelude::*;
 use actix_web::web;
+use diesel::prelude::*;
 
-use crate::{error::RouterError, routers::user::FullUserProfile, DbPool, models::{Account, User, Email, UserName}};
+use crate::{
+    error::RouterError,
+    models::{Account, Email, User, UserName},
+    routers::user::FullUserProfile,
+    DbPool,
+};
 
 pub async fn profile_view(
     user_id: web::ReqData<u32>,
@@ -46,6 +51,7 @@ pub async fn profile_view(
                     last_name: Some(name.last_name.to_owned()),
                     birthday: user.clone().birthday,
                     profile_image: user.clone().profile_image,
+                    language: user.language,
                 }
             }
 
@@ -57,6 +63,7 @@ pub async fn profile_view(
                 last_name: None,
                 birthday: user.clone().birthday,
                 profile_image: user.clone().profile_image,
+                language: user.language,
             },
         };
 

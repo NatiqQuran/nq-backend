@@ -1,5 +1,5 @@
-use crate::models::User;
 use super::FullUserProfile;
+use crate::models::User;
 use crate::{error::RouterError, DbPool};
 use actix_web::web;
 use diesel::prelude::*;
@@ -63,6 +63,7 @@ pub async fn users_list(
                     last_name: Some(last_name),
                     first_name: Some(first_name),
                     profile_image: user.profile_image,
+                    language: user.language,
                 },
             )
             .collect();
