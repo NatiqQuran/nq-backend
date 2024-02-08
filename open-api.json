@@ -204,6 +204,91 @@
                 }
             }
         },
+        "/profile": {
+            "get": {
+                "description": "Return's the user profile from auth token",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "required": true,
+                        "name": "Authorization",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "user"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return's the user profile."
+                    }
+                }
+            },
+            "post": {
+                "description": "Edit's the user profile from auth token",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "required": true,
+                        "name": "Authorization",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "description": "The unique username for user",
+                                        "example": "mahdidev"
+                                    },
+                                    "first_name": {
+                                        "type": "string",
+                                        "description": "First name of user profile",
+                                        "example": "Mahdi"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "description": "Last name of user profile",
+                                        "example": "Muslimi"
+                                    },
+                                    "birthday": {
+                                        "type": "string",
+                                        "description": "Birthday date of user profile",
+                                        "example": "1988-03-12"
+                                    },
+                                    "profile_image": {
+                                        "type": "string",
+                                        "description": "Profile image of user profile.",
+                                        "example": "https:/..."
+                                    },
+                                    "language": {
+                                        "type": "string",
+                                        "description": "User's speaking language.",
+                                        "example": "en"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "user"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "This means new organization created"
+                    }
+                }
+            }
+        },
         "/organization": {
             "get": {
                 "description": "Return the list of all organizations",
