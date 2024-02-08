@@ -15,6 +15,7 @@ pub struct FullUserProfile {
     pub last_name: Option<String>,
     pub birthday: Option<NaiveDate>,
     pub profile_image: Option<String>,
+    pub language: Option<String>,
 }
 
 #[derive(Deserialize)]

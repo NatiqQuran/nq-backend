@@ -2,10 +2,10 @@ use actix_web::web;
 use diesel::prelude::*;
 use uuid::Uuid;
 
+use super::FullUserProfile;
 use crate::error::RouterError;
 use crate::models::{Account, Email, User, UserName};
 use crate::DbPool;
-use super::FullUserProfile;
 
 pub async fn view_user(
     path: web::Path<Uuid>,
@@ -50,6 +50,7 @@ pub async fn view_user(
                     last_name: Some(name.last_name.to_owned()),
                     birthday: user.clone().birthday,
                     profile_image: user.clone().profile_image,
+                    language: user.clone().language,
                 }
             }
 
@@ -61,6 +62,7 @@ pub async fn view_user(
                 last_name: None,
                 birthday: user.clone().birthday,
                 profile_image: user.clone().profile_image,
+                language: user.clone().language,
             },
         };
 
