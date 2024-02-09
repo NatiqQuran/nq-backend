@@ -40,6 +40,7 @@ pub async fn profile_edit(
             .set((
                 birthday.eq(new_user.birthday),
                 profile_image.eq(new_user.profile_image),
+                language.eq(new_user.language),
             ))
             .execute(&mut conn)?;
 
