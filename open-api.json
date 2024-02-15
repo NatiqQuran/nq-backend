@@ -1,1902 +1,1903 @@
 {
-    "openapi": "3.0.2",
-    "info": {
-        "title": "NatiqQuran Api",
-        "version": "0.0.6"
-    },
-    "servers": [
-        {
-            "url": "https://api.natiq.net"
-        }
-    ],
-    "tags": [
-        {
-            "name": "account",
-            "description": "For authorization, and users"
-        },
-        {
-            "name": "user",
-            "description": "List, View, Edit & Delete users"
-        },
-        {
-            "name": "organization",
-            "description": "Manage organizations"
-        },
-        {
-            "name": "permission",
-            "description": "Manage permissions"
-        },
-        {
-            "name": "quran",
-            "description": "All the quran related routers"
-        },
-        {
-            "name": "translation",
-            "description": "Manage translation"
-        }
-    ],
-    "paths": {
-        "/account/sendCode": {
-            "description": "Send code for sign in or sign up",
-            "post": {
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "description": "The email address",
-                                        "example": "info@natiq.com"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "account"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Code sended."
-                    }
-                }
-            }
-        },
-        "/account/verify": {
-            "description": "Return the new user token",
-            "post": {
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "description": "The email address",
-                                        "example": "info@natiq.com"
-                                    },
-                                    "code": {
-                                        "type": "string",
-                                        "description": "The code",
-                                        "minLength": 6,
-                                        "maxLength": 6,
-                                        "example": 123456
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "account"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Returns the new user token"
-                    }
-                }
-            }
-        },
-        "/account/logout": {
-            "description": "Expire the user token",
-            "get": {
-                "parameters": [
-                    {
-                        "in": "header",
-                        "required": true,
-                        "name": "Authorization",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "tags": [
-                    "account"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Expires the token of user"
-                    }
-                }
-            }
-        },
-        "/user": {
-            "get": {
-                "description": "Get users list",
-                "parameters": [
-                    {
-                        "in": "header",
-                        "required": true,
-                        "name": "Authorization",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "tags": [
-                    "user"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Return's the list of users"
-                    }
-                }
-            }
-        },
-        "/user/{user_uuid}": {
-            "get": {
-                "description": "Return's single user profile",
-                "parameters": [
-                    {
-                        "in": "header",
-                        "required": true,
-                        "name": "Authorization",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "user_uuid",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "tags": [
-                    "user"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Return's single user profile"
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete's single user profile",
-                "parameters": [
-                    {
-                        "in": "header",
-                        "required": true,
-                        "name": "Authorization",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "user_uuid",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "tags": [
-                    "user"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Deleted"
-                    }
-                }
-            },
-            "post": {
-                "description": "Edit the user full profile",
-                "parameters": [
-                    {
-                        "in": "header",
-                        "required": true,
-                        "name": "Authorization",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "user_uuid",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "username": {
-                                        "type": "string",
-                                        "description": "The unique username for new profile",
-                                        "example": "Mahdi1279"
-                                    },
-                                    "first_name": {
-                                        "type": "string",
-                                        "description": "The first name of user",
-                                        "example": "Mahdi"
-                                    },
-                                    "last_name": {
-                                        "type": "string",
-                                        "description": "The last name of user",
-                                        "example": "Mohammadi"
-                                    },
-                                    "birthday": {
-                                        "type": "string",
-                                        "description": "The date of the birth",
-                                        "example": "1989-12-2"
-                                    },
-                                    "profile_image": {
-                                        "type": "string",
-                                        "description": "The url of a profile image",
-                                        "example": "https://assets.natiq.com/mahdi-profile-image.jpg"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "user"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User full profile edited"
-                    }
-                }
-            }
-        }
-    },
-    "/profile": {
-        "get": {
-            "description": "Return's the user profile from auth token",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "user"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Return's the user profile."
-                }
-            }
-        },
-        "post": {
-            "description": "Edit's the user profile from auth token",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "username": {
-                                    "type": "string",
-                                    "description": "The unique username for user",
-                                    "example": "mahdidev"
-                                },
-                                "first_name": {
-                                    "type": "string",
-                                    "description": "First name of user profile",
-                                    "example": "Mahdi"
-                                },
-                                "last_name": {
-                                    "type": "string",
-                                    "description": "Last name of user profile",
-                                    "example": "Muslimi"
-                                },
-                                "birthday": {
-                                    "type": "string",
-                                    "description": "Birthday date of user profile",
-                                    "example": "1988-03-12"
-                                },
-                                "profile_image": {
-                                    "type": "string",
-                                    "description": "Profile image of user profile.",
-                                    "example": "https:/..."
-                                },
-                                "language": {
-                                    "type": "string",
-                                    "description": "User's speaking language.",
-                                    "example": "en"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "user"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means new organization created"
-                }
-            }
-        }
-    },
-    "/organization": {
-        "get": {
-            "description": "Return the list of all organizations",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "organization"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the list of all organizations"
-                }
-            }
-        },
-        "post": {
-            "description": "Add the new organization",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "username": {
-                                    "type": "string",
-                                    "description": "The unique username for new organization",
-                                    "example": "github"
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "description": "The full name of organization",
-                                    "example": "github organization"
-                                },
-                                "profile_image": {
-                                    "type": "string",
-                                    "description": "The url of a profile image",
-                                    "example": "https://assets.natiq.com/nema-profile-image.jpg"
-                                },
-                                "established_date": {
-                                    "type": "string",
-                                    "description": "The established date of organization(company)",
-                                    "example": "1988-03-12"
-                                },
-                                "national_id": {
-                                    "type": "string",
-                                    "description": "The national id of a company",
-                                    "minLength": 11,
-                                    "maxLength": 11,
-                                    "example": "12345678911"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "organization"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means new organization created"
-                }
-            }
-        }
-    },
-    "/organization/{organization_uuid}": {
-        "get": {
-            "description": "View organization with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "organization_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "organization"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the organization with id you specified"
-                }
-            }
-        },
-        "post": {
-            "description": "Edit permission with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "organization_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "username": {
-                                    "type": "string",
-                                    "description": "The unique username for new organization",
-                                    "example": "github"
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "description": "The full name of organization",
-                                    "example": "github organization"
-                                },
-                                "profile_image": {
-                                    "type": "string",
-                                    "description": "The url of a profile image",
-                                    "example": "https://assets.natiq.com/nema-profile-image.jpg"
-                                },
-                                "established_date": {
-                                    "type": "string",
-                                    "description": "The established date of organization(company)",
-                                    "example": "1988-03-12"
-                                },
-                                "national_id": {
-                                    "type": "string",
-                                    "description": "The national id of a company",
-                                    "minLength": 11,
-                                    "maxLength": 11,
-                                    "example": "12345678911"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "organization"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Organization with id you specified edited"
-                }
-            }
-        }
-    },
-    "/organization/name": {
-        "post": {
-            "description": "Add the organization name in another language",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "description": "New name",
-                                    "example": "ali"
-                                },
-                                "language": {
-                                    "type": "string",
-                                    "description": "Language",
-                                    "minLength": 2,
-                                    "maxLength": 2,
-                                    "example": "en"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "organization"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Organization name in another language added"
-                }
-            }
-        }
-    },
-    "/organization/name/{name_uuid}": {
-        "get": {
-            "description": "View the organization name in another language with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "name_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "organization"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the organization name in another language with id you specified"
-                }
-            }
-        },
-        "post": {
-            "description": "Edit the organization name in another language with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "name_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "description": "New name",
-                                    "example": "ali"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "organization"
-            ],
-            "responses": {
-                "200": {
-                    "description": "The organization name in another language with id you specified edited"
-                }
-            }
-        },
-        "delete": {
-            "description": "Delete the organization name in another language with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "name_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "organization"
-            ],
-            "responses": {
-                "200": {
-                    "description": "The organization name in another language with id you specified deleted"
-                }
-            }
-        }
-    },
-    "/permission": {
-        "get": {
-            "description": "Ruturn the list of all permissions",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "permission"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the list of all permissions"
-                }
-            }
-        },
-        "post": {
-            "description": "Add new permission",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "subject": {
-                                    "type": "string",
-                                    "description": "The user uuid or * for all users",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "object": {
-                                    "type": "string",
-                                    "description": "The controller that the user need to access",
-                                    "example": "Translation, Reciters & etc"
-                                },
-                                "action": {
-                                    "type": "string",
-                                    "description": "The action for controller & etc",
-                                    "example": "Add, Edit, View, List, Delete & etc"
-                                },
-                                "conditions": {
-                                    "type": "array",
-                                    "description": "Array of conditions, each condition is an object includ has name & value, currently only possible condition is isOwner(Boolean)",
-                                    "example": "[{ \"name\": \"isOwner\", \"value\":\"true\"]"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "permission"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means new permission created"
-                }
-            }
-        }
-    },
-    "/permission/{permission_uuid}": {
-        "get": {
-            "description": "View permission with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "permission_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "permission"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the permission with id you specified"
-                }
-            }
-        },
-        "post": {
-            "description": "Edit permission with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "permission_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "subject": {
-                                    "type": "string",
-                                    "description": "The user uuid or * for all users",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "object": {
-                                    "type": "string",
-                                    "description": "The controller that the user need to access",
-                                    "example": "Translation, Reciters & etc"
-                                },
-                                "action": {
-                                    "type": "string",
-                                    "description": "The action for controller & etc",
-                                    "example": "Add, Edit, View, List, Delete & etc"
-                                },
-                                "conditions": {
-                                    "type": "array",
-                                    "description": "Array of conditions, each condition is an object includ has name & value, currently only possible condition is isOwner(Boolean)",
-                                    "example": "[{ \"name\": \"isOwner\", \"value\":\"true\"]"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "permission"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Permission with id you specified edited"
-                }
-            }
-        },
-        "delete": {
-            "description": "Delete permission with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "permission_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "permission"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Permission with id you specified deleted"
-                }
-            }
-        }
-    },
-    "/permission_conditions": {
-        "description": "Returns the list of all permission conditions",
-        "get": {
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "permission"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the list of all permission conditions"
-                }
-            }
-        }
-    },
-    "/mushaf": {
-        "description": "Returns the list of mushafs",
-        "get": {
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the mushafs list"
-                }
-            }
-        },
-        "post": {
-            "description": "Add the new mushaf",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "short_name": {
-                                    "type": "string",
-                                    "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
-                                    "example": "hafs"
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "description": "The mushaf full name",
-                                    "example": "hafs as asem"
-                                },
-                                "source": {
-                                    "type": "string",
-                                    "description": "The mushaf text source",
-                                    "example": "tanzil"
-                                },
-                                "bismillah_text": {
-                                    "type": "string",
-                                    "description": "The mushaf bismillah text",
-                                    "example": "بسم الله الرحمن الرحيم"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means new mushaf created"
-                }
-            }
-        }
-    },
-    "/mushaf/{mushaf_uuid}": {
-        "get": {
-            "description": "View mushaf with id you specified",
-            "parameters": [
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "mushaf_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the mushaf with id you specified"
-                }
-            }
-        },
-        "post": {
-            "description": "Edit mushaf with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "mushaf_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "short_name": {
-                                    "type": "string",
-                                    "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
-                                    "example": "hafs"
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "description": "The mushaf full name",
-                                    "example": "hafs as asem"
-                                },
-                                "source": {
-                                    "type": "string",
-                                    "description": "The mushaf text source",
-                                    "example": "tanzil"
-                                },
-                                "bismillah_text": {
-                                    "type": "string",
-                                    "description": "The mushaf bismillah text",
-                                    "example": "بسم الله الرحمن الرحيم"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Mushaf with id you specified edited"
-                }
-            }
-        },
-        "delete": {
-            "description": "Delete mushaf with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "mushaf_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Mushaf with id you specified deleted"
-                }
-            }
-        }
-    },
-    "/surah": {
-        "description": "Returns the list of surahs",
-        "get": {
-            "parameters": [
-                {
-                    "in": "query",
-                    "required": true,
-                    "name": "mushaf",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the surahs list"
-                }
-            }
-        },
-        "post": {
-            "description": "Add the new surah",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "description": "The surah name",
-                                    "example": "الفاتحة"
-                                },
-                                "period": {
-                                    "type": "string",
-                                    "description": "Surah is makki or madani",
-                                    "example": "makki"
-                                },
-                                "number": {
-                                    "type": "number",
-                                    "description": "Number of surah",
-                                    "example": 1
-                                },
-                                "mushaf_id": {
-                                    "type": "string",
-                                    "description": "The mushaf_uuid",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "bismillah_status": {
-                                    "type": "boolean",
-                                    "description": "Determines if bismillah exists in surah",
-                                    "example": "true"
-                                },
-                                "bismillah_as_first_ayah": {
-                                    "type": "boolean",
-                                    "description": "Determines if bismillah exists and its in the first_ayah content",
-                                    "example": "false"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means new surah added"
-                }
-            }
-        }
-    },
-    "/surah/{surah_uuid}": {
-        "description": "Returns the single surah",
-        "get": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "surah_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the single surah"
-                }
-            }
-        },
-        "post": {
-            "description": "Edit surah with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "surah_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "description": "The surah name",
-                                    "example": "الفاتحة"
-                                },
-                                "period": {
-                                    "type": "string",
-                                    "description": "Surah is makki or madani",
-                                    "example": "makki"
-                                },
-                                "number": {
-                                    "type": "number",
-                                    "description": "Number of surah",
-                                    "example": 1
-                                },
-                                "mushaf_id": {
-                                    "type": "string",
-                                    "description": "The mushaf_uuid",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "bismillah_status": {
-                                    "type": "boolean",
-                                    "description": "Determines if bismillah exists in surah",
-                                    "example": "true"
-                                },
-                                "bismillah_as_first_ayah": {
-                                    "type": "boolean",
-                                    "description": "Determines if bismillah exists and its in the first_ayah content",
-                                    "example": "false"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means the surah edited"
-                }
-            }
-        },
-        "delete": {
-            "description": "Delete surah with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "surah_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Surah with id you specified deleted"
-                }
-            }
-        }
-    },
-    "/ayah": {
-        "description": "Returns the list of ayahs",
-        "get": {
-            "parameters": [
-                {
-                    "in": "query",
-                    "required": true,
-                    "name": "mushaf",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the ayahs list"
-                }
-            }
-        },
-        "post": {
-            "description": "Add the new ayah",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "surah_id": {
-                                    "type": "string",
-                                    "description": "The surah_uuid",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "sajdeh": {
-                                    "type": "string",
-                                    "description": "Ayah have sajdeh or no",
-                                    "example": ""
-                                },
-                                "ayah_number": {
-                                    "type": "number",
-                                    "description": "Number of ayah",
-                                    "example": 1
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means new ayah added"
-                }
-            }
-        }
-    },
-    "/ayah/{ayah_uuid}": {
-        "description": "Returns the single ayah",
-        "get": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "ayah_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the single ayah"
-                }
-            }
-        },
-        "post": {
-            "description": "Edit ayah with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "ayah_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "surah_id": {
-                                    "type": "string",
-                                    "description": "The surah_uuid",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "sajdeh": {
-                                    "type": "string",
-                                    "description": "Ayah have sajdeh or no",
-                                    "example": ""
-                                },
-                                "ayah_number": {
-                                    "type": "number",
-                                    "description": "Number of ayah",
-                                    "example": 1
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means the ayah edited"
-                }
-            }
-        },
-        "delete": {
-            "description": "Delete ayah with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "ayah_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Ayah with id you specified deleted"
-                }
-            }
-        }
-    },
-    "/word": {
-        "description": "Returns the list of words",
-        "get": {
-            "parameters": [
-                {
-                    "in": "query",
-                    "required": true,
-                    "name": "mushaf",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the words list"
-                }
-            }
-        }
-    },
-    "/word/{word_uuid}": {
-        "description": "Returns the single word",
-        "get": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "word_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the single word"
-                }
-            }
-        },
-        "post": {
-            "description": "Edit word with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "word_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "ayah_uuid": {
-                                    "type": "string",
-                                    "description": "The ayah_uuid",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "word": {
-                                    "type": "string",
-                                    "description": "New word that want to replace",
-                                    "example": ""
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means the word edited"
-                }
-            }
-        },
-        "delete": {
-            "description": "Delete word with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "word_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "quran"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Word with id you specified deleted"
-                }
-            }
-        }
-    },
-    "/translation": {
-        "get": {
-            "description": "Ruturn the list of all translations",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "translation"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the list of all translations"
-                }
-            }
-        },
-        "post": {
-            "description": "Add new translation",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "translator_account_uuid": {
-                                    "type": "string",
-                                    "description": "The translator account uuid",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "source": {
-                                    "type": "string",
-                                    "description": "The translation text source",
-                                    "example": "tanzil"
-                                },
-                                "language": {
-                                    "type": "string",
-                                    "description": "The language of translation text",
-                                    "example": "eng"
-                                },
-                                "release_date": {
-                                    "type": "string",
-                                    "description": "",
-                                    "example": "2023-01-01"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "translation"
-            ],
-            "responses": {
-                "200": {
-                    "description": "This means new translation created"
-                }
-            }
-        }
-    },
-    "/translation/{translation_uuid}": {
-        "get": {
-            "description": "View translation with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "translation_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "translation"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Returns the translation with id you specified"
-                }
-            }
-        },
-        "post": {
-            "description": "Edit translation with id you specified",
-            "parameters": [
-                {
-                    "in": "header",
-                    "required": true,
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "translation_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "translator_account_uuid": {
-                                    "type": "string",
-                                    "description": "The translator account uuid",
-                                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                                },
-                                "source": {
-                                    "type": "string",
-                                    "description": "The translation text source",
-                                    "example": "tanzil"
-                                },
-                                "language": {
-                                    "type": "string",
-                                    "description": "The language of translation text",
-                                    "example": "English"
-                                },
-                                "release_date": {
-                                    "type": "string",
-                                    "description": "Release day of the translation",
-                                    "example": "2023-01-01"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": [
-                "translation"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Translation with id you specified edited"
-                }
-            }
-        },
-        "delete": {
-            "description": "Delete translation with id you specified",
-            "parameters": [
-                {
-                    "required": true,
-                    "in": "header",
-                    "name": "Authorization",
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "in": "path",
-                    "required": true,
-                    "name": "translation_uuid",
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "translation"
-            ],
-            "responses": {
-                "200": {
-                    "description": "Translation with id you specified deleted"
-                }
-            }
-        }
+  "openapi": "3.0.2",
+  "info": {
+    "title": "NatiqQuran Api",
+    "version": "0.0.6"
+  },
+  "servers": [
+    {
+      "url": "https://api.natiq.net"
     }
-},
-"/translation/text/{translation_uuid}": {
-    "get": {
-        "description": "View translation with id you specified",
-        "parameters": [
-            {
-                "in": "path",
-                "required": true,
-                "name": "translation_uuid",
-                "schema": {
-                    "type": "string"
+  ],
+  "tags": [
+    {
+      "name": "account",
+      "description": "For authorization, and users"
+    },
+    {
+      "name": "user",
+      "description": "List, View, Edit & Delete users"
+    },
+    {
+      "name": "organization",
+      "description": "Manage organizations"
+    },
+    {
+      "name": "permission",
+      "description": "Manage permissions"
+    },
+    {
+      "name": "quran",
+      "description": "All the quran related routers"
+    },
+    {
+      "name": "translation",
+      "description": "Manage translation"
+    }
+  ],
+  "paths": {
+    "/account/sendCode": {
+      "description": "Send code for sign in or sign up",
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The email address",
+                    "example": "info@natiq.com"
+                  }
                 }
-            },
-            {
-                "in": "query",
-                "required": true,
-                "name": "ayah_uuid",
-                "schema": {
-                    "type": "string"
-                }
+              }
             }
-        ],
+          }
+        },
         "tags": [
-            "translation"
+          "account"
         ],
         "responses": {
-            "200": {
-                "description": "Returns the translation_text with id you specified"
-            }
+          "200": {
+            "description": "Code sended."
+          }
         }
+      }
     },
-    "post": {
-        "description": "Edit/Add translation_text with id you specified",
-        "parameters": [
-            {
-                "in": "header",
-                "required": true,
-                "name": "Authorization",
-                "schema": {
-                    "type": "string"
+    "/account/verify": {
+      "description": "Return the new user token",
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The email address",
+                    "example": "info@natiq.com"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "The code",
+                    "minLength": 6,
+                    "maxLength": 6,
+                    "example": 123456
+                  }
                 }
-            },
-            {
-                "in": "path",
-                "required": true,
-                "name": "translation_uuid",
-                "schema": {
-                    "type": "string"
-                }
+              }
             }
+          }
+        },
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the new user token"
+          }
+        }
+      }
+    },
+    "/account/logout": {
+      "description": "Expire the user token",
+      "get": {
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Expires the token of user"
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "description": "Get users list",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "Return's the list of users"
+          }
+        }
+      }
+    },
+    "/user/{user_uuid}": {
+      "get": {
+        "description": "Return's single user profile",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "user_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "Return's single user profile"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete's single user profile",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "user_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit the user full profile",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "user_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
-            "content": {
-                "application/json": {
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "ayah_uuid": {
-                                "type": "string",
-                                "description": "ayah_uuid",
-                                "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                            },
-                            "text": {
-                                "type": "string",
-                                "description": "The translation text",
-                                "example": "----"
-                            }
-                        }
-                    }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "The unique username for new profile",
+                    "example": "Mahdi1279"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "description": "The first name of user",
+                    "example": "Mahdi"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "description": "The last name of user",
+                    "example": "Mohammadi"
+                  },
+                  "birthday": {
+                    "type": "string",
+                    "description": "The date of the birth",
+                    "example": "1989-12-2"
+                  },
+                  "profile_image": {
+                    "type": "string",
+                    "description": "The url of a profile image",
+                    "example": "https://assets.natiq.com/mahdi-profile-image.jpg"
+                  }
                 }
+              }
             }
+          }
         },
         "tags": [
-            "translation"
+          "user"
         ],
         "responses": {
-            "200": {
-                "description": "Translation with id you specified edited/added"
-            }
+          "200": {
+            "description": "User full profile edited"
+          }
         }
+      }
     },
-    "delete": {
-        "description": "Delete a single translation_text",
+    "/profile": {
+      "get": {
+        "description": "Return's the user profile from auth token",
         "parameters": [
-            {
-                "in": "path",
-                "required": true,
-                "name": "translation_uuid",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            {
-                "in": "query",
-                "required": true,
-                "name": "ayah_uuid",
-                "schema": {
-                    "type": "string"
-                }
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
             }
+          }
         ],
         "tags": [
-            "translation"
+          "user"
         ],
         "responses": {
-            "200": {
-                "description": "Deleted"
-            }
+          "200": {
+            "description": "Return's the user profile."
+          }
         }
+      },
+      "post": {
+        "description": "Edit's the user profile from auth token",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "The unique username for user",
+                    "example": "mahdidev"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "description": "First name of user profile",
+                    "example": "Mahdi"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "description": "Last name of user profile",
+                    "example": "Muslimi"
+                  },
+                  "birthday": {
+                    "type": "string",
+                    "description": "Birthday date of user profile",
+                    "example": "1988-03-12"
+                  },
+                  "profile_image": {
+                    "type": "string",
+                    "description": "Profile image of user profile.",
+                    "example": "https:/..."
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "User's speaking language.",
+                    "example": "en"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means new organization created"
+          }
+        }
+      }
+    },
+    "/organization": {
+      "get": {
+        "description": "Return the list of all organizations",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "organization"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the list of all organizations"
+          }
+        }
+      },
+      "post": {
+        "description": "Add the new organization",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "The unique username for new organization",
+                    "example": "github"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The full name of organization",
+                    "example": "github organization"
+                  },
+                  "profile_image": {
+                    "type": "string",
+                    "description": "The url of a profile image",
+                    "example": "https://assets.natiq.com/nema-profile-image.jpg"
+                  },
+                  "established_date": {
+                    "type": "string",
+                    "description": "The established date of organization(company)",
+                    "example": "1988-03-12"
+                  },
+                  "national_id": {
+                    "type": "string",
+                    "description": "The national id of a company",
+                    "minLength": 11,
+                    "maxLength": 11,
+                    "example": "12345678911"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organization"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means new organization created"
+          }
+        }
+      }
+    },
+    "/organization/{organization_uuid}": {
+      "get": {
+        "description": "View organization with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "organization_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "organization"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the organization with id you specified"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit permission with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "organization_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "The unique username for new organization",
+                    "example": "github"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The full name of organization",
+                    "example": "github organization"
+                  },
+                  "profile_image": {
+                    "type": "string",
+                    "description": "The url of a profile image",
+                    "example": "https://assets.natiq.com/nema-profile-image.jpg"
+                  },
+                  "established_date": {
+                    "type": "string",
+                    "description": "The established date of organization(company)",
+                    "example": "1988-03-12"
+                  },
+                  "national_id": {
+                    "type": "string",
+                    "description": "The national id of a company",
+                    "minLength": 11,
+                    "maxLength": 11,
+                    "example": "12345678911"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organization"
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization with id you specified edited"
+          }
+        }
+      }
+    },
+    "/organization/name": {
+      "post": {
+        "description": "Add the organization name in another language",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "New name",
+                    "example": "ali"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Language",
+                    "minLength": 2,
+                    "maxLength": 2,
+                    "example": "en"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organization"
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization name in another language added"
+          }
+        }
+      }
+    },
+    "/organization/name/{name_uuid}": {
+      "get": {
+        "description": "View the organization name in another language with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "name_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "organization"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the organization name in another language with id you specified"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit the organization name in another language with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "name_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "New name",
+                    "example": "ali"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organization"
+        ],
+        "responses": {
+          "200": {
+            "description": "The organization name in another language with id you specified edited"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete the organization name in another language with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "name_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "organization"
+        ],
+        "responses": {
+          "200": {
+            "description": "The organization name in another language with id you specified deleted"
+          }
+        }
+      }
+    },
+    "/permission": {
+      "get": {
+        "description": "Ruturn the list of all permissions",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the list of all permissions"
+          }
+        }
+      },
+      "post": {
+        "description": "Add new permission",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subject": {
+                    "type": "string",
+                    "description": "The user uuid or * for all users",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "object": {
+                    "type": "string",
+                    "description": "The controller that the user need to access",
+                    "example": "Translation, Reciters & etc"
+                  },
+                  "action": {
+                    "type": "string",
+                    "description": "The action for controller & etc",
+                    "example": "Add, Edit, View, List, Delete & etc"
+                  },
+                  "conditions": {
+                    "items": {},
+                    "type": "array",
+                    "description": "Array of conditions, each condition is an object has name & value, currently only possible condition is isOwner(Boolean)",
+                    "example": "[{ \"name\": \"isOwner\", \"value\":\"true\"]"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "permission"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means new permission created"
+          }
+        }
+      }
+    },
+    "/permission/{permission_uuid}": {
+      "get": {
+        "description": "View permission with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "permission_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the permission with id you specified"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit permission with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "permission_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subject": {
+                    "type": "string",
+                    "description": "The user uuid or * for all users",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "object": {
+                    "type": "string",
+                    "description": "The controller that the user need to access",
+                    "example": "Translation, Reciters & etc"
+                  },
+                  "action": {
+                    "type": "string",
+                    "description": "The action for controller & etc",
+                    "example": "Add, Edit, View, List, Delete & etc"
+                  },
+                  "conditions": {
+                    "items": {},
+                    "type": "array",
+                    "description": "Array of conditions, each condition is an object includ has name & value, currently only possible condition is isOwner(Boolean)",
+                    "example": "[{ \"name\": \"isOwner\", \"value\":\"true\"]"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "permission"
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission with id you specified edited"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete permission with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "permission_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission with id you specified deleted"
+          }
+        }
+      }
+    },
+    "/permission_conditions": {
+      "description": "Returns the list of all permission conditions",
+      "get": {
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the list of all permission conditions"
+          }
+        }
+      }
+    },
+    "/mushaf": {
+      "description": "Returns the list of mushafs",
+      "get": {
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the mushafs list"
+          }
+        }
+      },
+      "post": {
+        "description": "Add the new mushaf",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "short_name": {
+                    "type": "string",
+                    "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
+                    "example": "hafs"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The mushaf full name",
+                    "example": "hafs as asem"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "The mushaf text source",
+                    "example": "tanzil"
+                  },
+                  "bismillah_text": {
+                    "type": "string",
+                    "description": "The mushaf bismillah text",
+                    "example": "بسم الله الرحمن الرحيم"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means new mushaf created"
+          }
+        }
+      }
+    },
+    "/mushaf/{mushaf_uuid}": {
+      "get": {
+        "description": "View mushaf with id you specified",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "mushaf_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the mushaf with id you specified"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit mushaf with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "mushaf_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "short_name": {
+                    "type": "string",
+                    "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
+                    "example": "hafs"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The mushaf full name",
+                    "example": "hafs as asem"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "The mushaf text source",
+                    "example": "tanzil"
+                  },
+                  "bismillah_text": {
+                    "type": "string",
+                    "description": "The mushaf bismillah text",
+                    "example": "بسم الله الرحمن الرحيم"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Mushaf with id you specified edited"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete mushaf with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "mushaf_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Mushaf with id you specified deleted"
+          }
+        }
+      }
+    },
+    "/surah": {
+      "description": "Returns the list of surahs",
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "required": true,
+            "name": "mushaf",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the surahs list"
+          }
+        }
+      },
+      "post": {
+        "description": "Add the new surah",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The surah name",
+                    "example": "الفاتحة"
+                  },
+                  "period": {
+                    "type": "string",
+                    "description": "Surah is makki or madani",
+                    "example": "makki"
+                  },
+                  "number": {
+                    "type": "number",
+                    "description": "Number of surah",
+                    "example": 1
+                  },
+                  "mushaf_id": {
+                    "type": "string",
+                    "description": "The mushaf_uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "bismillah_status": {
+                    "type": "boolean",
+                    "description": "Determines if bismillah exists in surah",
+                    "example": "true"
+                  },
+                  "bismillah_as_first_ayah": {
+                    "type": "boolean",
+                    "description": "Determines if bismillah exists and its in the first_ayah content",
+                    "example": "false"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means new surah added"
+          }
+        }
+      }
+    },
+    "/surah/{surah_uuid}": {
+      "description": "Returns the single surah",
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "surah_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the single surah"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit surah with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "surah_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The surah name",
+                    "example": "الفاتحة"
+                  },
+                  "period": {
+                    "type": "string",
+                    "description": "Surah is makki or madani",
+                    "example": "makki"
+                  },
+                  "number": {
+                    "type": "number",
+                    "description": "Number of surah",
+                    "example": 1
+                  },
+                  "mushaf_id": {
+                    "type": "string",
+                    "description": "The mushaf_uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "bismillah_status": {
+                    "type": "boolean",
+                    "description": "Determines if bismillah exists in surah",
+                    "example": "true"
+                  },
+                  "bismillah_as_first_ayah": {
+                    "type": "boolean",
+                    "description": "Determines if bismillah exists and its in the first_ayah content",
+                    "example": "false"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means the surah edited"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete surah with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "surah_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Surah with id you specified deleted"
+          }
+        }
+      }
+    },
+    "/ayah": {
+      "description": "Returns the list of ayahs",
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "required": true,
+            "name": "mushaf",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the ayahs list"
+          }
+        }
+      },
+      "post": {
+        "description": "Add the new ayah",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "surah_id": {
+                    "type": "string",
+                    "description": "The surah_uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "sajdeh": {
+                    "type": "string",
+                    "description": "Ayah have sajdeh or no",
+                    "example": ""
+                  },
+                  "ayah_number": {
+                    "type": "number",
+                    "description": "Number of ayah",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means new ayah added"
+          }
+        }
+      }
+    },
+    "/ayah/{ayah_uuid}": {
+      "description": "Returns the single ayah",
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "ayah_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the single ayah"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit ayah with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "ayah_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "surah_id": {
+                    "type": "string",
+                    "description": "The surah_uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "sajdeh": {
+                    "type": "string",
+                    "description": "Ayah have sajdeh or no",
+                    "example": ""
+                  },
+                  "ayah_number": {
+                    "type": "number",
+                    "description": "Number of ayah",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means the ayah edited"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete ayah with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "ayah_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Ayah with id you specified deleted"
+          }
+        }
+      }
+    },
+    "/word": {
+      "description": "Returns the list of words",
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "required": true,
+            "name": "mushaf",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the words list"
+          }
+        }
+      }
+    },
+    "/word/{word_uuid}": {
+      "description": "Returns the single word",
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "word_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the single word"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit word with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "word_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ayah_uuid": {
+                    "type": "string",
+                    "description": "The ayah_uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "word": {
+                    "type": "string",
+                    "description": "New word that want to replace",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means the word edited"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete word with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "word_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "quran"
+        ],
+        "responses": {
+          "200": {
+            "description": "Word with id you specified deleted"
+          }
+        }
+      }
+    },
+    "/translation": {
+      "get": {
+        "description": "Ruturn the list of all translations",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "translation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the list of all translations"
+          }
+        }
+      },
+      "post": {
+        "description": "Add new translation",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "translator_account_uuid": {
+                    "type": "string",
+                    "description": "The translator account uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "The translation text source",
+                    "example": "tanzil"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "The language of translation text",
+                    "example": "eng"
+                  },
+                  "release_date": {
+                    "type": "string",
+                    "description": "",
+                    "example": "2023-01-01"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "translation"
+        ],
+        "responses": {
+          "200": {
+            "description": "This means new translation created"
+          }
+        }
+      }
+    },
+    "/translation/{translation_uuid}": {
+      "get": {
+        "description": "View translation with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "translation_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "translation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the translation with id you specified"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit translation with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "translation_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "translator_account_uuid": {
+                    "type": "string",
+                    "description": "The translator account uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "The translation text source",
+                    "example": "tanzil"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "The language of translation text",
+                    "example": "English"
+                  },
+                  "release_date": {
+                    "type": "string",
+                    "description": "Release day of the translation",
+                    "example": "2023-01-01"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "translation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Translation with id you specified edited"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete translation with id you specified",
+        "parameters": [
+          {
+            "required": true,
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "translation_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "translation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Translation with id you specified deleted"
+          }
+        }
+      }
+    },
+    "/translation/text/{translation_uuid}": {
+      "get": {
+        "description": "View translation with id you specified",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "translation_uuid",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "required": true,
+            "name": "ayah_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "translation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the translation_text with id you specified"
+          }
+        }
+      },
+      "post": {
+        "description": "Edit/Add translation_text with id you specified",
+        "parameters": [
+          {
+            "in": "header",
+            "required": true,
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "translation_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ayah_uuid": {
+                    "type": "string",
+                    "description": "ayah_uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "The translation text",
+                    "example": "----"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "translation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Translation with id you specified edited/added"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a single translation_text",
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "translation_uuid",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "required": true,
+            "name": "ayah_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "translation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          }
+        }
+      }
     }
-}
+  }
 }
