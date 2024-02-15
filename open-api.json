@@ -744,8 +744,9 @@
                     "example": "Add, Edit, View, List, Delete & etc"
                   },
                   "conditions": {
+                    "items": {},
                     "type": "array",
-                    "description": "Array of conditions, each condition is an object includ has name & value, currently only possible condition is isOwner(Boolean)",
+                    "description": "Array of conditions, each condition is an object has name & value, currently only possible condition is isOwner(Boolean)",
                     "example": "[{ \"name\": \"isOwner\", \"value\":\"true\"]"
                   }
                 }
@@ -835,6 +836,7 @@
                     "example": "Add, Edit, View, List, Delete & etc"
                   },
                   "conditions": {
+                    "items": {},
                     "type": "array",
                     "description": "Array of conditions, each condition is an object includ has name & value, currently only possible condition is isOwner(Boolean)",
                     "example": "[{ \"name\": \"isOwner\", \"value\":\"true\"]"
