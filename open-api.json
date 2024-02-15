@@ -1787,9 +1787,8 @@
                 }
             }
         }
-    }
-},
-"/translation/text/{translation_uuid}": {
+    },
+    "/translation/text/{translation_uuid}": {
     "get": {
         "description": "View translation with id you specified",
         "parameters": [
