@@ -271,8 +271,7 @@
                     }
                 }
             }
-        }
-    },
+        },
     "/profile": {
         "get": {
             "description": "Return's the user profile from auth token",
