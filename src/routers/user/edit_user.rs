@@ -3,9 +3,7 @@ use diesel::prelude::*;
 use uuid::Uuid;
 
 use crate::{
-    error::RouterError,
-    models::{Account, User, UserName},
-    DbPool,
+    error::RouterError, models::{Account, User, UserName}, validate::validate, DbPool
 };
 
 use super::EditableUser;
@@ -23,6 +21,8 @@ pub async fn edit_user(
 
     let target_account_uuid = path.into_inner();
     let new_user = new_user.into_inner();
+
+    validate(&new_user)?;
 
     web::block(move || {
         let mut conn = pool.get().unwrap();
