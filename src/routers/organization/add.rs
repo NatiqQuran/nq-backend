@@ -10,12 +10,12 @@ use crate::{
     DbPool,
 };
 
-use super::new_organization_info::NewOrgInfo;
+use super::ReqOrganization;
 
 /// Add a new Org
 pub async fn add(
     conn: web::Data<DbPool>,
-    new_org: web::Json<NewOrgInfo>,
+    new_org: web::Json<ReqOrganization>,
     data: ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, id as account_id, username};
