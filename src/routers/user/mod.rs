@@ -25,10 +25,10 @@ pub struct EditableUser {
     #[validate(length(min = 6, max = 12))]
     pub username: String,
 
-    #[validate(length(min = 1, max = 12))]
+    #[validate(length(min = 1, max = 16))]
     pub first_name: String,
 
-    #[validate(length(min = 1, max = 12))]
+    #[validate(length(min = 1, max = 16))]
     pub last_name: String,
 
     #[validate(custom = "validate_date_time")]
