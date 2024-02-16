@@ -2,10 +2,7 @@ use actix_web::web;
 use diesel::prelude::*;
 
 use crate::{
-    error::RouterError,
-    models::{Account, User, UserName},
-    routers::user::EditableUser,
-    DbPool,
+    error::RouterError, models::{Account, User, UserName}, routers::user::EditableUser, validate::validate, DbPool
 };
 
 pub async fn profile_edit(
@@ -19,6 +16,8 @@ pub async fn profile_edit(
 
     let user_id = user_id.into_inner();
     let new_user = new_user.into_inner();
+
+    validate(&new_user)?;
 
     web::block(move || {
         let mut conn = pool.get().unwrap();
