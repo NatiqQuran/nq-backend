@@ -13,9 +13,7 @@ use validator::Validate;
 
 /// Generate random code with range (min, max)
 pub fn generate_random_code(min: i32, max: i32) -> i32 {
-    let num: i32 = rand::thread_rng().gen_range(min..max);
-
-    num
+    rand::thread_rng().gen_range(min..max)
 }
 
 enum SendCodeStatus {
