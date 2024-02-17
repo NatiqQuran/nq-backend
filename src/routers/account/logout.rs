@@ -3,11 +3,11 @@ use crate::DbPool;
 use actix_web::web::{self, ReqData};
 use diesel::prelude::*;
 
-/// This will teminate the user token
-pub async fn logout<'a>(
+/// This will terminate the user token
+pub async fn logout(
     pool: web::Data<DbPool>,
     data: ReqData<u32>,
-) -> Result<&'a str, RouterError> {
+) -> Result<&'static str, RouterError> {
     use crate::models::Token;
     use crate::schema::app_tokens::dsl::*;
 

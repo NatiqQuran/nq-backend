@@ -1,10 +1,12 @@
+pub mod delete_user;
 pub mod edit_user;
 pub mod user;
 pub mod users_list;
-pub mod delete_user;
 
-use serde::{Serialize, Deserialize};
+use crate::datetime::validate_date_time;
 use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 #[derive(Serialize)]
 pub struct FullUserProfile {
@@ -18,13 +20,23 @@ pub struct FullUserProfile {
     pub language: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct EditableUser {
+    #[validate(length(min = 6, max = 12))]
     pub username: String,
+
+    #[validate(length(min = 1, max = 16))]
     pub first_name: String,
+
+    #[validate(length(min = 1, max = 16))]
     pub last_name: String,
+
+    #[validate(custom = "validate_date_time")]
     pub birthday: NaiveDate,
-    pub profile_image: String,
+
+    #[validate(url)]
+    pub profile_image: Option<String>,
+
+    #[validate(length(min = 1, max = 2))]
     pub language: String,
 }
-

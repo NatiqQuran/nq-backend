@@ -63,7 +63,7 @@ pub async fn verify(
 
         let Some(last_sended_code) = last_sended_code.get(0) else {
             return Err(RouterError::Gone(
-                "No coded sended to this email".to_string(),
+                "No code sended to this email".to_string(),
             ));
         };
 

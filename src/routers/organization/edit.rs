@@ -1,25 +1,16 @@
 use crate::{
-    error::RouterError,
-    models::{Account, Organization, OrganizationName},
-    DbPool,
+    error::RouterError, models::{Account, Organization, OrganizationName}, validate::validate, DbPool
 };
 use actix_web::web::{self};
 use diesel::prelude::*;
-use serde::Deserialize;
 use uuid::Uuid;
 
-#[derive(Deserialize)]
-pub struct OrgInfoUpdatebleFileds {
-    username: String,
-    name: String,
-    profile_image: Option<String>,
-    national_id: String,
-}
+use super::ReqOrganization;
 
 /// Edits the org
 pub async fn edit_organization(
     path: web::Path<Uuid>,
-    info: web::Json<OrgInfoUpdatebleFileds>,
+    info: web::Json<ReqOrganization>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, username, uuid as acc_uuid};
@@ -28,6 +19,8 @@ pub async fn edit_organization(
 
     let account_uuid = path.into_inner();
     let new_org = info.into_inner();
+
+    validate(&new_org)?;
 
     web::block(move || {
         let mut conn = pool.get().unwrap();
