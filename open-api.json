@@ -47,6 +47,8 @@
                 "properties": {
                   "email": {
                     "type": "string",
+                    "format": "email",
+                    "pattern": "\\.[Ii][Oo]$",
                     "description": "The email address",
                     "example": "info@natiq.com"
                   }
@@ -80,7 +82,7 @@
                     "example": "info@natiq.com"
                   },
                   "code": {
-                    "type": "string",
+                    "type": "number",
                     "description": "The code",
                     "minLength": 6,
                     "maxLength": 6,
@@ -235,21 +237,27 @@
                   "username": {
                     "type": "string",
                     "description": "The unique username for new profile",
-                    "example": "Mahdi1279"
+                    "example": "Mahdi1279",
+                    "minLength": 6,
+                    "maxLength": 12
                   },
                   "first_name": {
                     "type": "string",
                     "description": "The first name of user",
-                    "example": "Mahdi"
+                    "example": "Mahdi",
+                    "minLength": 1,
+                    "maxLength": 16
                   },
                   "last_name": {
                     "type": "string",
                     "description": "The last name of user",
-                    "example": "Mohammadi"
+                    "example": "Mohammadi",
+                    "minLength": 1,
+                    "maxLength": 16
                   },
                   "birthday": {
                     "type": "string",
-                    "description": "The date of the birth",
+                    "description": "The date of the birth, minDate is 200 years past",
                     "example": "1989-12-2"
                   },
                   "profile_image": {
@@ -315,21 +323,27 @@
                   "username": {
                     "type": "string",
                     "description": "The unique username for user",
-                    "example": "mahdidev"
+                    "example": "mahdidev",
+                    "minLength": 6,
+                    "maxLength": 12
                   },
                   "first_name": {
                     "type": "string",
                     "description": "First name of user profile",
-                    "example": "Mahdi"
+                    "example": "Mahdi",
+                    "minLength": 1,
+                    "maxLength": 16
                   },
                   "last_name": {
                     "type": "string",
                     "description": "Last name of user profile",
-                    "example": "Muslimi"
+                    "example": "Muslimi",
+                    "minLength": 1,
+                    "maxLength": 16
                   },
                   "birthday": {
                     "type": "string",
-                    "description": "Birthday date of user profile",
+                    "description": "Birthday date of user profile, minDate is 200 years past",
                     "example": "1988-03-12"
                   },
                   "profile_image": {
@@ -340,7 +354,8 @@
                   "language": {
                     "type": "string",
                     "description": "User's speaking language.",
-                    "example": "en"
+                    "example": "en",
+                    "maxLength": 2
                   }
                 }
               }
@@ -400,21 +415,25 @@
                   "username": {
                     "type": "string",
                     "description": "The unique username for new organization",
-                    "example": "github"
+                    "example": "github",
+                    "minLength": 6,
+                    "maxLength": 12,
                   },
                   "name": {
                     "type": "string",
                     "description": "The full name of organization",
-                    "example": "github organization"
+                    "example": "github organization",
+                    "minLength": 1,
+                    "maxLength": 16,
                   },
                   "profile_image": {
                     "type": "string",
                     "description": "The url of a profile image",
-                    "example": "https://assets.natiq.com/nema-profile-image.jpg"
+                    "example": "https://..."
                   },
                   "established_date": {
                     "type": "string",
-                    "description": "The established date of organization(company)",
+                    "description": "The established date of organization(company), minDate is 200 year past",
                     "example": "1988-03-12"
                   },
                   "national_id": {
@@ -498,21 +517,25 @@
                   "username": {
                     "type": "string",
                     "description": "The unique username for new organization",
-                    "example": "github"
+                    "example": "github",
+                    "minLength": 6,
+                    "maxLength": 12,
                   },
                   "name": {
                     "type": "string",
                     "description": "The full name of organization",
-                    "example": "github organization"
+                    "example": "github organization",
+                    "minLength": 1,
+                    "maxLength": 16,
                   },
                   "profile_image": {
                     "type": "string",
                     "description": "The url of a profile image",
-                    "example": "https://assets.natiq.com/nema-profile-image.jpg"
+                    "example": "https://..."
                   },
                   "established_date": {
                     "type": "string",
-                    "description": "The established date of organization(company)",
+                    "description": "The established date of organization(company), minYear is 200 year past",
                     "example": "1988-03-12"
                   },
                   "national_id": {
@@ -559,7 +582,9 @@
                   "name": {
                     "type": "string",
                     "description": "New name",
-                    "example": "ali"
+                    "example": "ali",
+                    "minLength": 1,
+                    "maxLength": 16,
                   },
                   "language": {
                     "type": "string",
@@ -642,7 +667,9 @@
                   "name": {
                     "type": "string",
                     "description": "New name",
-                    "example": "ali"
+                    "example": "ali",
+                    "minLength": 1,
+                    "maxLength": 16
                   }
                 }
               }
@@ -946,7 +973,7 @@
                   "name": {
                     "type": "string",
                     "description": "The mushaf full name",
-                    "example": "hafs as asem"
+                    "example": "hafs from asem"
                   },
                   "source": {
                     "type": "string",
@@ -1340,7 +1367,7 @@
                   "sajdeh": {
                     "type": "string",
                     "description": "Ayah have sajdeh or no",
-                    "example": ""
+                    "example": "none | maki | madani"
                   },
                   "ayah_number": {
                     "type": "number",
@@ -1418,7 +1445,7 @@
                   "sajdeh": {
                     "type": "string",
                     "description": "Ayah have sajdeh or no",
-                    "example": ""
+                    "example": "none | maki | madani"
                   },
                   "ayah_number": {
                     "type": "number",
@@ -1647,11 +1674,13 @@
                   "language": {
                     "type": "string",
                     "description": "The language of translation text",
-                    "example": "eng"
+                    "example": "en",
+                    "minLength": 2,
+                    "maxLength": 2
                   },
                   "release_date": {
                     "type": "string",
-                    "description": "",
+                    "description": "translation release date",
                     "example": "2023-01-01"
                   }
                 }
