@@ -1632,7 +1632,61 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+              "in": "query",
+              "required": true,
+              "name": "mushaf",
+              "schema": {
+                  "type": "string"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "language",
+              "schema": {
+                  "type": "string"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "sort",
+              "schema": {
+                  "type": "string"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "order",
+              "schema": {
+                  "type": "string"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "from",
+              "schema": {
+                  "type": "number"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "to",
+              "schema": {
+                  "type": "number"
+              }
           }
+
         ],
         "tags": [
           "translation"
