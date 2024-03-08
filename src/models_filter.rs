@@ -1,15 +1,14 @@
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah, QuranWord, Translation};
-use crate::schema::mushafs::BoxedQuery as MushafBoxedQuery;
+use crate::schema::mushafs::{self, BoxedQuery as MushafBoxedQuery};
 use crate::schema::quran_ayahs::BoxedQuery as AyahBoxedQuery;
 use crate::schema::quran_surahs::BoxedQuery as SurahBoxedQuery;
 use crate::schema::quran_words::BoxedQuery as WordBoxedQuery;
-use crate::schema::translations::{
-    table as translations_table, BoxedQuery as TranslationBoxedQuery,
-};
+use crate::schema::translations::table as translations_table;
 use crate::{
     error::RouterError,
     filter::{Filter, Filters, Order},
 };
+use diesel::helper_types::{InnerJoin, IntoBoxed};
 use diesel::pg::Pg;
 use diesel::{prelude::*, query_dsl::methods::BoxedDsl};
 
@@ -215,64 +214,76 @@ impl Filter for QuranMushaf {
     }
 }
 
+pub type TranslationBoxedQueryType =
+    IntoBoxed<'static, InnerJoin<translations_table, mushafs::table>, Pg>;
+
 impl Filter for Translation {
-    type Output = Result<TranslationBoxedQuery<'static, Pg>, RouterError>;
+    type Output = Result<TranslationBoxedQueryType, RouterError>;
 
     fn filter(filters: Box<dyn Filters>) -> Self::Output {
+        use crate::schema::mushafs::dsl::{mushafs, name as mushaf_name};
         use crate::schema::translations::dsl::*;
 
-        let mut _query = translations_table.into_boxed();
+        let mut _query = translations_table.inner_join(mushafs).into_boxed();
 
         _query = match filters.sort() {
             Some(sort_str) => match sort_str.as_str() {
                 "createTime" => match filters.order().unwrap_or_default() {
-                    Order::Asc =>
-                         Ok(translations.order(created_at.asc()).internal_into_boxed()),
-                    Order::Desc =>
-                        Ok(translations.order(created_at.desc()).internal_into_boxed())
+                    Order::Asc => Ok(translations
+                        .inner_join(mushafs)
+                        .order(created_at.asc())
+                        .internal_into_boxed()),
+                    Order::Desc => Ok(translations
+                        .inner_join(mushafs)
+                        .order(created_at.desc())
+                        .internal_into_boxed()),
                 },
 
                 "updateTime" => match filters.order().unwrap_or_default() {
-                    Order::Asc =>
-                        Ok(translations.order(updated_at.asc()).internal_into_boxed()),
-                    Order::Desc =>
-                        Ok(translations.order(updated_at.desc()).internal_into_boxed())
+                    Order::Asc => Ok(translations
+                        .inner_join(mushafs)
+                        .order(updated_at.asc())
+                        .internal_into_boxed()),
+                    Order::Desc => Ok(translations
+                        .inner_join(mushafs)
+                        .order(updated_at.desc())
+                        .internal_into_boxed()),
                 },
 
                 "language" => match filters.order().unwrap_or_default() {
-                    Order::Asc => Ok(translations.order(language.asc()).internal_into_boxed()),
-                    Order::Desc => 
-                        Ok(translations.order(language.desc()).internal_into_boxed())
+                    Order::Asc => Ok(translations
+                        .inner_join(mushafs)
+                        .order(language.asc())
+                        .internal_into_boxed()),
+                    Order::Desc => Ok(translations
+                        .inner_join(mushafs)
+                        .order(language.desc())
+                        .internal_into_boxed()),
                 },
 
-                //"mushaf" => match filters.order().unwrap_or_default() {
-                //    Order::Asc => {
-                //        is_mushaf_sort = true;
-                //        _query_with_mushaf = translations
-                //            .select(Translation::as_select())
-                //            .inner_join(mushafs)
-                //            .order(name.asc())
-                //            .internal_into_boxed()
-                //    }
+                "mushaf" => match filters.order().unwrap_or_default() {
+                    Order::Asc => Ok(translations
+                        .inner_join(mushafs)
+                        .order(mushaf_name.asc())
+                        .internal_into_boxed()),
 
-                //    Order::Desc => {
-                //        is_mushaf_sort = true;
-                //        _query_with_mushaf = translations
-                //            .select(Translation::as_select())
-                //            .inner_join(mushafs)
-                //            .order(name.desc())
-                //            .internal_into_boxed()
-                //    }
-                //},
+                    Order::Desc => Ok(translations
+                        .inner_join(mushafs)
+                        .order(mushaf_name.desc())
+                        .internal_into_boxed()),
+                },
 
-                value =>
-                    Err(RouterError::BadRequest(format!(
-                        "Sort value {} is not possible!",
-                        value
-                    )))
+                //"translator_name" => match filters.order().unwrap_or_default() {
+                //    Order::Asc => Ok(translations.),
+                //    Order::Desc => Ok()
+                //}
+                value => Err(RouterError::BadRequest(format!(
+                    "Sort value {} is not possible!",
+                    value
+                ))),
             },
 
-            None => Ok(translations.into_boxed())
+            None => Ok(translations.inner_join(mushafs).into_boxed()),
         }?;
 
         _query = match filters.to() {

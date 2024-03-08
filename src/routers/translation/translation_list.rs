@@ -12,8 +12,8 @@ pub async fn translation_list(
     pool: web::Data<DbPool>,
     web::Query(query): web::Query<TranslationListQuery>,
 ) -> Result<web::Json<Vec<Translation>>, RouterError> {
-    //use crate::schema::app_accounts::dsl::{app_accounts, id as acc_id, uuid as account_uuid};
-    use crate::schema::translations::dsl::language;
+    use crate::schema::mushafs::dsl::{mushafs, short_name as mushaf_short_name, id as mushaf_id};
+    use crate::schema::translations::dsl::{language, mushaf_id as translation_mushaf_id};
 
     let result = web::block(move || {
         let mut conn = pool.get().unwrap();
@@ -23,6 +23,11 @@ pub async fn translation_list(
             Some(ref s) => s.clone(),
             None => "en".to_string(),
         };
+
+        let mushafid: i32 = mushafs
+            .filter(mushaf_short_name.eq(query.mushaf.clone()))
+            .select(mushaf_id)
+            .get_result(&mut conn)?;
 
         // TODO: FIX
         //let master_account: Vec<i32> = match query.master_account {
@@ -34,10 +39,12 @@ pub async fn translation_list(
         //};
 
         // Get the list of translations from the database
-        let translations_list = Translation::filter(Box::from(query))?
+        let translations_list: Vec<Translation> = Translation::filter(Box::from(query))?
             .filter(language.eq(lang))
-            //.filter(translator_account_id.eq_any::<Vec<i32>>(master_account))
-            .load::<Translation>(&mut conn)?;
+            .filter(translation_mushaf_id.eq(mushafid))
+            .select(Translation::as_select())
+            .load(&mut conn)?;
+        //.filter(translator_account_id.eq_any::<Vec<i32>>(master_account))
 
         Ok(web::Json(translations_list))
     })
