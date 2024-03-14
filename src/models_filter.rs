@@ -4,6 +4,7 @@ use crate::schema::quran_ayahs::BoxedQuery as AyahBoxedQuery;
 use crate::schema::quran_surahs::BoxedQuery as SurahBoxedQuery;
 use crate::schema::quran_words::BoxedQuery as WordBoxedQuery;
 use crate::schema::translations::table as translations_table;
+use crate::schema::{app_accounts, app_user_names};
 use crate::{
     error::RouterError,
     filter::{Filter, Filters, Order},
@@ -214,27 +215,43 @@ impl Filter for QuranMushaf {
     }
 }
 
-pub type TranslationBoxedQueryType =
-    IntoBoxed<'static, InnerJoin<translations_table, mushafs::table>, Pg>;
+// translator_name <==> account <==> user_names
+pub type TranslationBoxedQueryType = IntoBoxed<
+    'static,
+    InnerJoin<
+        InnerJoin<translations_table, mushafs::table>,
+        InnerJoin<app_accounts::table, app_user_names::table>,
+    >,
+    Pg,
+>;
 
 impl Filter for Translation {
     type Output = Result<TranslationBoxedQueryType, RouterError>;
 
     fn filter(filters: Box<dyn Filters>) -> Self::Output {
+        use crate::schema::app_accounts::dsl::app_accounts;
+        use crate::schema::app_user_names::dsl::{
+            app_user_names, first_name as user_first_name, last_name as user_last_name,
+        };
         use crate::schema::mushafs::dsl::{mushafs, name as mushaf_name};
         use crate::schema::translations::dsl::*;
 
-        let mut _query = translations_table.inner_join(mushafs).into_boxed();
+        let mut _query = translations_table
+            .inner_join(mushafs)
+            .inner_join(app_accounts.inner_join(app_user_names))
+            .into_boxed();
 
         _query = match filters.sort() {
             Some(sort_str) => match sort_str.as_str() {
                 "createTime" => match filters.order().unwrap_or_default() {
                     Order::Asc => Ok(translations
                         .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
                         .order(created_at.asc())
                         .internal_into_boxed()),
                     Order::Desc => Ok(translations
                         .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
                         .order(created_at.desc())
                         .internal_into_boxed()),
                 },
@@ -242,10 +259,12 @@ impl Filter for Translation {
                 "updateTime" => match filters.order().unwrap_or_default() {
                     Order::Asc => Ok(translations
                         .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
                         .order(updated_at.asc())
                         .internal_into_boxed()),
                     Order::Desc => Ok(translations
                         .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
                         .order(updated_at.desc())
                         .internal_into_boxed()),
                 },
@@ -253,10 +272,12 @@ impl Filter for Translation {
                 "language" => match filters.order().unwrap_or_default() {
                     Order::Asc => Ok(translations
                         .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
                         .order(language.asc())
                         .internal_into_boxed()),
                     Order::Desc => Ok(translations
                         .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
                         .order(language.desc())
                         .internal_into_boxed()),
                 },
@@ -264,26 +285,41 @@ impl Filter for Translation {
                 "mushaf" => match filters.order().unwrap_or_default() {
                     Order::Asc => Ok(translations
                         .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
                         .order(mushaf_name.asc())
                         .internal_into_boxed()),
 
                     Order::Desc => Ok(translations
                         .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
                         .order(mushaf_name.desc())
                         .internal_into_boxed()),
                 },
 
-                //"translator_name" => match filters.order().unwrap_or_default() {
-                //    Order::Asc => Ok(translations.),
-                //    Order::Desc => Ok()
-                //}
+                "translator_name" => match filters.order().unwrap_or_default() {
+                    Order::Asc => Ok(translations
+                        .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
+                        .order(user_first_name.asc())
+                        .internal_into_boxed()),
+
+                    Order::Desc => Ok(translations
+                        .inner_join(mushafs)
+                        .inner_join(app_accounts.inner_join(app_user_names))
+                        .order(user_first_name.desc())
+                        .internal_into_boxed()),
+                },
+
                 value => Err(RouterError::BadRequest(format!(
                     "Sort value {} is not possible!",
                     value
                 ))),
             },
 
-            None => Ok(translations.inner_join(mushafs).into_boxed()),
+            None => Ok(translations
+                .inner_join(mushafs)
+                .inner_join(app_accounts.inner_join(app_user_names))
+                .into_boxed()),
         }?;
 
         _query = match filters.to() {
