@@ -419,8 +419,9 @@ pub struct NewPermissionCondition {
     pub value: String,
 }
 
-#[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable)]
+#[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable, Associations)]
 #[diesel(table_name = translations)]
+#[diesel(belongs_to(Account, foreign_key = translator_account_id))]
 pub struct Translation {
     #[serde(skip_serializing)]
     pub id: i32,

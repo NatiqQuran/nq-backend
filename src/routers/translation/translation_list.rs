@@ -43,7 +43,7 @@ pub async fn translation_list(
             .filter(language.eq(lang))
             .filter(translation_mushaf_id.eq(mushafid))
             .select(Translation::as_select())
-            .load(&mut conn)?;
+            .get_results(&mut conn)?;
         //.filter(translator_account_id.eq_any::<Vec<i32>>(master_account))
 
         Ok(web::Json(translations_list))
