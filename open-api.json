@@ -2,7 +2,7 @@
   "openapi": "3.0.2",
   "info": {
     "title": "NatiqQuran Api",
-    "version": "0.0.6"
+    "version": "0.0.7"
   },
   "servers": [
     {
@@ -938,6 +938,43 @@
     "/mushaf": {
       "description": "Returns the list of mushafs",
       "get": {
+        "parameters": [
+          {
+              "in": "query",
+              "required": false,
+              "name": "sort",
+              "schema": {
+                  "type": "string"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "order",
+              "schema": {
+                  "type": "string"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "from",
+              "schema": {
+                  "type": "number"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "to",
+              "schema": {
+                  "type": "number"
+              }
+          }
+        ],
         "tags": [
           "quran"
         ],
@@ -1123,7 +1160,43 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+              "in": "query",
+              "required": false,
+              "name": "sort",
+              "schema": {
+                  "type": "string"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "order",
+              "schema": {
+                  "type": "string"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "from",
+              "schema": {
+                  "type": "number"
+              }
+          },
+
+          {
+              "in": "query",
+              "required": false,
+              "name": "to",
+              "schema": {
+                  "type": "number"
+              }
           }
+
         ],
         "tags": [
           "quran"
