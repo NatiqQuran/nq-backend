@@ -1,11 +1,11 @@
 use actix_utils::future::{ready, Ready};
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
-    error::ErrorForbidden,
-    Error, HttpMessage,
+    http::StatusCode,
+    Error, HttpMessage, HttpResponse, ResponseError,
 };
 use futures_util::future::LocalBoxFuture;
-use std::rc::Rc;
+use std::{fmt::Display, rc::Rc};
 
 use crate::{CheckPermission, ParsedPath};
 
@@ -48,6 +48,37 @@ where
     }
 }
 
+#[derive(Debug)]
+pub struct AccessDeniedError {
+    message: &'static str,
+}
+
+impl AccessDeniedError {
+    pub fn with_message(message: &'static str) -> Self {
+        Self { message }
+    }
+}
+
+impl Display for AccessDeniedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", &self.message)?;
+
+        Ok(())
+    }
+}
+
+impl ResponseError for AccessDeniedError {
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::build(self.status_code())
+            .insert_header(("Access-Control-Allow-Origin", "*"))
+            .body(self.to_string())
+    }
+
+    fn status_code(&self) -> StatusCode {
+        StatusCode::FORBIDDEN
+    }
+}
+
 pub struct AuthZMiddleware<S, P> {
     service: Rc<S>,
     permission: P,
@@ -83,10 +114,13 @@ where
                 .await
             {
                 let res = service.call(req).await?;
+
                 return Ok(res);
             }
 
-            return Err(ErrorForbidden("You don't have access to this resource!"));
+            return Err(Error::from(AccessDeniedError::with_message(
+                "You don't have access to this resource!",
+            )));
         })
     }
 }

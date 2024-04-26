@@ -1,13 +1,13 @@
 use actix_utils::future::{ready, Ready};
-use actix_web::http::header;
-use actix_web::HttpMessage;
+use actix_web::http::{header, StatusCode};
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
-    error::ErrorUnauthorized,
     Error,
 };
+use actix_web::{HttpMessage, HttpResponse, ResponseError};
 use async_trait::async_trait;
 use futures_util::future::LocalBoxFuture;
+use std::fmt::Display;
 use std::marker::PhantomData;
 use std::rc::Rc;
 
@@ -82,6 +82,37 @@ where
     }
 }
 
+#[derive(Debug)]
+pub struct AccessDeniedError {
+    message: &'static str,
+}
+
+impl AccessDeniedError {
+    pub fn with_message(message: &'static str) -> Self {
+        Self { message }
+    }
+}
+
+impl Display for AccessDeniedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", &self.message)?;
+
+        Ok(())
+    }
+}
+
+impl ResponseError for AccessDeniedError {
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::build(self.status_code())
+            .insert_header(("Access-Control-Allow-Origin", "*"))
+            .body(self.to_string())
+    }
+
+    fn status_code(&self) -> StatusCode {
+        StatusCode::UNAUTHORIZED
+    }
+}
+
 pub struct TokenAuthMiddleware<S, F, Type> {
     service: Rc<S>,
     token_finder: F,
@@ -122,11 +153,15 @@ where
                         return Ok(res);
                     };
 
-                    Err(ErrorUnauthorized("This Token is not valid"))
+                    Err(Error::from(AccessDeniedError::with_message(
+                        "Unauthorized (Token invalid), Please login again!",
+                    )))
                 }
                 None => {
                     if header_required {
-                        return Err(ErrorUnauthorized("Token required"));
+                        return Err(Error::from(AccessDeniedError::with_message(
+                            "Unauthorized, Please login!",
+                        )));
                     }
 
                     let res = service.call(req).await?;
