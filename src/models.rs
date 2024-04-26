@@ -21,14 +21,14 @@ pub struct NewAccount<'a> {
     pub account_type: &'a String,
 }
 
-#[derive(Clone, Identifiable, Queryable, Debug, Serialize, Associations)]
+#[derive(Clone, Identifiable, Queryable, Debug, Serialize, Associations, Selectable)]
 #[diesel(belongs_to(Account))]
 #[diesel(table_name = app_user_names)]
 pub struct UserName {
     pub id: i32,
     pub account_id: i32,
     pub creator_user_id: i32,
-    pub primary: bool,
+    pub primary_name: bool,
     pub first_name: String,
     pub last_name: String,
     pub language: String,
@@ -419,7 +419,17 @@ pub struct NewPermissionCondition {
     pub value: String,
 }
 
-#[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable, Associations)]
+#[derive(
+    Deserialize,
+    Serialize,
+    Clone,
+    Validate,
+    Identifiable,
+    Queryable,
+    Debug,
+    Selectable,
+    Associations,
+)]
 #[diesel(table_name = translations)]
 #[diesel(belongs_to(Account, foreign_key = translator_account_id))]
 pub struct Translation {
