@@ -10,7 +10,7 @@ members = [".", "authN", "authZ"]
 env_logger = "0.10.0"
 auth_n = { path="authN" }
 auth_z = { path="authZ" }
-actix-web = "4.4.0"
+actix-web = "4.5.0"
 actix-cors = "0.6.4"
 diesel = { version = "2.0.4", features = ["postgres", "r2d2", "chrono", "uuid"] }
 uuid = { version = "1.3.3", features = ["serde"] }
