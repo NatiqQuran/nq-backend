@@ -1,15 +1,15 @@
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah, QuranWord, Translation};
-use crate::schema::mushafs::{self, BoxedQuery as MushafBoxedQuery};
+use crate::schema::mushafs::{ BoxedQuery as MushafBoxedQuery};
 use crate::schema::quran_ayahs::BoxedQuery as AyahBoxedQuery;
 use crate::schema::quran_surahs::BoxedQuery as SurahBoxedQuery;
 use crate::schema::quran_words::BoxedQuery as WordBoxedQuery;
-use crate::schema::translations::table as translations_table;
-use crate::schema::{app_accounts, app_user_names};
+use crate::schema::{
+     translations::BoxedQuery as TranslationBoxed,
+};
 use crate::{
     error::RouterError,
     filter::{Filter, Filters, Order},
 };
-use diesel::helper_types::{InnerJoin, IntoBoxed};
 use diesel::pg::Pg;
 use diesel::{prelude::*, query_dsl::methods::BoxedDsl};
 
@@ -216,111 +216,97 @@ impl Filter for QuranMushaf {
 }
 
 // translator_name <==> account <==> user_names
-pub type TranslationBoxedQueryType = IntoBoxed<
-    'static,
-    InnerJoin<
-        InnerJoin<translations_table, mushafs::table>,
-        InnerJoin<app_accounts::table, app_user_names::table>,
-    >,
-    Pg,
->;
+//pub type TranslationBoxedQueryType = IntoBoxed<
+//    'static,
+//    LeftJoinOn<
+//        translations_table,
+//        InnerJoin<app_accounts::table, app_user_names::table>,
+//        helper_types::Eq<app_user_names::account_id, app_accounts::id>,
+//    >,
+//    Pg,
+//>;
 
 impl Filter for Translation {
-    type Output = Result<TranslationBoxedQueryType, RouterError>;
+    type Output = Result<TranslationBoxed<'static, Pg>, RouterError>;
 
     fn filter(filters: Box<dyn Filters>) -> Self::Output {
-        use crate::schema::app_accounts::dsl::app_accounts;
-        use crate::schema::app_user_names::dsl::{
-            app_user_names, first_name as user_first_name, last_name as user_last_name,
-        };
-        use crate::schema::mushafs::dsl::{mushafs, name as mushaf_name};
+        //use crate::schema::app_accounts::dsl::{app_accounts, id as acc_id};
+        //use crate::schema::app_user_names::dsl::{
+        //    account_id, app_user_names, first_name as user_first_name, last_name as user_last_name,
+        //};
+        //use crate::schema::mushafs::dsl::{mushafs, name as mushaf_name};
         use crate::schema::translations::dsl::*;
 
-        let mut _query = translations_table
-            .inner_join(mushafs)
-            .inner_join(app_accounts.inner_join(app_user_names))
+        let mut _query = translations
+            //.inner_join(app_accounts)
+            //.left_join(app_user_names.on(account_id.eq(acc_id)))
             .into_boxed();
 
-        _query = match filters.sort() {
-            Some(sort_str) => match sort_str.as_str() {
-                "createTime" => match filters.order().unwrap_or_default() {
-                    Order::Asc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(created_at.asc())
-                        .internal_into_boxed()),
-                    Order::Desc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(created_at.desc())
-                        .internal_into_boxed()),
-                },
+        //_query = match filters.sort() {
+        //    Some(sort_str) => match sort_str.as_str() {
+        //        "createTime" => match filters.order().unwrap_or_default() {
+        //            Order::Asc => Ok(translations
+        //                .inner_join(app_accounts)
+        //                .left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .order(created_at.asc())
+        //                .internal_into_boxed()),
+        //            Order::Desc => Ok(translations
+        //                .inner_join(app_accounts)
+        //                .left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .order(created_at.desc())
+        //                .internal_into_boxed()),
+        //        },
 
-                "updateTime" => match filters.order().unwrap_or_default() {
-                    Order::Asc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(updated_at.asc())
-                        .internal_into_boxed()),
-                    Order::Desc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(updated_at.desc())
-                        .internal_into_boxed()),
-                },
+        //        "updateTime" => match filters.order().unwrap_or_default() {
+        //            Order::Asc => Ok(translations
+        //                .inner_join(app_accounts)
+        //                .left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .order(updated_at.asc())
+        //                .internal_into_boxed()),
+        //            Order::Desc => Ok(translations
+        //                .inner_join(app_accounts)
+        //                .left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .order(updated_at.desc())
+        //                .internal_into_boxed()),
+        //        },
 
-                "language" => match filters.order().unwrap_or_default() {
-                    Order::Asc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(language.asc())
-                        .internal_into_boxed()),
-                    Order::Desc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(language.desc())
-                        .internal_into_boxed()),
-                },
+        //        "language" => match filters.order().unwrap_or_default() {
+        //            Order::Asc => Ok(translations
+        //                .inner_join(app_accounts)
+        //                .left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .order(language.asc())
+        //                .internal_into_boxed()),
+        //            Order::Desc => Ok(translations
+        //                .inner_join(app_accounts)
+        //                .left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .order(language.desc())
+        //                .internal_into_boxed()),
+        //        },
+        //        "translator_name" => match filters.order().unwrap_or_default() {
+        //            Order::Asc => Ok(translations
+        //                .inner_join(app_accounts)
+        //                .left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .order(user_first_name.asc())
+        //                .internal_into_boxed()),
 
-                "mushaf" => match filters.order().unwrap_or_default() {
-                    Order::Asc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(mushaf_name.asc())
-                        .internal_into_boxed()),
+        //            Order::Desc => Ok(translations
+        //                .inner_join(app_accounts)
+        //                .left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .order(user_first_name.desc())
+        //                .internal_into_boxed()),
+        //        },
 
-                    Order::Desc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(mushaf_name.desc())
-                        .internal_into_boxed()),
-                },
-
-                "translator_name" => match filters.order().unwrap_or_default() {
-                    Order::Asc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(user_first_name.asc())
-                        .internal_into_boxed()),
-
-                    Order::Desc => Ok(translations
-                        .inner_join(mushafs)
-                        .inner_join(app_accounts.inner_join(app_user_names))
-                        .order(user_first_name.desc())
-                        .internal_into_boxed()),
-                },
-
-                value => Err(RouterError::BadRequest(format!(
-                    "Sort value {} is not possible!",
-                    value
-                ))),
-            },
-
-            None => Ok(translations
-                .inner_join(mushafs)
-                .inner_join(app_accounts.inner_join(app_user_names))
-                .into_boxed()),
-        }?;
+        //        value => Err(RouterError::BadRequest(format!(
+        //            "Sort value {} is not possible!",
+        //            value
+        //        ))),
+        //    },
+        //
+        //            None => Ok(translations
+        //                //.inner_join(app_accounts)
+        //                //.left_join(app_user_names.on(account_id.eq(acc_id)))
+        //                .into_boxed()),
+        //        }?;
 
         _query = match filters.to() {
             Some(limit) => _query
