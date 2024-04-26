@@ -12,7 +12,7 @@ pub async fn translation_list(
     pool: web::Data<DbPool>,
     web::Query(query): web::Query<TranslationListQuery>,
 ) -> Result<web::Json<Vec<Translation>>, RouterError> {
-    use crate::schema::mushafs::dsl::{mushafs, short_name as mushaf_short_name, id as mushaf_id};
+    use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, short_name as mushaf_short_name};
     use crate::schema::translations::dsl::{language, mushaf_id as translation_mushaf_id};
 
     let result = web::block(move || {
@@ -44,7 +44,6 @@ pub async fn translation_list(
             .filter(translation_mushaf_id.eq(mushafid))
             .select(Translation::as_select())
             .get_results(&mut conn)?;
-        //.filter(translator_account_id.eq_any::<Vec<i32>>(master_account))
 
         Ok(web::Json(translations_list))
     })
