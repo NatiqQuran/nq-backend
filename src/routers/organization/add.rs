@@ -87,7 +87,7 @@ pub async fn add(
             creator_user_id: user,
             account_id: new_account.id,
             language: "default".to_string(),
-            name: new_org_info.name,
+            name: new_org_info.primary_name,
         }
         .insert_into(app_organization_names)
         .execute(&mut conn)?;

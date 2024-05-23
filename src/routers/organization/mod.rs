@@ -17,7 +17,7 @@ pub struct ReqOrganization {
     pub username: String,
 
     #[validate(length(min = 1, max = 16))]
-    pub name: String,
+    pub primary_name: String,
 
     #[validate(url)]
     pub profile_image: Option<String>,
