@@ -1,5 +1,5 @@
 use actix_cors::Cors;
-use actix_web::{web, App, HttpServer};
+use actix_web::{middleware, web, App, HttpServer};
 use authz::AuthZController;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
@@ -102,6 +102,7 @@ async fn main() -> std::io::Result<()> {
 
         App::new()
             .wrap(cors)
+            .wrap(middleware::DefaultHeaders::new().add(("Cache-Control", "no-cache")))
             .app_data(web::Data::new(pool.clone()))
             .app_data(web::Data::new(mailer.clone()))
             .service(
