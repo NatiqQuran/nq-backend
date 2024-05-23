@@ -24,7 +24,6 @@ mod models_filter;
 mod routers;
 mod schema;
 mod select_model;
-mod test;
 mod token_checker;
 mod validate;
 

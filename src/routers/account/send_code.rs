@@ -2,7 +2,6 @@ use super::{time_deference, MAX_RANDOM_CODE, MIN_RANDOM_CODE};
 use crate::email::EmailManager;
 use crate::error::RouterError;
 use crate::models::{NewVerifyCode, VerifyCode};
-use crate::test::Test;
 use crate::validate::validate;
 use crate::DbPool;
 use actix_web::web;
@@ -30,14 +29,6 @@ enum SendCodeStatus {
 pub struct SendCodeInfo {
     #[validate(email)]
     email: String,
-}
-
-impl Test for SendCodeInfo {
-    fn test() -> Self {
-        Self {
-            email: "example@example.com".to_string(),
-        }
-    }
 }
 
 /// Data -> Email,
