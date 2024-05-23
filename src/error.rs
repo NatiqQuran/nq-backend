@@ -4,6 +4,7 @@ use actix_web::{
     HttpResponse,
 };
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
+use log::error;
 use std::{error::Error, fmt::Display};
 use uuid::Error as UuidError;
 
@@ -75,7 +76,11 @@ impl From<DieselError> for RouterError {
             DieselError::NotFound => Self::NotFound("Not found!".to_string()),
             DieselError::DatabaseError(kind, _) => Self::from(kind),
 
-            _ => Self::InternalError,
+            err => {
+                error!("InternalError: {:?}", err);
+
+                Self::InternalError
+            }
         }
     }
 }
@@ -85,7 +90,11 @@ impl From<DatabaseErrorKind> for RouterError {
         match value {
             DatabaseErrorKind::CheckViolation => Self::NotAvailable("Not available!".to_string()),
 
-            _ => Self::InternalError,
+            err => {
+                error!("InternalError: {:?}", err);
+
+                Self::InternalError
+            }
         }
     }
 }
@@ -95,4 +104,3 @@ impl From<UuidError> for RouterError {
         Self::BadRequest(value.to_string())
     }
 }
-
