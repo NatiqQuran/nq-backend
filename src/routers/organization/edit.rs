@@ -44,7 +44,7 @@ pub async fn edit_organization(
             .execute(&mut conn)?;
 
         diesel::update(OrganizationName::belonging_to(&account).filter(language.eq("default")))
-            .set((name.eq(new_org.name),))
+            .set((name.eq(new_org.primary_name),))
             .execute(&mut conn)?;
 
         Ok("Updated")

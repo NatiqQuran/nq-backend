@@ -10,5 +10,5 @@ CREATE TABLE translations_text (
     CONSTRAINT translation_text_id PRIMARY KEY (id),
     CONSTRAINT fk_translation FOREIGN KEY(translation_id) REFERENCES translations(id) on delete cascade,
     CONSTRAINT translation_text_fk_user_id_rel FOREIGN KEY(creator_user_id) REFERENCES app_users(id),
-    CONSTRAINT fk_ayah FOREIGN KEY(ayah_id) REFERENCES quran_ayahs(id)
+    CONSTRAINT fk_ayah FOREIGN KEY(ayah_id) REFERENCES quran_ayahs(id) on delete cascade
 );
