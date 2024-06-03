@@ -61,7 +61,7 @@ impl RouterError {
 
 impl Display for RouterError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.error.message);
+        write!(f, "{}", self.error.message)?;
         Ok(())
     }
 }

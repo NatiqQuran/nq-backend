@@ -60,10 +60,7 @@ impl Filter for QuranSurah {
                     Order::Desc => quran_surahs.order(updated_at.desc()).internal_into_boxed(),
                 }),
 
-                value => Err(RouterError::BadRequest(format!(
-                    "Sort value {} is not possible!",
-                    value
-                ))),
+                _ => Err(RouterError::from_predefined("FILTER_SORT_VALUE_NOT_DEFINED")),
             },
 
             None => Ok(quran_surahs.internal_into_boxed()),
@@ -105,10 +102,9 @@ impl Filter for QuranAyah {
                     Order::Desc => quran_ayahs.order(updated_at.desc()).internal_into_boxed(),
                 }),
 
-                value => Err(RouterError::BadRequest(format!(
-                    "Sort value {} is not possible!",
-                    value
-                ))),
+                
+                _ => Err(RouterError::from_predefined("FILTER_SORT_VALUE_NOT_DEFINED")),
+
             },
 
             None => Ok(quran_ayahs.internal_into_boxed()),
@@ -150,10 +146,9 @@ impl Filter for QuranWord {
                     Order::Desc => quran_words.order(word.desc()).internal_into_boxed(),
                 }),
 
-                value => Err(RouterError::BadRequest(format!(
-                    "Sort value {} is not possible!",
-                    value
-                ))),
+               
+                _ => Err(RouterError::from_predefined("FILTER_SORT_VALUE_NOT_DEFINED")),
+
             },
 
             None => Ok(quran_words.internal_into_boxed()),
@@ -195,10 +190,8 @@ impl Filter for QuranMushaf {
                     Order::Desc => mushafs.order(updated_at.desc()).internal_into_boxed(),
                 }),
 
-                value => Err(RouterError::BadRequest(format!(
-                    "Sort value {} is not possible!",
-                    value
-                ))),
+                
+                _ => Err(RouterError::from_predefined("FILTER_SORT_VALUE_NOT_DEFINED")),
             },
 
             None => Ok(mushafs.internal_into_boxed()),
