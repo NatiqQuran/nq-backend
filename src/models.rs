@@ -498,3 +498,25 @@ pub struct NewTranslationText<'a> {
     pub ayah_id: i32,
     pub text: &'a String,
 }
+
+#[derive(Selectable, Identifiable, Queryable, Debug, Serialize)]
+#[diesel(table_name = app_error_logs)]
+pub struct ErrorLog {
+    pub id: i32,
+    pub uuid: Uuid,
+    pub error_name: String,
+    pub status_code: i32,
+
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
+}
+
+
+#[derive(Insertable)]
+#[diesel(table_name = app_error_logs)]
+pub struct NewErrorLog<'a> {
+    pub error_name: &'a String,
+    pub status_code: i32,
+}
