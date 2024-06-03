@@ -3,40 +3,66 @@ use actix_web::{
     http::{header::ContentType, StatusCode},
     HttpResponse,
 };
-use diesel::result::{DatabaseErrorKind, Error as DieselError};
+use diesel::{
+    prelude::*,
+    result::{DatabaseErrorKind, Error as DieselError},
+};
 use log::error;
-use std::{error::Error, fmt::Display};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use std::{collections::HashMap, error::Error, fmt::Display};
 use uuid::Error as UuidError;
 
+use crate::{models::NewErrorLog, DbPool, FIXED_ERROR_RESPONSES};
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct PreDefinedResponseError {
+    status_code: u16,
+    message: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PreDefinedResponseErrors {
+    pub errors: HashMap<String, PreDefinedResponseError>,
+}
+
 #[derive(Debug)]
-pub enum RouterError {
-    NotFound(String),
+pub struct RouterError {
+    error_name: String,
+    error: PreDefinedResponseError,
+}
 
-    /// Needs the detail of error
-    ValidationError(String),
-    InternalError,
-    Gone(String),
+impl RouterError {
+    pub fn from_predefined(error_response_name: &str) -> Self {
+        let err_resp = FIXED_ERROR_RESPONSES.get().unwrap();
 
-    /// For example:
-    /// username is not available
-    NotAvailable(String),
+        Self {
+            error: err_resp.errors.get(error_response_name).unwrap().clone(),
+            error_name: error_response_name.to_string(),
+        }
+    }
 
-    BadRequest(String),
+    pub fn log_to_db(&self, conn: DbPool) -> &Self {
+        use crate::schema::app_error_logs::dsl::app_error_logs;
 
-    Unauth(String),
+        let mut conn = conn.get().unwrap();
+
+        NewErrorLog {
+            error_name: &self.error_name,
+            status_code: self.error.status_code as i32,
+        }
+        .insert_into(app_error_logs)
+        .execute(&mut conn)
+        .unwrap();
+
+        self
+    }
 }
 
 impl Display for RouterError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::NotFound(message) => write!(f, "{}", message),
-            Self::ValidationError(detail) => write!(f, "{}", detail),
-            Self::InternalError => write!(f, "internal server error"),
-            Self::Gone(message) => write!(f, "{}", message),
-            Self::NotAvailable(what) => write!(f, "{} is not available", what),
-            Self::BadRequest(message) => write!(f, "{}", message),
-            Self::Unauth(message) => write!(f, "{}", message),
-        }
+        write!(f, "{}", self.error.message);
+        Ok(())
     }
 }
 
@@ -52,34 +78,30 @@ impl Error for RouterError {
 
 impl ResponseError for RouterError {
     fn error_response(&self) -> HttpResponse {
+        let json = json!({
+            "error_name": self.error_name,
+            "message": self.error.message,
+        });
         HttpResponse::build(self.status_code())
-            .insert_header(ContentType::plaintext())
-            .body(self.to_string())
+            .insert_header(ContentType::json())
+            .body(json.to_string())
     }
 
     fn status_code(&self) -> StatusCode {
-        match self {
-            Self::InternalError => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::NotFound(_) => StatusCode::NOT_FOUND,
-            Self::ValidationError(_) => StatusCode::BAD_REQUEST,
-            Self::Gone(_) => StatusCode::GONE,
-            Self::NotAvailable(_) => StatusCode::OK,
-            Self::BadRequest(_) => StatusCode::BAD_REQUEST,
-            Self::Unauth(_) => StatusCode::FORBIDDEN,
-        }
+        StatusCode::from_u16(self.error.status_code).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
     }
 }
 
 impl From<DieselError> for RouterError {
     fn from(value: DieselError) -> Self {
         match value {
-            DieselError::NotFound => Self::NotFound("Not found!".to_string()),
+            DieselError::NotFound => Self::from_predefined("NOT_FOUND"),
             DieselError::DatabaseError(kind, _) => Self::from(kind),
 
             err => {
                 error!("InternalError: {:?}", err);
 
-                Self::InternalError
+                Self::from_predefined("INTERNAL_ERROR")
             }
         }
     }
@@ -88,19 +110,19 @@ impl From<DieselError> for RouterError {
 impl From<DatabaseErrorKind> for RouterError {
     fn from(value: DatabaseErrorKind) -> Self {
         match value {
-            DatabaseErrorKind::CheckViolation => Self::NotAvailable("Not available!".to_string()),
+            DatabaseErrorKind::CheckViolation => Self::from_predefined("Not available!"),
 
             err => {
                 error!("InternalError: {:?}", err);
 
-                Self::InternalError
+                Self::from_predefined("INTERNAL_ERROR")
             }
         }
     }
 }
 
 impl From<UuidError> for RouterError {
-    fn from(value: UuidError) -> Self {
-        Self::BadRequest(value.to_string())
+    fn from(_value: UuidError) -> Self {
+        Self::from_predefined("UUID_ERROR")
     }
 }

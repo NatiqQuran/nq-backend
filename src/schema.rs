@@ -35,6 +35,17 @@ diesel::table! {
 }
 
 diesel::table! {
+    app_error_logs (id) {
+        id -> Int4,
+        uuid -> Uuid,
+        error_name -> Varchar,
+        status_code -> Int4,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
     app_organization_names (id) {
         id -> Int4,
         uuid -> Uuid,
@@ -247,6 +258,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     app_accounts,
     app_emails,
     app_employees,
+    app_error_logs,
     app_organization_names,
     app_organizations,
     app_permission_conditions,

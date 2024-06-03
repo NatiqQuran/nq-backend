@@ -8,3 +8,4 @@ actix-web = "4"
 actix-utils = "3.0.1"
 async-trait = "0.1.68"
 futures-util = { version = "0.3.7", default-features = false, features = ["std"] }
+log = "0.4.21"

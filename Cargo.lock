@@ -279,6 +279,7 @@ dependencies = [
  "actix-web",
  "async-trait",
  "futures-util",
+ "log",
 ]
 
 [[package]]

@@ -1,3 +1,4 @@
+use crate::error::PreDefinedResponseError;
 use actix_cors::Cors;
 use actix_web::{middleware, web, App, HttpServer};
 use authz::AuthZController;
@@ -9,9 +10,13 @@ use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool};
 use dotenvy::dotenv;
 use email::EmailManager;
+use error::PreDefinedResponseErrors;
 use lettre::transport::smtp::authentication::Credentials;
-use std::env;
+use std::collections::HashMap;
 use std::error::Error;
+use std::io::ErrorKind;
+use std::sync::OnceLock;
+use std::{env, io};
 use token_checker::UserIdFromToken;
 
 mod authz;
@@ -45,6 +50,9 @@ use routers::user::{delete_user, edit_user, user, users_list};
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
+
+pub static FIXED_ERROR_RESPONSES: OnceLock<PreDefinedResponseErrors> = OnceLock::new();
+pub const FIXED_ERROR_JSON: &'static str = include_str!("../error_codes.json");
 
 fn run_migrations(
     connection: &mut PgConnection,
@@ -81,6 +89,22 @@ pub fn establish_database_connection() -> ConnectionManager<PgConnection> {
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
+
+    let Ok(json) =
+        serde_json::from_str::<HashMap<String, PreDefinedResponseError>>(FIXED_ERROR_JSON)
+    else {
+        return Err(io::Error::new(
+            ErrorKind::Other,
+            "Failed to parse fixed_error_responses json!",
+        ));
+    };
+
+    let Ok(()) = FIXED_ERROR_RESPONSES.set(PreDefinedResponseErrors { errors: json }) else {
+        return Err(io::Error::new(
+            ErrorKind::Other,
+            "Could't set to static FIXED_ERROR_RESPONSES",
+        ));
+    };
 
     let pg_manager = establish_database_connection();
 
