@@ -50,6 +50,7 @@ pub async fn verify(
 
         return Ok(String::from("secret"));
     }
+    let pool = pool.into_inner();
 
     // The release mode
     web::block(move || {
@@ -62,17 +63,17 @@ pub async fn verify(
             .load::<VerifyCode>(&mut conn)?;
 
         let Some(last_sended_code) = last_sended_code.get(0) else {
-            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_SENDED"));
+            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_SENDED").log_to_db(pool));
         };
 
         // The code is not correct
         if last_sended_code.code != info.code {
-            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_VALID"));
+            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_VALID").log_to_db(pool));
         }
 
         // The code is already used
         if last_sended_code.status == *"used".to_string() {
-            return Err(RouterError::from_predefined("VERIFY_CODE_ALREADY_USED"));
+            return Err(RouterError::from_predefined("VERIFY_CODE_ALREADY_USED").log_to_db(pool));
         }
 
         // Get the time difference for expireation check
@@ -83,7 +84,7 @@ pub async fn verify(
             // The requested resource is no longer available at the server and no forwarding
             // address is known. This condition is expected to be considered permanent.
 
-            return Err(RouterError::from_predefined("VERIFY_CODE_EXPIRED"));
+            return Err(RouterError::from_predefined("VERIFY_CODE_EXPIRED").log_to_db(pool));
         }
 
         // Everything is ok now change code status to used
@@ -156,7 +157,7 @@ pub async fn verify(
         let token = HashBuilder::new().set_source(&source).generate();
 
         let Some(result) = token.get_result() else {
-            return Err(RouterError::from_predefined("CANT_GENERATE_TOKEN"));
+            return Err(RouterError::from_predefined("CANT_GENERATE_TOKEN").log_to_db(pool));
         };
 
         // Hash the token itself

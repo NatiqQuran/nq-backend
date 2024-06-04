@@ -506,6 +506,8 @@ pub struct ErrorLog {
     pub uuid: Uuid,
     pub error_name: String,
     pub status_code: i32,
+    pub message: String,
+    pub detail: Option<String>,
 
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
@@ -513,10 +515,11 @@ pub struct ErrorLog {
     pub updated_at: NaiveDateTime,
 }
 
-
 #[derive(Insertable)]
 #[diesel(table_name = app_error_logs)]
 pub struct NewErrorLog<'a> {
     pub error_name: &'a String,
     pub status_code: i32,
+    pub message: &'a String,
+    pub detail: Option<&'a String>,
 }

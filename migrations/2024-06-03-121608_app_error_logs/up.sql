@@ -3,6 +3,8 @@ CREATE TABLE app_error_logs(
     uuid uuid DEFAULT uuid_generate_v4 () NOT NULL,
     error_name VARCHAR(256) NOT NULL,
     status_code INT NOT NULL,
+    message TEXT NOT NULL,
+    detail TEXT,
     --- TODO: ADD user IP and ...
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

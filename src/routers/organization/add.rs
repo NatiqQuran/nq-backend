@@ -14,7 +14,7 @@ use super::ReqOrganization;
 
 /// Add a new Org
 pub async fn add(
-    conn: web::Data<DbPool>,
+    pool: web::Data<DbPool>,
     new_org: web::Json<ReqOrganization>,
     data: ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
@@ -29,8 +29,10 @@ pub async fn add(
 
     validate(&new_org_info)?;
 
+    let pool = pool.into_inner();
+
     web::block(move || {
-        let mut conn = conn.get().unwrap();
+        let mut conn = pool.get().unwrap();
 
         // Check if org already exists
         let org_exists = select(exists(
@@ -39,7 +41,9 @@ pub async fn add(
         .get_result::<bool>(&mut conn)?;
 
         if org_exists {
-            return Err(RouterError::from_predefined("ORGANIZATION_NAME_NOT_AVAILABLE"));
+            return Err(
+                RouterError::from_predefined("ORGANIZATION_NAME_NOT_AVAILABLE").log_to_db(pool),
+            );
         }
 
         // Create new account for org

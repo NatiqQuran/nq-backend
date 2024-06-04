@@ -5,6 +5,7 @@ pub mod quran;
 pub mod permission;
 pub mod translation;
 pub mod profile;
+pub mod error;
 
 use std::collections::BTreeMap;
 use std::hash::Hash;

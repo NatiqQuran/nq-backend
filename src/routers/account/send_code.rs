@@ -43,6 +43,7 @@ pub async fn send_code(
     validate(&info.0)?;
 
     let info_copy = info.clone();
+    let pool_clone = pool.clone();
 
     let send_status: Result<SendCodeStatus, RouterError> = web::block(move || {
         let random_code = generate_random_code(MIN_RANDOM_CODE, MAX_RANDOM_CODE);
@@ -95,8 +96,8 @@ pub async fn send_code(
 
                 match result {
                     Ok(()) => Ok("Code sended".to_string()),
-                    // TODO: We can check the error, Maybe ?
-                    Err(_error) => Err(RouterError::from_predefined("SEND_CODE_INTERNAL_ERROR")),
+                    Err(_error) => Err(RouterError::from_predefined("SEND_CODE_INTERNAL_ERROR")
+                        .log_to_db(pool_clone.into_inner())),
                 }
             }
             SendCodeStatus::AlreadySent => Ok("Already sent".to_string()),

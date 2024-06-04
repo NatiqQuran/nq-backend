@@ -1,11 +1,10 @@
-use crate::models::{QuranAyah, QuranMushaf, QuranSurah, QuranWord, Translation};
-use crate::schema::mushafs::{ BoxedQuery as MushafBoxedQuery};
+use crate::models::{ErrorLog, QuranAyah, QuranMushaf, QuranSurah, QuranWord, Translation};
+use crate::schema::mushafs::BoxedQuery as MushafBoxedQuery;
 use crate::schema::quran_ayahs::BoxedQuery as AyahBoxedQuery;
 use crate::schema::quran_surahs::BoxedQuery as SurahBoxedQuery;
 use crate::schema::quran_words::BoxedQuery as WordBoxedQuery;
-use crate::schema::{
-     translations::BoxedQuery as TranslationBoxed,
-};
+use crate::schema::translations::BoxedQuery as TranslationBoxed;
+use crate::schema::app_error_logs::BoxedQuery as AppErrorBoxedQuery;
 use crate::{
     error::RouterError,
     filter::{Filter, Filters, Order},
@@ -60,7 +59,9 @@ impl Filter for QuranSurah {
                     Order::Desc => quran_surahs.order(updated_at.desc()).internal_into_boxed(),
                 }),
 
-                _ => Err(RouterError::from_predefined("FILTER_SORT_VALUE_NOT_DEFINED")),
+                _ => Err(RouterError::from_predefined(
+                    "FILTER_SORT_VALUE_NOT_DEFINED",
+                )),
             },
 
             None => Ok(quran_surahs.internal_into_boxed()),
@@ -102,9 +103,9 @@ impl Filter for QuranAyah {
                     Order::Desc => quran_ayahs.order(updated_at.desc()).internal_into_boxed(),
                 }),
 
-                
-                _ => Err(RouterError::from_predefined("FILTER_SORT_VALUE_NOT_DEFINED")),
-
+                _ => Err(RouterError::from_predefined(
+                    "FILTER_SORT_VALUE_NOT_DEFINED",
+                )),
             },
 
             None => Ok(quran_ayahs.internal_into_boxed()),
@@ -146,9 +147,9 @@ impl Filter for QuranWord {
                     Order::Desc => quran_words.order(word.desc()).internal_into_boxed(),
                 }),
 
-               
-                _ => Err(RouterError::from_predefined("FILTER_SORT_VALUE_NOT_DEFINED")),
-
+                _ => Err(RouterError::from_predefined(
+                    "FILTER_SORT_VALUE_NOT_DEFINED",
+                )),
             },
 
             None => Ok(quran_words.internal_into_boxed()),
@@ -190,8 +191,9 @@ impl Filter for QuranMushaf {
                     Order::Desc => mushafs.order(updated_at.desc()).internal_into_boxed(),
                 }),
 
-                
-                _ => Err(RouterError::from_predefined("FILTER_SORT_VALUE_NOT_DEFINED")),
+                _ => Err(RouterError::from_predefined(
+                    "FILTER_SORT_VALUE_NOT_DEFINED",
+                )),
             },
 
             None => Ok(mushafs.internal_into_boxed()),
@@ -300,6 +302,42 @@ impl Filter for Translation {
         //                //.left_join(app_user_names.on(account_id.eq(acc_id)))
         //                .into_boxed()),
         //        }?;
+
+        _query = match filters.to() {
+            Some(limit) => _query
+                .limit(limit as i64)
+                .offset(filters.from().unwrap_or_default() as i64),
+            None => _query.offset(filters.from().unwrap_or_default() as i64),
+        };
+
+        Ok(_query)
+    }
+}
+
+impl Filter for ErrorLog {
+    type Output = Result<AppErrorBoxedQuery<'static, Pg>, RouterError>;
+
+    fn filter(filters: Box<dyn Filters>) -> Self::Output {
+        use crate::schema::app_error_logs::dsl::*;
+
+        let mut _query = app_error_logs.into_boxed();
+
+        _query = match filters.sort() {
+            Some(sort_str) => match sort_str.as_str() {
+                "createTime" => Ok(match filters.order().unwrap_or_default() {
+                    Order::Asc => app_error_logs.order(created_at.asc()).internal_into_boxed(),
+                    Order::Desc => app_error_logs
+                        .order(created_at.desc())
+                        .internal_into_boxed(),
+                }),
+
+                _ => Err(RouterError::from_predefined(
+                    "FILTER_SORT_VALUE_NOT_DEFINED",
+                )),
+            },
+
+            None => Ok(app_error_logs.internal_into_boxed()),
+        }?;
 
         _query = match filters.to() {
             Some(limit) => _query
