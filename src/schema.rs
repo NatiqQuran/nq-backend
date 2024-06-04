@@ -40,6 +40,8 @@ diesel::table! {
         uuid -> Uuid,
         error_name -> Varchar,
         status_code -> Int4,
+        message -> Text,
+        detail -> Nullable<Text>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }

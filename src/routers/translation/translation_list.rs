@@ -15,6 +15,8 @@ pub async fn translation_list(
     use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, short_name as mushaf_short_name};
     use crate::schema::translations::dsl::{language, mushaf_id as translation_mushaf_id};
 
+    let pool = pool.into_inner();
+
     let result = web::block(move || {
         let mut conn = pool.get().unwrap();
 
@@ -39,11 +41,14 @@ pub async fn translation_list(
         //};
 
         // Get the list of translations from the database
-        let translations_list: Vec<Translation> = Translation::filter(Box::from(query))?
-            .filter(language.eq(lang))
-            .filter(translation_mushaf_id.eq(mushafid))
-            .select(Translation::as_select())
-            .get_results(&mut conn)?;
+        let translations_list = match Translation::filter(Box::from(query)) {
+            Ok(filtred) => filtred,
+            Err(err) => return Err(err.log_to_db(pool)),
+        }
+        .filter(language.eq(lang))
+        .filter(translation_mushaf_id.eq(mushafid))
+        .select(Translation::as_select())
+        .get_results(&mut conn)?;
 
         Ok(web::Json(translations_list))
     })

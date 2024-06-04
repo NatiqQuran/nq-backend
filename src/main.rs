@@ -38,6 +38,7 @@ mod macros;
 use routers::account::logout;
 use routers::account::send_code;
 use routers::account::verify;
+use routers::error::errors_list;
 use routers::organization::{add, delete, edit, list, name, view};
 use routers::permission::{
     add_permission, delete_permission, edit_permission, permissions_list, view_permission,
@@ -302,6 +303,12 @@ async fn main() -> std::io::Result<()> {
                         "/{permission_uuid}",
                         web::delete().to(delete_permission::delete_permission),
                     ),
+            )
+            .service(
+                web::scope("/error")
+                    .wrap(AuthZ::new(auth_z_controller.clone()))
+                    .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                    .route("", web::get().to(errors_list)),
             )
     })
     .bind(("0.0.0.0", 8080))?

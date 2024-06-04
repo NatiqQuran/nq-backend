@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::error::RouterError;
 use crate::models::{Organization, User};
 use crate::select_model::SelectModel;
@@ -136,7 +138,17 @@ impl CheckPermission for AuthZController {
 
         // We Got the model now we check every condition
         for (cond_name, cond_value) in select_result.1 {
-            let Ok(model_attr) = ModelAttrib::try_from(cond_name.as_str()) else {
+            let model_attr: Option<ModelAttrib> = match ModelAttrib::try_from(cond_name.as_str()) {
+                Ok(v) => Some(v),
+
+                Err(err) => {
+                    err.log_to_db(Arc::new(self.db_pool.clone()));
+
+                    None
+                }
+            };
+
+            let Some(model_attr) = model_attr else {
                 return false;
             };
 

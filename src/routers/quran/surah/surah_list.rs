@@ -16,6 +16,7 @@ pub async fn surah_list(
     use crate::schema::quran_surahs::dsl::*;
 
     let query = query.into_inner();
+    let pool = pool.into_inner();
 
     web::block(move || {
         let mut conn = pool.get().unwrap();
@@ -26,7 +27,10 @@ pub async fn surah_list(
             .filter(mushaf_name.eq(&query.mushaf))
             .get_result::<QuranMushaf>(&mut conn)?;
 
-        let filtered_surahs = QuranSurah::filter(Box::from(query))?;
+        let filtered_surahs = match QuranSurah::filter(Box::from(query)) {
+            Ok(filtred) => filtred,
+            Err(err) => return Err(err.log_to_db(pool)),
+        };
 
         // Get the list of surahs from the database
         let surahs = filtered_surahs

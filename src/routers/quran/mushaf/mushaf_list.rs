@@ -12,12 +12,18 @@ pub async fn mushaf_list(
     pool: web::Data<DbPool>,
     web::Query(query): web::Query<MushafListQuery>,
 ) -> Result<web::Json<Vec<QuranMushaf>>, RouterError> {
+
+    let pool = pool.into_inner();
+
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the list of mushafs from the database
-        let quran_mushafs =
-            QuranMushaf::filter(Box::from(query))?.load::<QuranMushaf>(&mut conn)?;
+        let quran_mushafs = match QuranMushaf::filter(Box::from(query)) {
+            Ok(filtred) => filtred,
+            Err(err) => return Err(err.log_to_db(pool)),
+        }
+        .load::<QuranMushaf>(&mut conn)?;
 
         Ok(web::Json(quran_mushafs))
     })

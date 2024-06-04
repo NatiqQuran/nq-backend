@@ -56,6 +56,7 @@ impl SimpleCondition {
         let self_value_type = ConditionValueType::try_from(self.value.as_str())?;
 
         if value_type != self_value_type {
+            // TODO: log this to db
             return Err(RouterError::from_predefined("PERMISSION_CONDITION_VALUE_NOT_VALID"));
         }
 
