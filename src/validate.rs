@@ -10,9 +10,9 @@ where
     let validation = data.validate();
 
     match validation {
-        Err(error_detail) => {
+        Err(_error_detail) => {
             // TODO: This error in response is so ugly.
-            Err(RouterError::ValidationError(error_detail.to_string()))
+            Err(RouterError::from_predefined("VALIDATION_ERROR"))
         }
 
         Ok(()) => Ok(()),

@@ -39,9 +39,7 @@ pub async fn add(
         .get_result::<bool>(&mut conn)?;
 
         if org_exists {
-            return Err(RouterError::NotAvailable(
-                "organization username".to_string(),
-            ));
+            return Err(RouterError::from_predefined("ORGANIZATION_NAME_NOT_AVAILABLE"));
         }
 
         // Create new account for org

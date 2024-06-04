@@ -62,19 +62,17 @@ pub async fn verify(
             .load::<VerifyCode>(&mut conn)?;
 
         let Some(last_sended_code) = last_sended_code.get(0) else {
-            return Err(RouterError::Gone(
-                "No code sended to this email".to_string(),
-            ));
+            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_SENDED"));
         };
 
         // The code is not correct
         if last_sended_code.code != info.code {
-            return Err(RouterError::BadRequest("Code is not correct".to_string()));
+            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_VALID"));
         }
 
         // The code is already used
         if last_sended_code.status == *"used".to_string() {
-            return Err(RouterError::Gone("Code is already used".to_string()));
+            return Err(RouterError::from_predefined("VERIFY_CODE_ALREADY_USED"));
         }
 
         // Get the time difference for expireation check
@@ -85,7 +83,7 @@ pub async fn verify(
             // The requested resource is no longer available at the server and no forwarding
             // address is known. This condition is expected to be considered permanent.
 
-            return Err(RouterError::Gone("Code expired".to_string()));
+            return Err(RouterError::from_predefined("VERIFY_CODE_EXPIRED"));
         }
 
         // Everything is ok now change code status to used
@@ -158,7 +156,7 @@ pub async fn verify(
         let token = HashBuilder::new().set_source(&source).generate();
 
         let Some(result) = token.get_result() else {
-            return Err(RouterError::InternalError);
+            return Err(RouterError::from_predefined("CANT_GENERATE_TOKEN"));
         };
 
         // Hash the token itself

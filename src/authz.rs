@@ -199,8 +199,8 @@ impl TryFrom<&str> for ConditionValueType {
         match value {
             "true" | "false" => Ok(Self::Boolean),
 
-            _ => Err(RouterError::BadRequest(
-                "Condition Value Type is not correct!".to_string(),
+            _ => Err(RouterError::from_predefined(
+                "AUTHZ_CONDITION_VALUE_NOT_DEFINED",
             )),
         }
     }
@@ -328,10 +328,7 @@ impl TryFrom<&str> for ModelAttrib {
             "isOwner" => Ok(Self::Owner),
             "isLoggedIn" => Ok(Self::Login),
 
-            v => Err(RouterError::BadRequest(format!(
-                "Condition with name {} not found!",
-                v
-            ))),
+            _ => Err(RouterError::from_predefined("MODEL_ATTRIBUTE_NOT_DEFINED")),
         }
     }
 }
@@ -358,7 +355,7 @@ impl ModelPermission<ModelAttrib, i32> for Organization {
 
 #[cfg(test)]
 mod tests {
-    use super::{Condition, Login, Owner, ModelAttrib};
+    use super::{Condition, Login, ModelAttrib, Owner};
 
     #[test]
     fn test_login_condition() {
@@ -381,15 +378,18 @@ mod tests {
         // This should return false
         assert_eq!(owner.validate(None, None, ""), false);
 
-        assert_eq!(
-            owner.validate(Some(1), Some("1"), "true"),
-            true
-        );
+        assert_eq!(owner.validate(Some(1), Some("1"), "true"), true);
     }
 
     #[test]
     fn test_model_attrib() {
-        assert_eq!(ModelAttrib::try_from("isOwner").unwrap(), ModelAttrib::Owner);
-        assert_eq!(ModelAttrib::try_from("isLoggedIn").unwrap(), ModelAttrib::Login);
+        assert_eq!(
+            ModelAttrib::try_from("isOwner").unwrap(),
+            ModelAttrib::Owner
+        );
+        assert_eq!(
+            ModelAttrib::try_from("isLoggedIn").unwrap(),
+            ModelAttrib::Login
+        );
     }
 }

@@ -96,7 +96,7 @@ pub async fn send_code(
                 match result {
                     Ok(()) => Ok("Code sended".to_string()),
                     // TODO: We can check the error, Maybe ?
-                    Err(_error) => Err(RouterError::InternalError),
+                    Err(_error) => Err(RouterError::from_predefined("SEND_CODE_INTERNAL_ERROR")),
                 }
             }
             SendCodeStatus::AlreadySent => Ok("Already sent".to_string()),
