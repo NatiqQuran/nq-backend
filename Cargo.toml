@@ -7,20 +7,31 @@ edition = "2021"
 members = [".", "authN", "authZ"]
 
 [dependencies]
+log4rs = "1.3.0"
 log = "0.4.21"
 env_logger = "0.10.0"
-auth_n = { path="authN" }
-auth_z = { path="authZ" }
+auth_n = { path = "authN" }
+auth_z = { path = "authZ" }
 actix-web = "4.5.0"
 actix-cors = "0.6.4"
-diesel = { version = "2.0.4", features = ["postgres", "r2d2", "chrono", "uuid"] }
+diesel = { version = "2.0.4", features = [
+    "postgres",
+    "r2d2",
+    "chrono",
+    "uuid",
+] }
 uuid = { version = "1.3.3", features = ["serde"] }
 dotenvy = "0.15"
 serde = { version = "1.0.192", features = ["derive"] }
 serde_json = "1"
 rand = "0.8.5"
-chrono = {version = "0.4", features = ["serde"]}
-lettre = { version = "0.10.1", default-features = false, features = ["smtp-transport", "tokio1-rustls-tls", "hostname", "builder"] }
+chrono = { version = "0.4", features = ["serde"] }
+lettre = { version = "0.10.1", default-features = false, features = [
+    "smtp-transport",
+    "tokio1-rustls-tls",
+    "hostname",
+    "builder",
+] }
 validator = { version = "0.16.0", features = ["derive"] }
 diesel_migrations = "2.0.0"
 async-trait = "0.1.68"

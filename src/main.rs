@@ -12,6 +12,11 @@ use dotenvy::dotenv;
 use email::EmailManager;
 use error::PreDefinedResponseErrors;
 use lettre::transport::smtp::authentication::Credentials;
+use log::LevelFilter;
+use log4rs::append::file::FileAppender;
+use log4rs::config::{Appender, Root};
+use log4rs::encode::pattern::PatternEncoder;
+use log4rs::Config;
 use std::collections::HashMap;
 use std::error::Error;
 use std::io::ErrorKind;
@@ -89,7 +94,23 @@ pub fn establish_database_connection() -> ConnectionManager<PgConnection> {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    env_logger::init();
+
+    let file_log = FileAppender::builder()
+        .encoder(Box::new(PatternEncoder::new("{d} - {m}{n}")))
+        .build("$ENV{LOG_FILE_PATH}")
+        .unwrap();
+
+    let log_config = Config::builder()
+        .appender(Appender::builder().build("logfile", Box::new(file_log)))
+        .build(
+            Root::builder()
+                .appender("logfile")
+                .build(LevelFilter::Error),
+        )
+        .unwrap();
+
+    // Don't need to change configuration on runtime for now
+    let _handle = log4rs::init_config(log_config).unwrap();
 
     let Ok(json) =
         serde_json::from_str::<HashMap<String, PreDefinedResponseError>>(FIXED_ERROR_JSON)

@@ -17,6 +17,7 @@ services:
             SMTP_USERNAME: natiq@gmail.com
             SMTP_PASSWORD: pass
             SMTP_FROM: natiq<natiq@gmail.com>
+            LOG_FILE_PATH: nq_errors.log
 
     database:
         image: "postgres:latest"

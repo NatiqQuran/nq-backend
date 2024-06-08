@@ -24,5 +24,6 @@ ENV SMTP_PORT=465
 ENV SMTP_USERNAME=value
 ENV SMTP_PASSWORD=password
 ENV SMTP_FROM=natiq
+ENV LOG_FILE_PATH=nq_errors.log
 
 CMD ["nq-api"]
