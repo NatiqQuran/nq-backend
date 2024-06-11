@@ -12,7 +12,7 @@ pub const MAX_RANDOM_CODE: i32 = 999999;
 /// Get deference between Current time and past_time
 pub fn time_deference(past_time: NaiveDateTime) -> Duration {
     let current_date = Utc::now();
-    let past_date_time = DateTime::<Utc>::from_utc(past_time, Utc);
+    let past_date_time = DateTime::<Utc>::from_naive_utc_and_offset(past_time, Utc);
 
     current_date.signed_duration_since(past_date_time)
 }

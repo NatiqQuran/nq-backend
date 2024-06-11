@@ -4,7 +4,7 @@ use crate::error::RouterError;
 use crate::models::{Organization, User};
 use crate::select_model::SelectModel;
 use crate::DbPool;
-use actix_web::web;
+use actix_web::{web, ResponseError};
 use async_trait::async_trait;
 use auth_z::{CheckPermission, GetModel, ModelPermission, ParsedPath};
 use diesel::prelude::*;
@@ -66,7 +66,12 @@ impl AuthZController {
 
 #[async_trait]
 impl CheckPermission for AuthZController {
-    async fn check(&self, subject: Option<u32>, path: ParsedPath, method: String) -> bool {
+    async fn check(
+        &self,
+        subject: Option<u32>,
+        path: ParsedPath,
+        method: String,
+    ) -> Result<(), Box<dyn ResponseError>> {
         use crate::schema::app_permission_conditions::dsl::{
             app_permission_conditions, name, value,
         };
@@ -74,6 +79,9 @@ impl CheckPermission for AuthZController {
             action as permission_action, app_permissions, id as permission_id,
             object as permission_object, subject as permission_subject,
         };
+
+        let permission_denied_error =
+            Box::new(RouterError::from_predefined("AUTHZ_PERMISSION_DENIED"));
 
         // these will be moved to the web::block closure
         let subject_copy = subject.clone();
@@ -113,17 +121,19 @@ impl CheckPermission for AuthZController {
             .unwrap();
 
         let Ok(select_result) = select_result else {
-            return false;
+            permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()));
+            return Err(permission_denied_error);
         };
 
         if select_result.0.is_empty() {
-            return false;
+            permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()));
+            return Err(permission_denied_error);
         }
 
         // No need to Checking the conditions
         // there is no condition
         if select_result.1.is_empty() {
-            return true;
+            return Ok(());
         }
 
         // *Now Check the conditions*
@@ -149,7 +159,8 @@ impl CheckPermission for AuthZController {
             };
 
             let Some(model_attr) = model_attr else {
-                return false;
+                permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()));
+                return Err(permission_denied_error);
             };
 
             let attr = model.get_attr(model_attr.clone()).await;
@@ -166,11 +177,12 @@ impl CheckPermission for AuthZController {
             );
 
             if result {
-                return true;
+                return Ok(());
             }
         }
 
-        false
+        permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()));
+        return Err(permission_denied_error);
     }
 }
 

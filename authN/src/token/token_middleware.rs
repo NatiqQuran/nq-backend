@@ -1,13 +1,12 @@
 use actix_utils::future::{ready, Ready};
-use actix_web::http::{header, StatusCode};
+use actix_web::http::header;
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
     Error,
 };
-use actix_web::{HttpMessage, HttpResponse, ResponseError};
+use actix_web::{HttpMessage, ResponseError};
 use async_trait::async_trait;
 use futures_util::future::LocalBoxFuture;
-use std::fmt::Display;
 use std::marker::PhantomData;
 use std::rc::Rc;
 
@@ -23,9 +22,12 @@ where
     /// Unauthorized
     ///
     /// This function returns the verifyed user ID
-    async fn get_user_id(&self, request_token: &str) -> Option<T>
+    async fn get_user_id(&self, request_token: &str) -> Result<T, Box<dyn ResponseError>>
     where
         Self: Sized;
+
+    /// Error when no token were sent and the token is required
+    async fn token_not_found_error(&self) -> Box<dyn ResponseError>;
 }
 
 // There are two steps in middleware processing.
@@ -82,37 +84,6 @@ where
     }
 }
 
-#[derive(Debug)]
-pub struct AccessDeniedError {
-    message: &'static str,
-}
-
-impl AccessDeniedError {
-    pub fn with_message(message: &'static str) -> Self {
-        Self { message }
-    }
-}
-
-impl Display for AccessDeniedError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", &self.message)?;
-
-        Ok(())
-    }
-}
-
-impl ResponseError for AccessDeniedError {
-    fn error_response(&self) -> HttpResponse {
-        HttpResponse::build(self.status_code())
-            .insert_header(("Access-Control-Allow-Origin", "*"))
-            .body(self.to_string())
-    }
-
-    fn status_code(&self) -> StatusCode {
-        StatusCode::UNAUTHORIZED
-    }
-}
-
 pub struct TokenAuthMiddleware<S, F, Type> {
     service: Rc<S>,
     token_finder: F,
@@ -144,24 +115,20 @@ where
                 .get(header::AUTHORIZATION)
                 .and_then(|token| token.to_str().ok())
             {
-                Some(token) => {
-                    let token_data = token_finder.get_user_id(token).await;
-
-                    if let Some(data) = token_data {
+                Some(token) => match token_finder.get_user_id(token).await {
+                    Ok(data) => {
                         req.extensions_mut().insert(data);
                         let res = service.call(req).await?;
                         return Ok(res);
-                    };
+                    }
 
-                    Err(Error::from(AccessDeniedError::with_message(
-                        "Unauthorized (Token invalid), Please login again!",
-                    )))
-                }
+                    Err(error) => {
+                        return Err(Error::from(error));
+                    }
+                },
                 None => {
                     if header_required {
-                        return Err(Error::from(AccessDeniedError::with_message(
-                            "Unauthorized, Please login!",
-                        )));
+                        return Err(Error::from(token_finder.token_not_found_error().await));
                     }
 
                     let res = service.call(req).await?;
