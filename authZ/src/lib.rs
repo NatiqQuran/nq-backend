@@ -1,5 +1,6 @@
 pub mod middleware;
 
+use actix_web::ResponseError;
 use async_trait::async_trait;
 
 #[async_trait]
@@ -22,7 +23,14 @@ pub trait CheckPermission {
     /// Check if the permissions are valid
     ///
     /// This args will passed from the Middleware
-    async fn check(&self, subject: Option<u32>, path: ParsedPath, method: String) -> bool;
+    ///
+    /// The Err will be sent as response when permission denied
+    async fn check(
+        &self,
+        subject: Option<u32>,
+        path: ParsedPath,
+        method: String,
+    ) -> Result<(), Box<dyn ResponseError>>;
 }
 
 #[async_trait]

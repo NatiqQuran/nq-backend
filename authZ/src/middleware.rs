@@ -109,18 +109,20 @@ where
         let path = ParsedPath::from(url_as_str);
 
         Box::pin(async move {
-            if permission
+            match permission
                 .check(subject, path, req.method().to_string())
                 .await
             {
-                let res = service.call(req).await?;
+                Ok(()) => {
+                    let res = service.call(req).await?;
 
-                return Ok(res);
+                    return Ok(res);
+                }
+
+                Err(error) => {
+                    return Err(Error::from(error));
+                }
             }
-
-            return Err(Error::from(AccessDeniedError::with_message(
-                "You don't have access to this resource!",
-            )));
         })
     }
 }
