@@ -66,5 +66,9 @@
     "AUTHZ_PERMISSION_DENIED": {
         "status_code": 403,
         "message": "Permission denied!"
+    },
+    "UUID_ERROR": {
+        "status_code": 400,
+        "message": "Invalid UUID!"
     }
 }

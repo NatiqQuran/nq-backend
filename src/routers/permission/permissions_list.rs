@@ -41,6 +41,7 @@ pub async fn get_list_of_permissions(
             Vec<Option<PermissionCondition>>,
         > = multip(permissions_with_conditions, |p: Permission| {
             SimplePermission {
+                id: p.id,
                 uuid: p.uuid,
                 subject: p.subject,
                 object: p.object,

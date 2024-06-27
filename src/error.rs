@@ -106,6 +106,8 @@ impl ResponseError for RouterError {
         };
         HttpResponse::build(self.status_code())
             .insert_header(ContentType::json())
+            // WARINING TODO: Do not allow all Cors
+            .insert_header(("Access-Control-Allow-Origin", "*"))
             .body(json.to_string())
     }
 
@@ -132,7 +134,7 @@ impl From<DieselError> for RouterError {
 impl From<DatabaseErrorKind> for RouterError {
     fn from(value: DatabaseErrorKind) -> Self {
         match value {
-            DatabaseErrorKind::CheckViolation => Self::from_predefined("Not available!"),
+            DatabaseErrorKind::CheckViolation => Self::from_predefined("INTERNAL_ERROR"),
 
             err => {
                 error!("InternalError: {:?}", err);

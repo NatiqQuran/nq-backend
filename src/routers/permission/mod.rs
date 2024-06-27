@@ -66,6 +66,8 @@ impl SimpleCondition {
 
 #[derive(Serialize, Eq, Ord, Hash, Debug, Clone, PartialEq, PartialOrd)]
 pub struct SimplePermission {
+    #[serde(skip_serializing)]
+    id: i32,
     uuid: Uuid,
     subject: String,
     object: String,
@@ -75,6 +77,7 @@ pub struct SimplePermission {
 impl From<Permission> for SimplePermission {
     fn from(value: Permission) -> Self {
         Self {
+            id: value.id,
             uuid: value.uuid,
             subject: value.subject,
             object: value.object,
