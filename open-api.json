@@ -9,6 +9,15 @@
       "url": "https://api.natiq.net"
     }
   ],
+   "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    }
+  },
   "tags": [
     {
       "name": "account",
@@ -106,14 +115,9 @@
     "/account/logout": {
       "description": "Expire the user token",
       "get": {
-        "parameters": [
+       "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "tags": [
@@ -129,14 +133,9 @@
     "/user": {
       "get": {
         "description": "Get users list",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "tags": [
@@ -152,15 +151,12 @@
     "/user/{user_uuid}": {
       "get": {
         "description": "Return's single user profile",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -181,15 +177,12 @@
       },
       "delete": {
         "description": "Delete's single user profile",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -210,15 +203,12 @@
       },
       "post": {
         "description": "Edit the user full profile",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -283,14 +273,9 @@
     "/profile": {
       "get": {
         "description": "Return's the user profile from auth token",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "tags": [
@@ -304,14 +289,9 @@
       },
       "post": {
         "description": "Edit's the user profile from auth token",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "requestBody": {
@@ -375,14 +355,9 @@
     "/organization": {
       "get": {
         "description": "Return the list of all organizations",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "tags": [
@@ -396,14 +371,9 @@
       },
       "post": {
         "description": "Add the new organization",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "requestBody": {
@@ -417,14 +387,14 @@
                     "description": "The unique username for new organization",
                     "example": "github",
                     "minLength": 6,
-                    "maxLength": 12,
+                    "maxLength": 12
                   },
                   "name": {
                     "type": "string",
                     "description": "The full name of organization",
                     "example": "github organization",
                     "minLength": 1,
-                    "maxLength": 16,
+                    "maxLength": 16
                   },
                   "profile_image": {
                     "type": "string",
@@ -461,15 +431,12 @@
     "/organization/{organization_uuid}": {
       "get": {
         "description": "View organization with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -490,15 +457,12 @@
       },
       "post": {
         "description": "Edit permission with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -519,14 +483,14 @@
                     "description": "The unique username for new organization",
                     "example": "github",
                     "minLength": 6,
-                    "maxLength": 12,
+                    "maxLength": 12
                   },
                   "name": {
                     "type": "string",
                     "description": "The full name of organization",
                     "example": "github organization",
                     "minLength": 1,
-                    "maxLength": 16,
+                    "maxLength": 16
                   },
                   "profile_image": {
                     "type": "string",
@@ -563,14 +527,9 @@
     "/organization/name": {
       "post": {
         "description": "Add the organization name in another language",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "requestBody": {
@@ -584,7 +543,7 @@
                     "description": "New name",
                     "example": "ali",
                     "minLength": 1,
-                    "maxLength": 16,
+                    "maxLength": 16
                   },
                   "language": {
                     "type": "string",
@@ -611,15 +570,12 @@
     "/organization/name/{name_uuid}": {
       "get": {
         "description": "View the organization name in another language with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -640,15 +596,12 @@
       },
       "post": {
         "description": "Edit the organization name in another language with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -687,15 +640,12 @@
       },
       "delete": {
         "description": "Delete the organization name in another language with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -718,14 +668,9 @@
     "/permission": {
       "get": {
         "description": "Ruturn the list of all permissions",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "tags": [
@@ -739,14 +684,9 @@
       },
       "post": {
         "description": "Add new permission",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "requestBody": {
@@ -794,15 +734,12 @@
     "/permission/{permission_uuid}": {
       "get": {
         "description": "View permission with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -823,15 +760,12 @@
       },
       "post": {
         "description": "Edit permission with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -884,15 +818,12 @@
       },
       "delete": {
         "description": "Delete permission with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -915,14 +846,9 @@
     "/permission_conditions": {
       "description": "Returns the list of all permission conditions",
       "get": {
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "tags": [
@@ -986,14 +912,9 @@
       },
       "post": {
         "description": "Add the new mushaf",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "requestBody": {
@@ -1061,15 +982,12 @@
       },
       "post": {
         "description": "Edit mushaf with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1121,15 +1039,12 @@
       },
       "delete": {
         "description": "Delete mushaf with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1209,14 +1124,9 @@
       },
       "post": {
         "description": "Add the new surah",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "requestBody": {
@@ -1294,15 +1204,12 @@
       },
       "post": {
         "description": "Edit surah with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1364,15 +1271,12 @@
       },
       "delete": {
         "description": "Delete surah with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1416,14 +1320,9 @@
       },
       "post": {
         "description": "Add the new ayah",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "requestBody": {
@@ -1486,16 +1385,13 @@
       },
       "post": {
         "description": "Edit ayah with id you specified",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "parameters": [
-          {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
+         {
             "in": "path",
             "required": true,
             "name": "ayah_uuid",
@@ -1541,15 +1437,12 @@
       },
       "delete": {
         "description": "Delete ayah with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1616,15 +1509,12 @@
       },
       "post": {
         "description": "Edit word with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1666,15 +1556,12 @@
       },
       "delete": {
         "description": "Delete word with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1697,15 +1584,12 @@
     "/translation": {
       "get": {
         "description": "Ruturn the list of all translations",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
               "in": "query",
               "required": true,
@@ -1772,14 +1656,9 @@
       },
       "post": {
         "description": "Add new translation",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
+            "ApiKeyAuth": []
           }
         ],
         "requestBody": {
@@ -1828,15 +1707,12 @@
     "/translation/{translation_uuid}": {
       "get": {
         "description": "View translation with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1857,15 +1733,12 @@
       },
       "post": {
         "description": "Edit translation with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1917,15 +1790,12 @@
       },
       "delete": {
         "description": "Delete translation with id you specified",
-        "parameters": [
+        "security": [
           {
-            "required": true,
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
@@ -1977,15 +1847,12 @@
       },
       "post": {
         "description": "Edit/Add translation_text with id you specified",
-        "parameters": [
+        "security": [
           {
-            "in": "header",
-            "required": true,
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            }
-          },
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
           {
             "in": "path",
             "required": true,
