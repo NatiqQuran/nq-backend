@@ -42,6 +42,10 @@
     {
       "name": "translation",
       "description": "Manage translation"
+    },
+    {
+      "name": "report",
+      "description": "Technical reports"
     }
   ],
   "paths": {
@@ -66,9 +70,7 @@
             }
           }
         },
-        "tags": [
-          "account"
-        ],
+        "tags": ["account"],
         "responses": {
           "200": {
             "description": "Code sended."
@@ -102,9 +104,7 @@
             }
           }
         },
-        "tags": [
-          "account"
-        ],
+        "tags": ["account"],
         "responses": {
           "200": {
             "description": "Returns the new user token"
@@ -120,9 +120,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "tags": [
-          "account"
-        ],
+        "tags": ["account"],
         "responses": {
           "200": {
             "description": "Expires the token of user"
@@ -138,9 +136,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Return's the list of users"
@@ -166,9 +162,7 @@
             }
           }
         ],
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Return's single user profile"
@@ -192,9 +186,7 @@
             }
           }
         ],
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Deleted"
@@ -260,9 +252,7 @@
             }
           }
         },
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "User full profile edited"
@@ -278,9 +268,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "Return's the user profile."
@@ -342,9 +330,7 @@
             }
           }
         },
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "responses": {
           "200": {
             "description": "This means new organization created"
@@ -360,9 +346,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "responses": {
           "200": {
             "description": "Returns the list of all organizations"
@@ -418,9 +402,7 @@
             }
           }
         },
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "responses": {
           "200": {
             "description": "This means new organization created"
@@ -446,9 +428,7 @@
             }
           }
         ],
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "responses": {
           "200": {
             "description": "Returns the organization with id you specified"
@@ -514,9 +494,7 @@
             }
           }
         },
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "responses": {
           "200": {
             "description": "Organization with id you specified edited"
@@ -557,9 +535,7 @@
             }
           }
         },
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "responses": {
           "200": {
             "description": "Organization name in another language added"
@@ -585,9 +561,7 @@
             }
           }
         ],
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "responses": {
           "200": {
             "description": "Returns the organization name in another language with id you specified"
@@ -629,9 +603,7 @@
             }
           }
         },
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "responses": {
           "200": {
             "description": "The organization name in another language with id you specified edited"
@@ -655,9 +627,7 @@
             }
           }
         ],
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "responses": {
           "200": {
             "description": "The organization name in another language with id you specified deleted"
@@ -673,9 +643,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "tags": [
-          "permission"
-        ],
+        "tags": ["permission"],
         "responses": {
           "200": {
             "description": "Returns the list of all permissions"
@@ -721,9 +689,7 @@
             }
           }
         },
-        "tags": [
-          "permission"
-        ],
+        "tags": ["permission"],
         "responses": {
           "200": {
             "description": "This means new permission created"
@@ -749,9 +715,7 @@
             }
           }
         ],
-        "tags": [
-          "permission"
-        ],
+        "tags": ["permission"],
         "responses": {
           "200": {
             "description": "Returns the permission with id you specified"
@@ -807,9 +771,7 @@
             }
           }
         },
-        "tags": [
-          "permission"
-        ],
+        "tags": ["permission"],
         "responses": {
           "200": {
             "description": "Permission with id you specified edited"
@@ -833,9 +795,7 @@
             }
           }
         ],
-        "tags": [
-          "permission"
-        ],
+        "tags": ["permission"],
         "responses": {
           "200": {
             "description": "Permission with id you specified deleted"
@@ -851,9 +811,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "tags": [
-          "permission"
-        ],
+        "tags": ["permission"],
         "responses": {
           "200": {
             "description": "Returns the list of all permission conditions"
@@ -866,44 +824,42 @@
       "get": {
         "parameters": [
           {
-              "in": "query",
-              "required": false,
-              "name": "sort",
-              "schema": {
-                  "type": "string"
-              }
+            "in": "query",
+            "required": false,
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "order",
-              "schema": {
-                  "type": "string"
-              }
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "schema": {
+              "type": "string"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "from",
-              "schema": {
-                  "type": "number"
-              }
+            "in": "query",
+            "required": false,
+            "name": "from",
+            "schema": {
+              "type": "number"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "to",
-              "schema": {
-                  "type": "number"
-              }
+            "in": "query",
+            "required": false,
+            "name": "to",
+            "schema": {
+              "type": "number"
+            }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Returns the mushafs list"
@@ -948,9 +904,7 @@
             }
           }
         },
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "This means new mushaf created"
@@ -971,9 +925,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Returns the mushaf with id you specified"
@@ -1028,9 +980,7 @@
             }
           }
         },
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Mushaf with id you specified edited"
@@ -1054,9 +1004,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Mushaf with id you specified deleted"
@@ -1077,45 +1025,42 @@
             }
           },
           {
-              "in": "query",
-              "required": false,
-              "name": "sort",
-              "schema": {
-                  "type": "string"
-              }
+            "in": "query",
+            "required": false,
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "order",
-              "schema": {
-                  "type": "string"
-              }
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "schema": {
+              "type": "string"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "from",
-              "schema": {
-                  "type": "number"
-              }
+            "in": "query",
+            "required": false,
+            "name": "from",
+            "schema": {
+              "type": "number"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "to",
-              "schema": {
-                  "type": "number"
-              }
+            "in": "query",
+            "required": false,
+            "name": "to",
+            "schema": {
+              "type": "number"
+            }
           }
-
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Returns the surahs list"
@@ -1170,9 +1115,7 @@
             }
           }
         },
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "This means new surah added"
@@ -1193,9 +1136,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Returns the single surah"
@@ -1260,9 +1201,7 @@
             }
           }
         },
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "This means the surah edited"
@@ -1286,9 +1225,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Surah with id you specified deleted"
@@ -1309,9 +1246,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Returns the ayahs list"
@@ -1351,9 +1286,7 @@
             }
           }
         },
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "This means new ayah added"
@@ -1374,9 +1307,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Returns the single ayah"
@@ -1426,9 +1357,7 @@
             }
           }
         },
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "This means the ayah edited"
@@ -1452,9 +1381,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Ayah with id you specified deleted"
@@ -1475,9 +1402,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Returns the words list"
@@ -1498,9 +1423,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Returns the single word"
@@ -1545,9 +1468,7 @@
             }
           }
         },
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "This means the word edited"
@@ -1571,9 +1492,7 @@
             }
           }
         ],
-        "tags": [
-          "quran"
-        ],
+        "tags": ["quran"],
         "responses": {
           "200": {
             "description": "Word with id you specified deleted"
@@ -1591,63 +1510,60 @@
         ],
         "parameters": [
           {
-              "in": "query",
-              "required": true,
-              "name": "mushaf",
-              "schema": {
-                  "type": "string"
-              }
+            "in": "query",
+            "required": true,
+            "name": "mushaf",
+            "schema": {
+              "type": "string"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "language",
-              "schema": {
-                  "type": "string"
-              }
+            "in": "query",
+            "required": false,
+            "name": "language",
+            "schema": {
+              "type": "string"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "sort",
-              "schema": {
-                  "type": "string"
-              }
+            "in": "query",
+            "required": false,
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "order",
-              "schema": {
-                  "type": "string"
-              }
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "schema": {
+              "type": "string"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "from",
-              "schema": {
-                  "type": "number"
-              }
+            "in": "query",
+            "required": false,
+            "name": "from",
+            "schema": {
+              "type": "number"
+            }
           },
 
           {
-              "in": "query",
-              "required": false,
-              "name": "to",
-              "schema": {
-                  "type": "number"
-              }
+            "in": "query",
+            "required": false,
+            "name": "to",
+            "schema": {
+              "type": "number"
+            }
           }
-
         ],
-        "tags": [
-          "translation"
-        ],
+        "tags": ["translation"],
         "responses": {
           "200": {
             "description": "Returns the list of all translations"
@@ -1694,9 +1610,7 @@
             }
           }
         },
-        "tags": [
-          "translation"
-        ],
+        "tags": ["translation"],
         "responses": {
           "200": {
             "description": "This means new translation created"
@@ -1722,9 +1636,7 @@
             }
           }
         ],
-        "tags": [
-          "translation"
-        ],
+        "tags": ["translation"],
         "responses": {
           "200": {
             "description": "Returns the translation with id you specified"
@@ -1779,9 +1691,7 @@
             }
           }
         },
-        "tags": [
-          "translation"
-        ],
+        "tags": ["translation"],
         "responses": {
           "200": {
             "description": "Translation with id you specified edited"
@@ -1805,9 +1715,7 @@
             }
           }
         ],
-        "tags": [
-          "translation"
-        ],
+        "tags": ["translation"],
         "responses": {
           "200": {
             "description": "Translation with id you specified deleted"
@@ -1836,9 +1744,7 @@
             }
           }
         ],
-        "tags": [
-          "translation"
-        ],
+        "tags": ["translation"],
         "responses": {
           "200": {
             "description": "Returns the translation_text with id you specified"
@@ -1883,9 +1789,7 @@
             }
           }
         },
-        "tags": [
-          "translation"
-        ],
+        "tags": ["translation"],
         "responses": {
           "200": {
             "description": "Translation with id you specified edited/added"
@@ -1912,12 +1816,58 @@
             }
           }
         ],
-        "tags": [
-          "translation"
-        ],
+        "tags": ["translation"],
         "responses": {
           "200": {
             "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/error": {
+      "get": {
+        "description": "View List of errors",
+        "parameters": [
+          {
+            "in": "query",
+            "required": false,
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            }
+          },
+
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "schema": {
+              "type": "string"
+            }
+          },
+
+          {
+            "in": "query",
+            "required": false,
+            "name": "from",
+            "schema": {
+              "type": "number"
+            }
+          },
+
+          {
+            "in": "query",
+            "required": false,
+            "name": "to",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "tags": ["report"],
+        "responses": {
+          "200": {
+            "description": "Returns the errors list in array"
           }
         }
       }
