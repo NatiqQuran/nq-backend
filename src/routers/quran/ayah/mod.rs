@@ -7,6 +7,7 @@ pub mod ayah_view;
 use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::filter::{Filters, Order};
 
@@ -26,9 +27,40 @@ impl Display for Sajdeh {
     }
 }
 
+impl Sajdeh {
+    pub fn from_option_string(value: Option<String>) -> Option<Self> {
+        let Some(value) = value else {
+            return None;
+        };
+
+        match value.as_str() {
+            "vajib" => Some(Self::Vajib),
+            "mostahab" => Some(Self::Mostahab),
+
+            _ => None,
+        }
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct SimpleWord {
+    uuid: Uuid,
+    word: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AyahWithContent {
+    uuid: Uuid,
+    mushaf: Uuid,
+    surah: Uuid,
+    ayah_number: i32,
+    sajdeh: Option<Sajdeh>,
+    text: String,
+    words: Vec<SimpleWord>,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct SimpleAyah {
-    pub surah_uuid: String,
     pub ayah_number: i32,
     pub sajdeh: Option<Sajdeh>,
 }

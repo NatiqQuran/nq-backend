@@ -241,14 +241,13 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/word")
-                    .route("", web::get().to(word_list::word_list))
                     .route("/{word_uuid}", web::get().to(word_view::word_view))
-                    //.service(
-                    //    web::resource("")
-                    //        .wrap(AuthZ::new(auth_z_controller.clone()))
-                    //        .wrap(TokenAuth::new(user_id_from_token.clone(), true))
-                    //        .route(web::post().to(word_add::word_add)),
-                    //)
+                    .service(
+                        web::resource("")
+                            .wrap(AuthZ::new(auth_z_controller.clone()))
+                            .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                            .route(web::post().to(word_add::word_add)),
+                    )
                     .service(
                         web::resource("/{word_uuid}")
                             .wrap(AuthZ::new(auth_z_controller.clone()))
