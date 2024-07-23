@@ -1389,27 +1389,6 @@
         }
       }
     },
-    "/word": {
-      "description": "Returns the list of words",
-      "get": {
-        "parameters": [
-          {
-            "in": "query",
-            "required": true,
-            "name": "mushaf",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "tags": ["quran"],
-        "responses": {
-          "200": {
-            "description": "Returns the words list"
-          }
-        }
-      }
-    },
     "/word/{word_uuid}": {
       "description": "Returns the single word",
       "get": {
