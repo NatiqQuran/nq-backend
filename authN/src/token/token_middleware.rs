@@ -1,5 +1,6 @@
 use actix_utils::future::{ready, Ready};
-use actix_web::http::header;
+use actix_web::http::header::{self, HeaderMap};
+use actix_web::http::Uri;
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
     Error,
@@ -8,6 +9,7 @@ use actix_web::{HttpMessage, ResponseError};
 use async_trait::async_trait;
 use futures_util::future::LocalBoxFuture;
 use std::marker::PhantomData;
+use std::net::SocketAddr;
 use std::rc::Rc;
 
 #[async_trait]
@@ -22,7 +24,13 @@ where
     /// Unauthorized
     ///
     /// This function returns the verifyed user ID
-    async fn get_user_id(&self, request_token: &str) -> Result<T, Box<dyn ResponseError>>
+    async fn get_user_id(
+        &self,
+        req_addr: SocketAddr,
+        headers: HeaderMap,
+        uri: Uri,
+        request_token: &str,
+    ) -> Result<T, Box<dyn ResponseError>>
     where
         Self: Sized;
 
@@ -115,7 +123,15 @@ where
                 .get(header::AUTHORIZATION)
                 .and_then(|token| token.to_str().ok())
             {
-                Some(token) => match token_finder.get_user_id(token).await {
+                Some(token) => match token_finder
+                    .get_user_id(
+                        req.request().clone().peer_addr().unwrap(),
+                        req.request().clone().headers().clone(),
+                        req.request().clone().uri().clone(),
+                        token,
+                    )
+                    .await
+                {
                     Ok(data) => {
                         req.extensions_mut().insert(data);
                         let res = service.call(req).await?;
