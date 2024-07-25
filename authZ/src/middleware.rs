@@ -110,7 +110,14 @@ where
 
         Box::pin(async move {
             match permission
-                .check(subject, path, req.method().to_string())
+                .check(
+                    req.request().clone().peer_addr().unwrap(),
+                    req.request().clone().headers().clone(),
+                    req.request().clone().uri().clone(),
+                    subject,
+                    path,
+                    req.method().to_string(),
+                )
                 .await
             {
                 Ok(()) => {
