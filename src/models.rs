@@ -1,6 +1,7 @@
 use crate::schema::*;
 use chrono::{NaiveDate, NaiveDateTime};
 use diesel::{Associations, Identifiable, Insertable, Queryable, Selectable};
+use ipnetwork::IpNetwork;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -499,7 +500,7 @@ pub struct NewTranslationText<'a> {
     pub text: &'a String,
 }
 
-#[derive(Selectable, Identifiable, Queryable, Debug, Serialize)]
+#[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable)]
 #[diesel(table_name = app_error_logs)]
 pub struct ErrorLog {
     pub id: i32,
@@ -508,6 +509,16 @@ pub struct ErrorLog {
     pub status_code: i32,
     pub message: String,
     pub detail: Option<String>,
+    pub account_id: Option<i32>,
+    pub request_token: Option<String>,
+    pub request_user_agent: Option<String>,
+    pub request_ipv4: IpNetwork,
+    pub request_url: Option<String>,
+    pub request_controller: Option<String>,
+    pub request_action: Option<String>,
+    pub request_id: Option<String>,
+    pub request_body: Option<Vec<u8>>,
+    pub request_body_content_type: Option<String>,
 
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
@@ -522,4 +533,14 @@ pub struct NewErrorLog<'a> {
     pub status_code: i32,
     pub message: &'a String,
     pub detail: Option<&'a String>,
+    pub request_user_agent: Option<&'a String>,
+    pub request_ipv4: IpNetwork,
+    pub account_id: Option<i32>,
+    pub request_token: Option<String>,
+    pub request_url: Option<String>,
+    pub request_controller: Option<String>,
+    pub request_action: Option<String>,
+    pub request_id: Option<String>,
+    pub request_body: Option<Vec<u8>>,
+    pub request_body_content_type: Option<String>,
 }

@@ -1,10 +1,10 @@
 use super::{time_deference, MAX_RANDOM_CODE, MIN_RANDOM_CODE};
 use crate::email::EmailManager;
-use crate::error::RouterError;
+use crate::error::{RouterError, RouterErrorDetail};
 use crate::models::{NewVerifyCode, VerifyCode};
 use crate::validate::validate;
 use crate::DbPool;
-use actix_web::web;
+use actix_web::{web, HttpRequest};
 use diesel::prelude::*;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -37,6 +37,7 @@ pub async fn send_code(
     pool: web::Data<DbPool>,
     emailer: web::Data<EmailManager>,
     info: web::Json<SendCodeInfo>,
+    req: HttpRequest,
 ) -> Result<String, RouterError> {
     use crate::schema::app_verify_codes::dsl::*;
 
@@ -44,6 +45,20 @@ pub async fn send_code(
 
     let info_copy = info.clone();
     let pool_clone = pool.clone();
+
+    let req_ip = req.peer_addr().unwrap();
+
+    let mut error_detail_builder = RouterErrorDetail::builder();
+
+    error_detail_builder
+        .req_address(req_ip)
+        .request_url_parsed(req.uri().path());
+
+    if let Some(user_agent) = req.headers().get("User-agent") {
+        error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
+    }
+
+    let error_detail = error_detail_builder.build();
 
     let send_status: Result<SendCodeStatus, RouterError> = web::block(move || {
         let random_code = generate_random_code(MIN_RANDOM_CODE, MAX_RANDOM_CODE);
@@ -97,7 +112,7 @@ pub async fn send_code(
                 match result {
                     Ok(()) => Ok("Code sended".to_string()),
                     Err(_error) => Err(RouterError::from_predefined("SEND_CODE_INTERNAL_ERROR")
-                        .log_to_db(pool_clone.into_inner())),
+                        .log_to_db(pool_clone.into_inner(), error_detail)),
                 }
             }
             SendCodeStatus::AlreadySent => Ok("Already sent".to_string()),
