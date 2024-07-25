@@ -1,6 +1,11 @@
 pub mod middleware;
 
-use actix_web::ResponseError;
+use std::net::SocketAddr;
+
+use actix_web::{
+    http::{header::HeaderMap, Uri},
+    ResponseError,
+};
 use async_trait::async_trait;
 
 #[async_trait]
@@ -27,6 +32,9 @@ pub trait CheckPermission {
     /// The Err will be sent as response when permission denied
     async fn check(
         &self,
+        req_addr: SocketAddr,
+        headers: HeaderMap,
+        uri: Uri,
         subject: Option<u32>,
         path: ParsedPath,
         method: String,
