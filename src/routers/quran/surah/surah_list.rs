@@ -12,7 +12,7 @@ use diesel::prelude::*;
 pub async fn surah_list(
     query: web::Query<SurahListQuery>,
     pool: web::Data<DbPool>,
-    req: HttpRequest
+    req: HttpRequest,
 ) -> Result<web::Json<Vec<SurahListResponse>>, RouterError> {
     use crate::schema::mushafs::dsl::{mushafs, name as mushaf_name};
     use crate::schema::quran_surahs::dsl::*;
@@ -20,19 +20,7 @@ pub async fn surah_list(
     let query = query.into_inner();
     let pool = pool.into_inner();
 
-    let mut error_detail_builder = RouterErrorDetail::builder();
-
-    let req_ip = req.peer_addr().unwrap();
-
-    error_detail_builder
-        .req_address(req_ip)
-        .request_url_parsed(req.uri().path());
-
-    if let Some(user_agent) = req.headers().get("User-agent") {
-        error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
-    }
-
-    let error_detail = error_detail_builder.build();
+    let error_detail = RouterErrorDetail::builder().from_http_request(&req).build();
 
     web::block(move || {
         let mut conn = pool.get().unwrap();

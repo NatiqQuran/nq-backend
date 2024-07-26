@@ -35,19 +35,15 @@ pub async fn add(
 
     let pool = pool.into_inner();
 
-    let mut error_detail_builder = RouterErrorDetail::builder();
-
-    let req_ip = req.peer_addr().unwrap();
-
-    error_detail_builder
-        .req_address(req_ip)
-        .request_url_parsed(req.uri().path());
-
-    if let Some(user_agent) = req.headers().get("User-agent") {
-        error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
-    }
-
-    let error_detail = error_detail_builder.build();
+    let error_detail = RouterErrorDetail::builder()
+        .request_body(
+            serde_json::to_string(&new_org_info)
+                .unwrap()
+                .as_bytes()
+                .to_vec(),
+        )
+        .from_http_request(&req)
+        .build();
 
     web::block(move || {
         let mut conn = pool.get().unwrap();
@@ -60,7 +56,8 @@ pub async fn add(
 
         if org_exists {
             return Err(
-                RouterError::from_predefined("ORGANIZATION_NAME_NOT_AVAILABLE").log_to_db(pool, error_detail),
+                RouterError::from_predefined("ORGANIZATION_NAME_NOT_AVAILABLE")
+                    .log_to_db(pool, error_detail),
             );
         }
 
