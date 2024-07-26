@@ -125,9 +125,9 @@ where
             {
                 Some(token) => match token_finder
                     .get_user_id(
-                        req.request().clone().peer_addr().unwrap(),
-                        req.request().clone().headers().clone(),
-                        req.request().clone().uri().clone(),
+                        req.request().peer_addr().unwrap(),
+                        req.request().headers().clone(),
+                        req.request().uri().clone(),
                         token,
                     )
                     .await
