@@ -12,14 +12,14 @@ log = "0.4.21"
 env_logger = "0.10.0"
 auth_n = { path = "authN" }
 auth_z = { path = "authZ" }
-actix-web = "4.7.0"
+actix-web = "4.8.0"
 actix-cors = "0.6.4"
 diesel = { version = "2.2.2", features = [
     "postgres",
     "r2d2",
     "chrono",
     "uuid",
-    "network-address"
+    "network-address",
 ] }
 ipnetwork = "0.20.0"
 uuid = { version = "1.3.3", features = ["serde"] }

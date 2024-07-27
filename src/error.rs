@@ -1,7 +1,7 @@
 use actix_web::{
     error::ResponseError,
     http::{header::ContentType, StatusCode},
-    HttpResponse,
+    HttpMessage, HttpRequest, HttpResponse,
 };
 use auth_z::ParsedPath;
 use diesel::{
@@ -94,6 +94,28 @@ pub struct RouterErrorDetailBuilder {
 }
 
 impl RouterErrorDetailBuilder {
+    pub fn from_http_request(&mut self, req: &HttpRequest) -> Self {
+        let req_ip = req.peer_addr().unwrap();
+
+        let mut error_detail_builder = RouterErrorDetail::builder();
+
+        error_detail_builder
+            .request_url(req.full_url().to_string())
+            .req_address(req_ip)
+            .request_url_parsed(req.uri().path())
+            .request_body_content_type(req.content_type().to_string());
+
+        if let Some(user_agent) = req.headers().get("User-Agent") {
+            error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
+        }
+
+        if let Some(token) = req.headers().get("Authorization") {
+            error_detail_builder.user_token(token.to_str().unwrap().to_string());
+        }
+
+        error_detail_builder
+    }
+
     pub fn req_address(&mut self, address: SocketAddr) -> &mut Self {
         self.detail.req_address = address;
 

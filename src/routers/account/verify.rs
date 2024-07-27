@@ -7,10 +7,10 @@ use actix_web::{web, HttpRequest};
 use auth_n::token::HashBuilder;
 use diesel::prelude::*;
 use rand::Rng;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-#[derive(Deserialize, Clone, Validate)]
+#[derive(Serialize, Deserialize, Clone, Validate)]
 pub struct VerifyCodeInfo {
     #[validate(email)]
     email: String,
@@ -33,20 +33,10 @@ pub async fn verify(
 
     validate(&info.0)?;
 
-    let req_ip = req.peer_addr().unwrap();
-
-    let mut error_detail_builder = RouterErrorDetail::builder();
-
-    error_detail_builder
-        .request_url(req.uri().to_string())
-        .req_address(req_ip)
-        .request_url_parsed(req.uri().path());
-
-    if let Some(user_agent) = req.headers().get("User-agent") {
-        error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
-    }
-
-    let error_detail = error_detail_builder.build();
+    let error_detail = RouterErrorDetail::builder()
+        .from_http_request(&req)
+        .request_body(serde_json::to_string(&info.0).unwrap().as_bytes().to_vec())
+        .build();
 
     // If in debug mode then generate a dummy token
     //
