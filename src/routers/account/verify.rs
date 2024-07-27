@@ -1,9 +1,9 @@
 use super::{time_deference, MAX_RANDOM_CODE, MIN_RANDOM_CODE};
-use crate::error::RouterError;
+use crate::error::{RouterError, RouterErrorDetail};
 use crate::models::{Account, Email, NewAccount, NewEmail, NewToken, NewUser, User, VerifyCode};
 use crate::schema::app_emails;
 use crate::{validate::validate, DbPool};
-use actix_web::web;
+use actix_web::{web, HttpRequest};
 use auth_n::token::HashBuilder;
 use diesel::prelude::*;
 use rand::Rng;
@@ -24,6 +24,7 @@ pub struct VerifyCodeInfo {
 pub async fn verify(
     pool: web::Data<DbPool>,
     info: web::Json<VerifyCodeInfo>,
+    req: HttpRequest,
 ) -> Result<String, RouterError> {
     use crate::schema::app_accounts;
     use crate::schema::app_tokens;
@@ -31,6 +32,21 @@ pub async fn verify(
     use crate::schema::app_verify_codes::dsl::*;
 
     validate(&info.0)?;
+
+    let req_ip = req.peer_addr().unwrap();
+
+    let mut error_detail_builder = RouterErrorDetail::builder();
+
+    error_detail_builder
+        .request_url(req.uri().to_string())
+        .req_address(req_ip)
+        .request_url_parsed(req.uri().path());
+
+    if let Some(user_agent) = req.headers().get("User-agent") {
+        error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
+    }
+
+    let error_detail = error_detail_builder.build();
 
     // If in debug mode then generate a dummy token
     //
@@ -63,17 +79,21 @@ pub async fn verify(
             .load::<VerifyCode>(&mut conn)?;
 
         let Some(last_sended_code) = last_sended_code.get(0) else {
-            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_SENDED").log_to_db(pool));
+            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_SENDED")
+                .log_to_db(pool, error_detail));
         };
 
         // The code is not correct
         if last_sended_code.code != info.code {
-            return Err(RouterError::from_predefined("VERIFY_CODE_NOT_VALID").log_to_db(pool));
+            return Err(
+                RouterError::from_predefined("VERIFY_CODE_NOT_VALID").log_to_db(pool, error_detail)
+            );
         }
 
         // The code is already used
         if last_sended_code.status == *"used".to_string() {
-            return Err(RouterError::from_predefined("VERIFY_CODE_ALREADY_USED").log_to_db(pool));
+            return Err(RouterError::from_predefined("VERIFY_CODE_ALREADY_USED")
+                .log_to_db(pool, error_detail));
         }
 
         // Get the time difference for expireation check
@@ -84,7 +104,9 @@ pub async fn verify(
             // The requested resource is no longer available at the server and no forwarding
             // address is known. This condition is expected to be considered permanent.
 
-            return Err(RouterError::from_predefined("VERIFY_CODE_EXPIRED").log_to_db(pool));
+            return Err(
+                RouterError::from_predefined("VERIFY_CODE_EXPIRED").log_to_db(pool, error_detail)
+            );
         }
 
         // Everything is ok now change code status to used
@@ -157,7 +179,9 @@ pub async fn verify(
         let token = HashBuilder::new().set_source(&source).generate();
 
         let Some(result) = token.get_result() else {
-            return Err(RouterError::from_predefined("CANT_GENERATE_TOKEN").log_to_db(pool));
+            return Err(
+                RouterError::from_predefined("CANT_GENERATE_TOKEN").log_to_db(pool, error_detail)
+            );
         };
 
         // Hash the token itself

@@ -1,9 +1,12 @@
+use std::net::SocketAddr;
 use std::sync::Arc;
 
-use crate::error::RouterError;
+use crate::error::{RouterError, RouterErrorDetail};
 use crate::models::{Organization, User};
 use crate::select_model::SelectModel;
 use crate::DbPool;
+use actix_web::http::header::HeaderMap;
+use actix_web::http::Uri;
 use actix_web::{web, ResponseError};
 use async_trait::async_trait;
 use auth_z::{CheckPermission, GetModel, ModelPermission, ParsedPath};
@@ -68,6 +71,9 @@ impl AuthZController {
 impl CheckPermission for AuthZController {
     async fn check(
         &self,
+        req_addr: SocketAddr,
+        headers: HeaderMap,
+        uri: Uri,
         subject: Option<u32>,
         path: ParsedPath,
         method: String,
@@ -79,6 +85,19 @@ impl CheckPermission for AuthZController {
             action as permission_action, app_permissions, id as permission_id,
             object as permission_object, subject as permission_subject,
         };
+
+        let mut error_detail_builder = RouterErrorDetail::builder();
+
+        error_detail_builder
+            .request_url(uri.to_string())
+            .request_url_parsed(uri.path())
+            .req_address(req_addr);
+
+        if let Some(user_agent) = headers.get("User-agent") {
+            error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
+        }
+
+        let error_detail = error_detail_builder.build();
 
         let permission_denied_error =
             Box::new(RouterError::from_predefined("AUTHZ_PERMISSION_DENIED"));
@@ -121,12 +140,12 @@ impl CheckPermission for AuthZController {
             .unwrap();
 
         let Ok(select_result) = select_result else {
-            permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()));
+            permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()), error_detail);
             return Err(permission_denied_error);
         };
 
         if select_result.0.is_empty() {
-            permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()));
+            permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()), error_detail);
             return Err(permission_denied_error);
         }
 
@@ -152,14 +171,14 @@ impl CheckPermission for AuthZController {
                 Ok(v) => Some(v),
 
                 Err(err) => {
-                    err.log_to_db(Arc::new(self.db_pool.clone()));
+                    err.log_to_db(Arc::new(self.db_pool.clone()), error_detail.clone());
 
                     None
                 }
             };
 
             let Some(model_attr) = model_attr else {
-                permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()));
+                permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()), error_detail);
                 return Err(permission_denied_error);
             };
 
@@ -181,7 +200,7 @@ impl CheckPermission for AuthZController {
             }
         }
 
-        permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()));
+        permission_denied_error.log_to_db(Arc::new(self.db_pool.clone()), error_detail);
         return Err(permission_denied_error);
     }
 }

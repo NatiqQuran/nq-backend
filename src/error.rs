@@ -3,14 +3,22 @@ use actix_web::{
     http::{header::ContentType, StatusCode},
     HttpResponse,
 };
+use auth_z::ParsedPath;
 use diesel::{
     prelude::*,
     result::{DatabaseErrorKind, Error as DieselError},
 };
+use ipnetwork::IpNetwork;
 use log::error;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::{collections::HashMap, error::Error, fmt::Display, sync::Arc};
+use std::{
+    collections::HashMap,
+    error::Error,
+    fmt::Display,
+    net::{Ipv4Addr, SocketAddr},
+    sync::Arc,
+};
 use uuid::Error as UuidError;
 
 use crate::{models::NewErrorLog, DbPool, FIXED_ERROR_RESPONSES};
@@ -31,6 +39,138 @@ pub struct RouterError {
     error_name: String,
     error: PreDefinedResponseError,
     detail: Option<String>,
+}
+
+#[derive(Clone, Debug)]
+pub struct RouterErrorDetail {
+    /// Request Address: IPv4
+    pub req_address: SocketAddr,
+
+    /// Request Account ID if available
+    pub account_id: Option<i32>,
+
+    /// Token recived from Authorization Header
+    pub user_token: Option<String>,
+
+    /// User Agent header
+    pub user_agent: Option<String>,
+
+    pub request_url: Option<String>,
+    pub request_controller: Option<String>,
+    pub request_action: Option<String>,
+    pub request_id: Option<String>,
+    pub request_body: Option<Vec<u8>>,
+    pub request_body_content_type: Option<String>,
+}
+
+impl Default for RouterErrorDetail {
+    fn default() -> Self {
+        Self {
+            req_address: SocketAddr::new(std::net::IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 0000),
+            account_id: None,
+            user_token: None,
+            user_agent: None,
+            request_url: None,
+            request_controller: None,
+            request_action: None,
+            request_id: None,
+            request_body: None,
+            request_body_content_type: None,
+        }
+    }
+}
+
+impl RouterErrorDetail {
+    pub fn builder() -> RouterErrorDetailBuilder {
+        RouterErrorDetailBuilder {
+            detail: RouterErrorDetail::default(),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct RouterErrorDetailBuilder {
+    detail: RouterErrorDetail,
+}
+
+impl RouterErrorDetailBuilder {
+    pub fn req_address(&mut self, address: SocketAddr) -> &mut Self {
+        self.detail.req_address = address;
+
+        self
+    }
+
+    pub fn account_id(&mut self, id: i32) -> &mut Self {
+        self.detail.account_id = Some(id);
+
+        self
+    }
+
+    pub fn user_token(&mut self, token: String) -> &mut Self {
+        self.detail.user_token = Some(token);
+
+        self
+    }
+
+    pub fn user_agent(&mut self, agent: String) -> &mut Self {
+        self.detail.user_agent = Some(agent);
+
+        self
+    }
+
+    pub fn request_url(&mut self, url: String) -> &mut Self {
+        self.detail.request_url = Some(url);
+
+        self
+    }
+
+    /// This will parse the url and set request_controller, request_action, request_id params.
+    pub fn request_url_parsed<'a>(&mut self, url_path: &'a str) -> &mut Self {
+        let parsed = ParsedPath::from(url_path);
+
+        self.detail.request_controller = parsed.controller;
+        self.detail.request_action = parsed.action;
+        self.detail.request_id = parsed.id;
+
+        self
+    }
+
+    pub fn request_controller(&mut self, controller: String) -> &mut Self {
+        self.detail.request_controller = Some(controller);
+
+        self
+    }
+
+    pub fn request_action(&mut self, action: String) -> &mut Self {
+        self.detail.request_action = Some(action);
+
+        self
+    }
+
+    pub fn request_id(&mut self, id: String) -> &mut Self {
+        self.detail.request_id = Some(id);
+
+        self
+    }
+
+    pub fn request_body(&mut self, body: Vec<u8>) -> &mut Self {
+        self.detail.request_body = Some(body);
+
+        self
+    }
+
+    pub fn request_body_content_type(&mut self, ty: String) -> &mut Self {
+        self.detail.request_body_content_type = Some(ty);
+
+        self
+    }
+
+    /// Finilize builder
+    ///
+    /// returns final RouterErrorDetail
+    pub fn build(&mut self) -> RouterErrorDetail {
+        self.detail.clone()
+    }
 }
 
 impl RouterError {
@@ -54,7 +194,7 @@ impl RouterError {
         }
     }
 
-    pub fn log_to_db(&self, pool: Arc<DbPool>) -> Self {
+    pub fn log_to_db(&self, pool: Arc<DbPool>, detail: RouterErrorDetail) -> Self {
         use crate::schema::app_error_logs::dsl::app_error_logs;
 
         let mut conn = pool.get().unwrap();
@@ -64,6 +204,16 @@ impl RouterError {
             status_code: self.error.status_code as i32,
             message: &self.error.message,
             detail: self.detail.as_ref(),
+            account_id: detail.account_id,
+            request_user_agent: detail.user_agent.as_ref(),
+            request_ipv4: IpNetwork::from(detail.req_address.ip()),
+            request_token: detail.user_token,
+            request_body: detail.request_body,
+            request_url: detail.request_url,
+            request_controller: detail.request_controller,
+            request_action: detail.request_action,
+            request_id: detail.request_id,
+            request_body_content_type: detail.request_body_content_type,
         }
         .insert_into(app_error_logs)
         .execute(&mut conn)
