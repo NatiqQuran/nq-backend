@@ -115,7 +115,7 @@ where
     fn call(&self, req: ServiceRequest) -> Self::Future {
         let service = Rc::clone(&self.service);
         let token_finder = self.token_finder.clone();
-        let header_required = self.authorization_header_required.clone();
+        let header_required = self.authorization_header_required;
 
         Box::pin(async move {
             match req
@@ -135,12 +135,11 @@ where
                     Ok(data) => {
                         req.extensions_mut().insert(data);
                         let res = service.call(req).await?;
-                        return Ok(res);
+
+                        Ok(res)
                     }
 
-                    Err(error) => {
-                        return Err(Error::from(error));
-                    }
+                    Err(error) => Err(Error::from(error)),
                 },
                 None => {
                     if header_required {

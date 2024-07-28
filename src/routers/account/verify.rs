@@ -1,10 +1,10 @@
 use super::{time_deference, MAX_RANDOM_CODE, MIN_RANDOM_CODE};
-use crate::error::{RouterError, RouterErrorDetail};
+use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::models::{Account, Email, NewAccount, NewEmail, NewToken, NewUser, User, VerifyCode};
 use crate::schema::app_emails;
 use crate::{validate::validate, DbPool};
 use actix_web::{web, HttpRequest};
-use auth_n::token::HashBuilder;
+use auth_n::HashBuilder;
 use diesel::prelude::*;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -33,8 +33,7 @@ pub async fn verify(
 
     validate(&info.0)?;
 
-    let error_detail = RouterErrorDetail::builder()
-        .from_http_request(&req)
+    let error_detail = RouterErrorDetailBuilder::from_http_request(&req)
         .request_body(serde_json::to_string(&info.0).unwrap().as_bytes().to_vec())
         .build();
 
@@ -44,7 +43,7 @@ pub async fn verify(
     if cfg!(debug_assertions) {
         let mut conn = pool.get().unwrap();
         let key = "secret".as_bytes().to_vec();
-        let token_hash = HashBuilder::new().set_source(&key).generate();
+        let token_hash = HashBuilder::default().set_source(&key).generate();
 
         diesel::insert_into(app_tokens::dsl::app_tokens)
             .values(NewToken {
@@ -68,7 +67,7 @@ pub async fn verify(
             .limit(1)
             .load::<VerifyCode>(&mut conn)?;
 
-        let Some(last_sended_code) = last_sended_code.get(0) else {
+        let Some(last_sended_code) = last_sended_code.first() else {
             return Err(RouterError::from_predefined("VERIFY_CODE_NOT_SENDED")
                 .log_to_db(pool, error_detail));
         };
@@ -147,7 +146,7 @@ pub async fn verify(
             new_user
         } else {
             let user = app_users::dsl::app_users
-                .filter(app_users::dsl::account_id.eq(user_email.get(0).unwrap().account_id))
+                .filter(app_users::dsl::account_id.eq(user_email.first().unwrap().account_id))
                 .first::<User>(&mut conn)?;
 
             user.to_owned()
@@ -166,7 +165,7 @@ pub async fn verify(
         source.append(&mut random_bytes);
         source.append(&mut time_as_string.as_bytes().to_vec());
 
-        let token = HashBuilder::new().set_source(&source).generate();
+        let token = HashBuilder::default().set_source(&source).generate();
 
         let Some(result) = token.get_result() else {
             return Err(

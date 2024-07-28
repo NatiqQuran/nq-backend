@@ -28,7 +28,7 @@ pub async fn translation_text_view(
     let path = path.into_inner();
     let query = query.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the translation by uuid
@@ -52,7 +52,5 @@ pub async fn translation_text_view(
         Ok(web::Json(translation_text))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

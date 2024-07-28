@@ -1,7 +1,7 @@
 pub mod delete_user;
 pub mod edit_user;
-pub mod user;
 pub mod users_list;
+pub mod view_user;
 
 use crate::datetime::validate_date_time;
 use chrono::NaiveDate;
@@ -24,6 +24,9 @@ pub struct FullUserProfile {
 pub struct EditableUser {
     #[validate(length(min = 6, max = 12))]
     pub username: String,
+
+    #[validate(email)]
+    pub primary_email: String,
 
     #[validate(length(min = 1, max = 16))]
     pub first_name: String,

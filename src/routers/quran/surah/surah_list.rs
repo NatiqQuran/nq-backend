@@ -1,5 +1,5 @@
 use super::{SurahListQuery, SurahListResponse};
-use crate::error::RouterErrorDetail;
+use crate::error::RouterErrorDetailBuilder;
 use crate::filter::Filter;
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah};
 use crate::schema::quran_ayahs::surah_id;
@@ -20,7 +20,7 @@ pub async fn surah_list(
     let query = query.into_inner();
     let pool = pool.into_inner();
 
-    let error_detail = RouterErrorDetail::builder().from_http_request(&req).build();
+    let error_detail = RouterErrorDetailBuilder::from_http_request(&req).build();
 
     web::block(move || {
         let mut conn = pool.get().unwrap();

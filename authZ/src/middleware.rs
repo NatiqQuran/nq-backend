@@ -99,10 +99,7 @@ where
     fn call(&self, req: ServiceRequest) -> Self::Future {
         let service = Rc::clone(&self.service);
         let permission = self.permission.clone();
-        let subject = match req.extensions().get::<u32>() {
-            Some(id) => Some(id.clone()),
-            None => None,
-        };
+        let subject = req.extensions().get::<u32>().copied();
 
         let url_as_str = req.uri().path();
 
@@ -123,12 +120,10 @@ where
                 Ok(()) => {
                     let res = service.call(req).await?;
 
-                    return Ok(res);
+                    Ok(res)
                 }
 
-                Err(error) => {
-                    return Err(Error::from(error));
-                }
+                Err(error) => Err(Error::from(error)),
             }
         })
     }

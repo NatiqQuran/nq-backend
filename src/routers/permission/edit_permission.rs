@@ -55,7 +55,7 @@ pub async fn edit_permission(
         // Turn PermissionCondition into SimpleCondition
         let target_conditions: Vec<SimpleCondition> = target_conditions
             .into_iter()
-            .map(|condition| SimpleCondition::from(condition))
+            .map(SimpleCondition::from)
             .collect();
 
         // Provide required data

@@ -60,7 +60,7 @@ where
     ) -> Box<dyn ModelPermission<T, A>>;
 }
 
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone)]
 /// This is the Natiq Way of reading URLs
 ///
 /// Overall format: `/{controller}/{action}/{id}`
@@ -90,16 +90,6 @@ pub struct ParsedPath {
     pub id: Option<String>,
 }
 
-impl Default for ParsedPath {
-    fn default() -> Self {
-        Self {
-            controller: None,
-            action: None,
-            id: None,
-        }
-    }
-}
-
 impl<'a> From<&'a str> for ParsedPath {
     /// value must start with '/'
     ///
@@ -115,17 +105,17 @@ impl<'a> From<&'a str> for ParsedPath {
             .map(|c| c.to_string());
 
         if splited.clone().count() >= 3 {
-            return Self {
+            Self {
                 controller: splited.next(),
                 action: splited.next(),
                 id: splited.next(),
-            };
+            }
         } else {
-            return Self {
+            Self {
                 controller: splited.next(),
                 action: None,
                 id: splited.next(),
-            };
+            }
         }
     }
 }

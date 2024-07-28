@@ -5,7 +5,7 @@ use actix_web::{
 use diesel::{dsl::exists, prelude::*, select};
 
 use crate::{
-    error::{RouterError, RouterErrorDetail},
+    error::{RouterError, RouterErrorDetailBuilder},
     models::{
         Account, NewAccount, NewEmployee, NewOrganization, NewOrganizationName, Organization,
     },
@@ -35,14 +35,13 @@ pub async fn add(
 
     let pool = pool.into_inner();
 
-    let error_detail = RouterErrorDetail::builder()
+    let error_detail = RouterErrorDetailBuilder::from_http_request(&req)
         .request_body(
             serde_json::to_string(&new_org_info)
                 .unwrap()
                 .as_bytes()
                 .to_vec(),
         )
-        .from_http_request(&req)
         .build();
 
     web::block(move || {

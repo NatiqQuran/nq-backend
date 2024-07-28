@@ -96,7 +96,7 @@ where
     pub fn diff(&mut self) -> Vec<DifferenceResult<T>> {
         let mut result = vec![];
 
-        for (name, object) in self.new.to_owned() {
+        for (name, object) in self.new.iter().cloned() {
             match self.target.remove(&name) {
                 Some(i) => {
                     // Check if objects in equal (checking hash)
@@ -121,8 +121,8 @@ where
         let remaining_as_remove: Vec<DifferenceResult<T>> = self
             .target
             .to_owned()
-            .into_iter()
-            .map(|(_, item)| DifferenceResult::Remove(item))
+            .into_values()
+            .map(|item| DifferenceResult::Remove(item))
             .collect();
 
         result.extend(remaining_as_remove);
