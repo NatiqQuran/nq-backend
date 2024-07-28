@@ -1,6 +1,6 @@
 use super::{time_deference, MAX_RANDOM_CODE, MIN_RANDOM_CODE};
 use crate::email::EmailManager;
-use crate::error::{RouterError, RouterErrorDetail};
+use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::models::{NewVerifyCode, VerifyCode};
 use crate::validate::validate;
 use crate::DbPool;
@@ -46,8 +46,7 @@ pub async fn send_code(
     let info_copy = info.clone();
     let pool_clone = pool.clone();
 
-    let error_detail = RouterErrorDetail::builder()
-        .from_http_request(&req)
+    let error_detail = RouterErrorDetailBuilder::from_http_request(&req)
         .request_body(serde_json::to_string(&info.0).unwrap().as_bytes().to_vec())
         .build();
 

@@ -1,4 +1,4 @@
-use crate::error::{RouterError, RouterErrorDetail};
+use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::Filter;
 use crate::models::QuranAyah;
 use crate::DbPool;
@@ -15,7 +15,7 @@ pub async fn ayah_list(
 ) -> Result<web::Json<Vec<QuranAyah>>, RouterError> {
     let pool = pool.into_inner();
 
-    let error_detail = RouterErrorDetail::builder().from_http_request(&req).build();
+    let error_detail = RouterErrorDetailBuilder::from_http_request(&req).build();
 
     web::block(move || {
         let mut conn = pool.get().unwrap();

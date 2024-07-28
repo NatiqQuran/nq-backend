@@ -94,7 +94,7 @@ pub struct RouterErrorDetailBuilder {
 }
 
 impl RouterErrorDetailBuilder {
-    pub fn from_http_request(&mut self, req: &HttpRequest) -> Self {
+    pub fn from_http_request(req: &HttpRequest) -> Self {
         let req_ip = req.peer_addr().unwrap();
 
         let mut error_detail_builder = RouterErrorDetail::builder();
@@ -147,7 +147,7 @@ impl RouterErrorDetailBuilder {
     }
 
     /// This will parse the url and set request_controller, request_action, request_id params.
-    pub fn request_url_parsed<'a>(&mut self, url_path: &'a str) -> &mut Self {
+    pub fn request_url_parsed(&mut self, url_path: &str) -> &mut Self {
         let parsed = ParsedPath::from(url_path);
 
         self.detail.request_controller = parsed.controller;

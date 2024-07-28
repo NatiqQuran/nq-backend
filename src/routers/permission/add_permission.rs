@@ -44,7 +44,7 @@ pub async fn add_permission(
         let mut insertable_conditions: Vec<NewPermissionCondition> = Vec::new();
 
         for condition in new_permission_data.conditions {
-            let _ = condition.validate()?;
+            condition.validate()?;
 
             insertable_conditions.push(NewPermissionCondition {
                 creator_user_id: user,

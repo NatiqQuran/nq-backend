@@ -1,4 +1,4 @@
-use crate::error::{RouterError, RouterErrorDetail};
+use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::Filter;
 use crate::models::Translation;
 use crate::DbPool;
@@ -18,9 +18,9 @@ pub async fn translation_list(
 
     let pool = pool.into_inner();
 
-    let error_detail = RouterErrorDetail::builder().from_http_request(&req).build();
+    let error_detail = RouterErrorDetailBuilder::from_http_request(&req).build();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the given language or return the default
@@ -56,7 +56,5 @@ pub async fn translation_list(
         Ok(web::Json(translations_list))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

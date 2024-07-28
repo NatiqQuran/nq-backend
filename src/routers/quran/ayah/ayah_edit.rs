@@ -22,10 +22,7 @@ pub async fn ayah_edit(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        let new_sajdeh = match new_ayah.sajdeh {
-            Some(sajdeh) => Some(sajdeh.to_string()),
-            None => None,
-        };
+        let new_sajdeh = new_ayah.sajdeh.map(|sajdeh| sajdeh.to_string());
 
         diesel::update(quran_ayahs.filter(ayah_uuid.eq(target_ayah_uuid)))
             .set((

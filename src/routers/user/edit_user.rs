@@ -3,7 +3,10 @@ use diesel::prelude::*;
 use uuid::Uuid;
 
 use crate::{
-    error::RouterError, models::{Account, User, UserName}, validate::validate, DbPool
+    error::RouterError,
+    models::{Account, Email, User, UserName},
+    validate::validate,
+    DbPool,
 };
 
 use super::EditableUser;
@@ -16,6 +19,7 @@ pub async fn edit_user(
     new_user: web::Json<EditableUser>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, username, uuid as uuid_from_account};
+    use crate::schema::app_emails::dsl::email as app_email;
     use crate::schema::app_user_names::dsl::{first_name, last_name, primary_name};
     use crate::schema::app_users::dsl::*;
 
@@ -33,6 +37,13 @@ pub async fn edit_user(
             .get_result(&mut conn)?;
 
         let user: User = User::belonging_to(&account).get_result(&mut conn)?;
+
+        let email: Email = Email::belonging_to(&account).get_result(&mut conn)?;
+
+        // Update Email
+        diesel::update(&email)
+            .set(app_email.eq(new_user.primary_email))
+            .execute(&mut conn)?;
 
         // Now update the account username
         diesel::update(&account)

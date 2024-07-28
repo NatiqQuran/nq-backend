@@ -29,9 +29,7 @@ impl Display for Sajdeh {
 
 impl Sajdeh {
     pub fn from_option_string(value: Option<String>) -> Option<Self> {
-        let Some(value) = value else {
-            return None;
-        };
+        let value = value?;
 
         match value.as_str() {
             "vajib" => Some(Self::Vajib),

@@ -31,7 +31,7 @@ enum Action {
 }
 
 impl Action {
-    fn from_auth_z<'a>(path: &ParsedPath, method: &'a str) -> Self {
+    fn from_auth_z(path: &ParsedPath, method: &str) -> Self {
         // Checks the id of path and request method
         match (path.id.clone(), method) {
             (Some(_), "GET") => Self::View,
@@ -44,13 +44,13 @@ impl Action {
     }
 }
 
-impl Into<&str> for Action {
-    fn into(self) -> &'static str {
-        match self {
-            Self::Create => "create",
-            Self::Edit => "edit",
-            Self::Delete => "delete",
-            Self::View => "view",
+impl From<Action> for &str {
+    fn from(val: Action) -> Self {
+        match val {
+            Action::Create => "create",
+            Action::Edit => "edit",
+            Action::Delete => "delete",
+            Action::View => "view",
         }
     }
 }
@@ -103,7 +103,7 @@ impl CheckPermission for AuthZController {
             Box::new(RouterError::from_predefined("AUTHZ_PERMISSION_DENIED"));
 
         // these will be moved to the web::block closure
-        let subject_copy = subject.clone();
+        let subject_copy = subject;
         let path_copy = path.clone();
 
         let mut conn = self.db_pool.get().unwrap();
@@ -184,10 +184,7 @@ impl CheckPermission for AuthZController {
 
             let attr = model.get_attr(model_attr.clone()).await;
 
-            let inner_subject = match subject {
-                Some(id) => Some(id.to_string()),
-                None => None,
-            };
+            let inner_subject = subject.map(|id| id.to_string());
 
             let result = ModelAttribResult::from(model_attr).validate(
                 attr,
@@ -282,9 +279,9 @@ impl<'a> Condition<'a> for Owner {
         };
 
         if condition_value == "true" {
-            matches!(attr, Some(_)) && subject == attr.unwrap().to_string()
+            attr.is_some() && subject == attr.unwrap().to_string()
         } else if condition_value == "false" {
-            matches!(attr, None) || subject != attr.unwrap().to_string()
+            attr.is_none() || subject != attr.unwrap().to_string()
         } else {
             true
         }
@@ -306,7 +303,7 @@ impl<'a> Condition<'a> for Login {
         subject: Option<&'a str>,
         _condition_value: &'a str,
     ) -> bool {
-        matches!(subject, Some(_))
+        subject.is_some()
     }
 
     fn get_value_type(&self) -> ConditionValueType {

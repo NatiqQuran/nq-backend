@@ -10,7 +10,7 @@ use actix_web::{
     web, ResponseError,
 };
 use async_trait::async_trait;
-use auth_n::token::{HashBuilder, TokenChecker};
+use auth_n::{middleware::TokenChecker, HashBuilder};
 use diesel::prelude::*;
 
 /// Returns the token selected
@@ -61,15 +61,13 @@ impl TokenChecker<u32> for UserIdFromToken {
             // Hash the request token
             // Here we use tokengenerator
             // But we can just use sha2
-            let hash_builder = HashBuilder::new().set_source(&token_bytes).generate();
+            let hash_builder = HashBuilder::default().set_source(&token_bytes).generate();
 
             // Selected hashed token from db
-            let token = app_tokens
+            app_tokens
                 .filter(token_hash.eq(hash_builder.get_result().unwrap()))
                 .load::<Token>(&mut conn)
-                .unwrap();
-
-            token
+                .unwrap()
         })
         .await
         .unwrap();
@@ -80,7 +78,7 @@ impl TokenChecker<u32> for UserIdFromToken {
             return Err(token_invalid_error);
         }
 
-        let last_token = token.get(0).unwrap();
+        let last_token = token.first().unwrap();
 
         error_detail_builder
             .user_token(last_token.token_hash.clone())
@@ -100,7 +98,7 @@ impl TokenChecker<u32> for UserIdFromToken {
     async fn token_not_found_error(&self) -> Box<dyn ResponseError> {
         Box::new(
             RouterError::from_predefined("AUTHN_TOKEN_NOT_FOUND")
-            // TODO: CHECK
+                // TODO: CHECK
                 .log_to_db(Arc::new(self.db_pool.clone()), RouterErrorDetail::default()),
         )
     }
