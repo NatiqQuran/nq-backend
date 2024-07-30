@@ -14,7 +14,7 @@ pub async fn translation_view(
 
     let path = path.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the single translation from the database
@@ -25,7 +25,5 @@ pub async fn translation_view(
         Ok(web::Json(translation))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

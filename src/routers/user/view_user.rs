@@ -40,7 +40,7 @@ pub async fn view_user(
         let profile = match names {
             Some(names) => {
                 // Its must be always > 1 element
-                let name: &UserName = names.get(0).unwrap();
+                let name: &UserName = names.first().unwrap();
 
                 FullUserProfile {
                     uuid: account.uuid.to_string(),

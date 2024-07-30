@@ -1,4 +1,4 @@
-use crate::error::{RouterError, RouterErrorDetail};
+use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::Filter;
 use crate::models::Translation;
 use crate::DbPool;
@@ -18,22 +18,9 @@ pub async fn translation_list(
 
     let pool = pool.into_inner();
 
-    let mut error_detail_builder = RouterErrorDetail::builder();
+    let error_detail = RouterErrorDetailBuilder::from_http_request(&req).build();
 
-    let req_ip = req.peer_addr().unwrap();
-
-    error_detail_builder
-        .req_address(req_ip)
-        .request_url(req.uri().to_string())
-        .request_url_parsed(req.uri().path());
-
-    if let Some(user_agent) = req.headers().get("User-agent") {
-        error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
-    }
-
-    let error_detail = error_detail_builder.build();
-
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         // Get the given language or return the default
@@ -69,7 +56,5 @@ pub async fn translation_list(
         Ok(web::Json(translations_list))
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

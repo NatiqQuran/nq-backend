@@ -1,4 +1,4 @@
-use crate::error::{RouterError, RouterErrorDetail};
+use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::{Filter, Filters, Order};
 use crate::models::ErrorLog;
 use crate::DbPool;
@@ -40,20 +40,7 @@ pub async fn errors_list(
 ) -> Result<web::Json<Vec<ErrorLog>>, RouterError> {
     let pool = pool.into_inner();
 
-    let req_ip = req.peer_addr().unwrap();
-
-    let mut error_detail_builder = RouterErrorDetail::builder();
-
-    error_detail_builder
-        .request_url(req.uri().to_string())
-        .req_address(req_ip)
-        .request_url_parsed(req.uri().path());
-
-    if let Some(user_agent) = req.headers().get("User-agent") {
-        error_detail_builder.user_agent(user_agent.to_str().unwrap().to_string());
-    }
-
-    let error_detail = error_detail_builder.build();
+    let error_detail = RouterErrorDetailBuilder::from_http_request(&req).build();
 
     web::block(move || {
         let mut conn = pool.get().unwrap();

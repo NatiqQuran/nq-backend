@@ -6,7 +6,7 @@ macro_rules! select_model {
         #[async_trait]
         impl SelectModel for $struct {
             async fn from_id(conn: DbPool, id: i32) -> Self {
-                use crate::schema::$table_name::dsl as $table_name;
+                use $crate::schema::$table_name::dsl as $table_name;
 
                 let mut conn = conn.get().unwrap();
 

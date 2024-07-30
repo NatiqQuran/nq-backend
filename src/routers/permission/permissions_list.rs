@@ -52,11 +52,11 @@ pub async fn get_list_of_permissions(
         let result: Vec<PermissionWithConditions> = permissions_with_conditions_map
             .into_iter()
             .map(|(simple_permission, conditions)| PermissionWithConditions {
-                conditions: match conditions.get(0) {
+                conditions: match conditions.first() {
                     Some(_) => conditions
                         .into_iter()
-                        .filter(|c| matches!(c, Some(_)))
-                        .map(|c| c.unwrap())
+                        .filter(|c| c.is_some())
+                        .flatten()
                         .collect(),
                     None => vec![],
                 },

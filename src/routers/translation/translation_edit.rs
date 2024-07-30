@@ -20,7 +20,7 @@ pub async fn translation_edit(
     let new_translation = new_translation.into_inner();
     let path = path.into_inner();
 
-    let result = web::block(move || {
+    web::block(move || {
         let mut conn = pool.get().unwrap();
 
         diesel::update(translations.filter(translation_uuid.eq(path)))
@@ -34,7 +34,5 @@ pub async fn translation_edit(
         Ok("Edited")
     })
     .await
-    .unwrap();
-
-    result
+    .unwrap()
 }

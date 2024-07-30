@@ -4,7 +4,7 @@ use actix_web::{middleware, web, App, HttpServer};
 use authz::AuthZController;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
-use auth_n::token::TokenAuth;
+use auth_n::middleware::TokenAuth;
 use auth_z::middleware::AuthZ;
 use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool};
@@ -51,14 +51,14 @@ use routers::permission::{
 use routers::profile::{profile_edit, profile_view};
 use routers::quran::{ayah::*, mushaf::*, surah::*, word::*};
 use routers::translation::*;
-use routers::user::{delete_user, edit_user, user, users_list};
+use routers::user::{delete_user, edit_user, view_user, users_list};
 
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
 pub static FIXED_ERROR_RESPONSES: OnceLock<PreDefinedResponseErrors> = OnceLock::new();
-pub const FIXED_ERROR_JSON: &'static str = include_str!("../error_codes.json");
+pub const FIXED_ERROR_JSON: &str = include_str!("../error_codes.json");
 
 fn run_migrations(
     connection: &mut PgConnection,
@@ -276,9 +276,10 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/user")
+                    .wrap(AuthZ::new(auth_z_controller.clone()))
                     .wrap(TokenAuth::new(user_id_from_token.clone(), true))
                     .route("", web::get().to(users_list::users_list))
-                    .route("/{uuid}", web::get().to(user::view_user))
+                    .route("/{uuid}", web::get().to(view_user::view_user))
                     .route("/{uuid}", web::post().to(edit_user::edit_user))
                     .route("/{uuid}", web::delete().to(delete_user::delete_user)),
             )
