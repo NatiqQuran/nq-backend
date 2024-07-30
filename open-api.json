@@ -1389,6 +1389,43 @@
         }
       }
     },
+    "/word": {
+      "post": {
+        "description": "Add the new word",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ayah_uuid": {
+                    "type": "string",
+                    "description": "The ayah_uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "word":{
+                    "type": "string",
+                    "description": "The word text",
+                    "example": "الیوم"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["quran"],
+        "response": {
+          "200": {
+            "description": "This means new word added"
+          }
+        }
+      }
+    },
     "/word/{word_uuid}": {
       "description": "Returns the single word",
       "get": {
