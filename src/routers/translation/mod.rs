@@ -22,6 +22,25 @@ pub struct SimpleTranslation {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct ViewableTranslation {
+    pub mushaf_uuid: Uuid,
+    pub translator_account_uuid: Uuid,
+    pub language: String,
+    pub release_date: Option<NaiveDate>,
+    pub source: Option<String>,
+    pub completed: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct EditableSimpleTranslation {
+    pub translator_account_uuid: Option<Uuid>,
+    pub language: String,
+    pub release_date: Option<NaiveDate>,
+    pub source: Option<String>,
+    pub completed: bool,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct SimpleTranslationText {
     pub ayah_uuid: Uuid,
     pub text: String,
@@ -31,7 +50,6 @@ pub struct SimpleTranslationText {
 pub struct TranslationListQuery {
     mushaf: String,
     master_account: Option<Uuid>,
-    language: Option<String>,
 
     sort: Option<String>,
     order: Option<Order>,
