@@ -1403,10 +1403,15 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "ayah_uuid": {
+                  "ayah_id": {
                     "type": "string",
                     "description": "The ayah_uuid",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "word":{
+                    "type": "string",
+                    "description": "The word text",
+                    "example": "الْيَوْمَ"
                   }
                 }
               }
