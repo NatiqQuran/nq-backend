@@ -7,6 +7,7 @@ CREATE TABLE translations (
     language VARCHAR(5) NOT NULL,
     release_date DATE,
     source VARCHAR(300),
+    completed BOOLEAN DEFAULT FALSE NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT translation_fk_user_id_rel FOREIGN KEY(creator_user_id) REFERENCES app_users(id),
