@@ -1701,6 +1701,11 @@
                     "type": "string",
                     "description": "Release day of the translation",
                     "example": "2023-01-01"
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "description": "If the translation is completed",
+                    "example": "true"
                   }
                 }
               }
