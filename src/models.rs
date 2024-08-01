@@ -441,13 +441,18 @@ pub struct Translation {
     #[serde(skip_serializing)]
     pub creator_user_id: i32,
 
+    #[serde(skip_serializing)]
     pub translator_account_id: i32,
 
+    #[serde(skip_serializing)]
     pub mushaf_id: i32,
 
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
+
+    /// translation content status
+    pub completed: bool,
 
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,

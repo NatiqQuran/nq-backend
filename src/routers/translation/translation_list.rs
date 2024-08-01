@@ -14,7 +14,7 @@ pub async fn translation_list(
     req: HttpRequest,
 ) -> Result<web::Json<Vec<Translation>>, RouterError> {
     use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, short_name as mushaf_short_name};
-    use crate::schema::translations::dsl::{language, mushaf_id as translation_mushaf_id};
+    use crate::schema::translations::dsl::mushaf_id as translation_mushaf_id;
 
     let pool = pool.into_inner();
 
@@ -24,10 +24,10 @@ pub async fn translation_list(
         let mut conn = pool.get().unwrap();
 
         // Get the given language or return the default
-        let lang = match query.language {
-            Some(ref s) => s.clone(),
-            None => "en".to_string(),
-        };
+        //let lang = match query.language {
+        //    Some(ref s) => s.clone(),
+        //    None => "en".to_string(),
+        //};
 
         let mushafid: i32 = mushafs
             .filter(mushaf_short_name.eq(query.mushaf.clone()))
@@ -48,7 +48,6 @@ pub async fn translation_list(
             Ok(filtred) => filtred,
             Err(err) => return Err(err.log_to_db(pool, error_detail)),
         }
-        .filter(language.eq(lang))
         .filter(translation_mushaf_id.eq(mushafid))
         .select(Translation::as_select())
         .get_results(&mut conn)?;
