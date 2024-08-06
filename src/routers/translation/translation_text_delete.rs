@@ -49,7 +49,7 @@ pub async fn translation_text_delete(
         )
         .execute(&mut conn)?;
 
-        Ok("Updated")
+        Ok("Deleted")
     })
     .await
     .unwrap()

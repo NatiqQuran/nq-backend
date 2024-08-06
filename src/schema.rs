@@ -220,7 +220,7 @@ diesel::table! {
         language -> Varchar,
         release_date -> Nullable<Date>,
         source -> Nullable<Varchar>,
-        completed -> Bool,
+        approved -> Bool,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
