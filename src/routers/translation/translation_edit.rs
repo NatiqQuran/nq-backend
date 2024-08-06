@@ -11,7 +11,7 @@ pub async fn translation_edit(
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::translations::dsl::{
-        completed as translation_completed, language as translation_language,
+        approved as translation_approved, language as translation_language,
         release_date as translation_release_date, source as translation_source, translations,
         uuid as translation_uuid,
     };
@@ -27,7 +27,7 @@ pub async fn translation_edit(
                 translation_source.eq(new_translation.source),
                 translation_release_date.eq(new_translation.release_date),
                 translation_language.eq(new_translation.language),
-                translation_completed.eq(new_translation.completed),
+                translation_approved.eq(new_translation.approved),
             ))
             .execute(&mut conn)?;
 

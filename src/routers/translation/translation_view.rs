@@ -1,6 +1,6 @@
 use crate::error::RouterError;
 use crate::models::Translation;
-use crate::{DbPool, ViewableTranslation};
+use crate::{DbPool, TranslationAyah, TranslationStatus, ViewableTranslation};
 use ::uuid::Uuid;
 use actix_web::web;
 use diesel::prelude::*;
@@ -14,7 +14,14 @@ pub async fn translation_view(
         app_accounts, id as account_table_id, uuid as account_uuid,
     };
     use crate::schema::mushafs::dsl::{id as mushaf_table_id, mushafs, uuid as mushaf_table_uuid};
+    use crate::schema::quran_ayahs::dsl::{ayah_number, quran_ayahs, uuid as ayah_uuid};
+    use crate::schema::quran_surahs::dsl::{
+        mushaf_id as surah_mushaf_id, number as surah_number, quran_surahs,
+    };
     use crate::schema::translations::dsl::{translations, uuid as translation_uuid};
+    use crate::schema::translations_text::dsl::{
+        text as translation_text, translation_id, translations_text, uuid as translation_text_uuid,
+    };
 
     let path = path.into_inner();
 
@@ -36,8 +43,40 @@ pub async fn translation_view(
             .select(account_uuid)
             .get_result(&mut conn)?;
 
+        // Get list of ayahs
+        let ayahs = quran_surahs
+            .inner_join(quran_ayahs.left_join(translations_text))
+            .filter(translation_id.eq(translation.id))
+            .filter(surah_mushaf_id.eq(translation.mushaf_id))
+            .select((
+                translation_text.nullable(),
+                ayah_uuid,
+                ayah_number,
+                surah_number,
+                translation_text_uuid.nullable(),
+            ))
+            .get_results::<(Option<String>, Uuid, i32, i32, Option<Uuid>)>(&mut conn)?;
+
+        let mut result_ayahs = vec![];
+        let mut status = TranslationStatus::Ok;
+
+        for (text, a_uuid, a_number, s_number, text_uuid) in ayahs {
+            if text.is_none() || text_uuid.is_none() {
+                status = TranslationStatus::Error;
+            }
+            result_ayahs.push(TranslationAyah {
+                uuid: a_uuid,
+                text,
+                surah_number: s_number as u32,
+                number: a_number as u32,
+                text_uuid,
+            });
+        }
+
         Ok(web::Json(ViewableTranslation {
-            completed: translation.completed,
+            ayahs: result_ayahs,
+            status,
+            approved: translation.approved,
             source: translation.source,
             language: translation.language,
             release_date: translation.release_date,

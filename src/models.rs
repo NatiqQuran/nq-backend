@@ -439,20 +439,20 @@ pub struct Translation {
     pub uuid: Uuid,
 
     #[serde(skip_serializing)]
+    pub mushaf_id: i32,
+
+    #[serde(skip_serializing)]
     pub creator_user_id: i32,
 
     #[serde(skip_serializing)]
     pub translator_account_id: i32,
-
-    #[serde(skip_serializing)]
-    pub mushaf_id: i32,
 
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
 
     /// translation content status
-    pub completed: bool,
+    pub approved: bool,
 
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
@@ -471,9 +471,20 @@ pub struct NewTranslation {
     pub source: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable)]
+#[derive(
+    Deserialize,
+    Serialize,
+    Clone,
+    Validate,
+    Identifiable,
+    Queryable,
+    Debug,
+    Associations,
+    Selectable,
+)]
 #[diesel(table_name = translations_text)]
 #[diesel(belongs_to(Translation))]
+#[diesel(belongs_to(QuranAyah, foreign_key = ayah_id))]
 pub struct TranslationText {
     #[serde(skip_serializing)]
     pub id: i32,

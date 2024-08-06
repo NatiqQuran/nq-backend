@@ -22,13 +22,31 @@ pub struct SimpleTranslation {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum TranslationStatus {
+    Ok,
+    Error,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TranslationAyah {
+    uuid: Uuid,
+    text_uuid: Option<Uuid>,
+    number: u32,
+    surah_number: u32,
+    text: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct ViewableTranslation {
     pub mushaf_uuid: Uuid,
     pub translator_account_uuid: Uuid,
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
-    pub completed: bool,
+    pub approved: bool,
+    pub status: TranslationStatus,
+    pub ayahs: Vec<TranslationAyah>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -37,7 +55,7 @@ pub struct EditableSimpleTranslation {
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
-    pub completed: bool,
+    pub approved: bool,
 }
 
 #[derive(Serialize, Deserialize)]
