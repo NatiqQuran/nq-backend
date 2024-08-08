@@ -2,6 +2,7 @@ pub mod delete_user;
 pub mod edit_user;
 pub mod users_list;
 pub mod view_user;
+pub mod add_user;
 
 use crate::datetime::validate_date_time;
 use chrono::NaiveDate;

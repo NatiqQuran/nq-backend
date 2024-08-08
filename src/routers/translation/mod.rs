@@ -60,7 +60,6 @@ pub struct EditableSimpleTranslation {
 
 #[derive(Serialize, Deserialize)]
 pub struct SimpleTranslationText {
-    pub ayah_uuid: Uuid,
     pub text: String,
 }
 

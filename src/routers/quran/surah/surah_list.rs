@@ -14,7 +14,7 @@ pub async fn surah_list(
     pool: web::Data<DbPool>,
     req: HttpRequest,
 ) -> Result<web::Json<Vec<SurahListResponse>>, RouterError> {
-    use crate::schema::mushafs::dsl::{mushafs, name as mushaf_name};
+    use crate::schema::mushafs::dsl::{mushafs, short_name as mushaf_name};
     use crate::schema::quran_surahs::dsl::*;
 
     let query = query.into_inner();
