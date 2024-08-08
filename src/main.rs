@@ -51,7 +51,7 @@ use routers::permission::{
 use routers::profile::{profile_edit, profile_view};
 use routers::quran::{ayah::*, mushaf::*, surah::*, word::*};
 use routers::translation::*;
-use routers::user::{delete_user, edit_user, users_list, view_user};
+use routers::user::{add_user, delete_user, edit_user, users_list, view_user};
 
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
@@ -274,6 +274,7 @@ async fn main() -> std::io::Result<()> {
                     .wrap(AuthZ::new(auth_z_controller.clone()))
                     .wrap(TokenAuth::new(user_id_from_token.clone(), true))
                     .route("", web::get().to(users_list::users_list))
+                    .route("", web::post().to(add_user::add_user))
                     .route("/{uuid}", web::get().to(view_user::view_user))
                     .route("/{uuid}", web::post().to(edit_user::edit_user))
                     .route("/{uuid}", web::delete().to(delete_user::delete_user)),
