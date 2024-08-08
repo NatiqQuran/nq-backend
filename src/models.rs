@@ -1,6 +1,6 @@
 use crate::schema::*;
 use chrono::{NaiveDate, NaiveDateTime};
-use diesel::{Associations, Identifiable, Insertable, Queryable, Selectable};
+use diesel::{deserialize::QueryableByName, Associations, Identifiable, Insertable, Queryable, Selectable};
 use ipnetwork::IpNetwork;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -481,6 +481,7 @@ pub struct NewTranslation {
     Debug,
     Associations,
     Selectable,
+    QueryableByName
 )]
 #[diesel(table_name = translations_text)]
 #[diesel(belongs_to(Translation))]

@@ -1,3 +1,4 @@
+use crate::translation_text_view::TextViewQuery;
 use crate::{error::RouterError, models::NewTranslationText, DbPool};
 use actix_web::web;
 use diesel::select;
@@ -16,6 +17,7 @@ pub async fn translation_text_modify(
     data: web::ReqData<u32>,
     // translatio uuid
     path: web::Path<Uuid>,
+    query: web::Query<TextViewQuery>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
     use crate::schema::quran_ayahs::dsl::{id as ayah_id, quran_ayahs, uuid as ayah_uuid};
@@ -30,6 +32,7 @@ pub async fn translation_text_modify(
     let new_translation_text = new_translation_text.into_inner();
     let path = path.into_inner();
     let creator_id = data.into_inner();
+    let query = query.into_inner();
 
     web::block(move || {
         let mut conn = pool.get().unwrap();
@@ -42,7 +45,7 @@ pub async fn translation_text_modify(
 
         // Get the translation text ayah id
         let ayah: i32 = quran_ayahs
-            .filter(ayah_uuid.eq(new_translation_text.ayah_uuid))
+            .filter(ayah_uuid.eq(query.ayah_uuid))
             .select(ayah_id)
             .get_result(&mut conn)?;
 
@@ -57,11 +60,9 @@ pub async fn translation_text_modify(
         if text {
             // This means the translation_text exists, we just need to update it
             diesel::update(translations_text)
-                .set((
-                    text_ayah_id.eq(ayah),
-                    text_translation_id.eq(translation),
-                    text_content.eq(new_translation_text.text),
-                ))
+                .filter(text_ayah_id.eq(ayah))
+                .filter(text_translation_id.eq(translation))
+                .set((text_content.eq(new_translation_text.text),))
                 .execute(&mut conn)?;
 
             Ok("Updated")

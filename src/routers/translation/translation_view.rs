@@ -1,9 +1,9 @@
 use crate::error::RouterError;
-use crate::models::Translation;
+use crate::models::{QuranAyah, Translation, TranslationText};
 use crate::{DbPool, TranslationAyah, TranslationStatus, ViewableTranslation};
 use ::uuid::Uuid;
 use actix_web::web;
-use diesel::prelude::*;
+use diesel::{prelude::*, sql_query};
 
 /// Return's a single translation
 pub async fn translation_view(
@@ -43,11 +43,14 @@ pub async fn translation_view(
             .select(account_uuid)
             .get_result(&mut conn)?;
 
-        // Get list of ayahs
         let ayahs = quran_surahs
-            .inner_join(quran_ayahs.left_join(translations_text))
-            .filter(translation_id.eq(translation.id))
+            .inner_join(quran_ayahs.left_outer_join(translations_text))
             .filter(surah_mushaf_id.eq(translation.mushaf_id))
+            .filter(
+                translation_id
+                    .eq(translation.id)
+                    .or(translation_id.is_null()),
+            )
             .select((
                 translation_text.nullable(),
                 ayah_uuid,
@@ -61,7 +64,7 @@ pub async fn translation_view(
         let mut status = TranslationStatus::Ok;
 
         for (text, a_uuid, a_number, s_number, text_uuid) in ayahs {
-            if text.is_none() || text_uuid.is_none() {
+            if text_uuid.is_none() {
                 status = TranslationStatus::Error;
             }
             result_ayahs.push(TranslationAyah {
