@@ -1,6 +1,8 @@
 use crate::schema::*;
 use chrono::{NaiveDate, NaiveDateTime};
-use diesel::{deserialize::QueryableByName, Associations, Identifiable, Insertable, Queryable, Selectable};
+use diesel::{
+    deserialize::QueryableByName, Associations, Identifiable, Insertable, Queryable, Selectable,
+};
 use ipnetwork::IpNetwork;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -98,6 +100,7 @@ pub struct UserProfile {
 #[derive(Insertable)]
 #[diesel(table_name = app_users)]
 pub struct NewUser {
+    pub birthday: Option<NaiveDate>,
     pub account_id: i32,
     pub language: Option<String>,
 }
@@ -481,7 +484,7 @@ pub struct NewTranslation {
     Debug,
     Associations,
     Selectable,
-    QueryableByName
+    QueryableByName,
 )]
 #[diesel(table_name = translations_text)]
 #[diesel(belongs_to(Translation))]

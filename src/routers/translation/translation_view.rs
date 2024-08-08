@@ -1,9 +1,9 @@
 use crate::error::RouterError;
-use crate::models::{QuranAyah, Translation, TranslationText};
+use crate::models::Translation;
 use crate::{DbPool, TranslationAyah, TranslationStatus, ViewableTranslation};
 use ::uuid::Uuid;
 use actix_web::web;
-use diesel::{prelude::*, sql_query};
+use diesel::prelude::*;
 
 /// Return's a single translation
 pub async fn translation_view(

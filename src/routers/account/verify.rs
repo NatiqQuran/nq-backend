@@ -120,6 +120,7 @@ pub async fn verify(
             .get_result::<Account>(&mut conn)?;
 
             let new_user = NewUser {
+                birthday: None,
                 account_id: new_account.id,
                 language: None,
             }

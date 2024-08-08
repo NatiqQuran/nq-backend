@@ -11,7 +11,7 @@ use super::EditableUser;
 
 pub async fn add_user(
     pool: web::Data<DbPool>,
-    req_data: web::ReqData<i32>,
+    req_data: web::ReqData<u32>,
     new_user: web::Json<EditableUser>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::app_accounts;
@@ -34,6 +34,7 @@ pub async fn add_user(
         .get_result::<Account>(&mut conn)?;
 
         NewUser {
+            birthday: Some(data.birthday),
             account_id: new_account.id,
             language: Some(data.language.clone()),
         }
@@ -41,7 +42,7 @@ pub async fn add_user(
         .get_result::<User>(&mut conn)?;
 
         NewEmail {
-            creator_user_id: req_data.clone().into_inner(),
+            creator_user_id: req_data.clone().into_inner() as i32,
             email: &data.primary_email,
             account_id: new_account.id,
             verified: true,
@@ -63,7 +64,7 @@ pub async fn add_user(
             first_name: Some(data.first_name),
             account_id: new_account.id,
             primary_name: true,
-            creator_user_id: req_data.into_inner(),
+            creator_user_id: req_data.into_inner() as i32,
         }
         .insert_into(app_user_names)
         .execute(&mut conn)?;
