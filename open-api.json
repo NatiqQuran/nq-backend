@@ -20,6 +20,10 @@
   },
   "tags": [
     {
+      "name" : "general",
+      "description": "Simple public api's"
+    },
+    {
       "name": "account",
       "description": "For authorization, and users"
     },
@@ -859,7 +863,7 @@
             }
           }
         ],
-        "tags": ["quran"],
+        "tags": ["quran", "general"],
         "responses": {
           "200": {
             "description": "Returns the mushafs list"
@@ -925,7 +929,7 @@
             }
           }
         ],
-        "tags": ["quran"],
+        "tags": ["quran", "general"],
         "responses": {
           "200": {
             "description": "Returns the mushaf with id you specified"
@@ -1060,7 +1064,7 @@
             }
           }
         ],
-        "tags": ["quran"],
+        "tags": ["quran", "general"],
         "responses": {
           "200": {
             "description": "Returns the surahs list"
@@ -1136,7 +1140,7 @@
             }
           }
         ],
-        "tags": ["quran"],
+        "tags": ["quran", "general"],
         "responses": {
           "200": {
             "description": "Returns the single surah"
@@ -1389,6 +1393,43 @@
         }
       }
     },
+    "/word": {
+      "post": {
+        "description": "Add the new word",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ayah_uuid": {
+                    "type": "string",
+                    "description": "The ayah_uuid",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  },
+                  "word":{
+                    "type": "string",
+                    "description": "The word text",
+                    "example": "الیوم"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["quran"],
+        "response": {
+          "200": {
+            "description": "This means new word added"
+          }
+        }
+      }
+    },
     "/word/{word_uuid}": {
       "description": "Returns the single word",
       "get": {
@@ -1542,7 +1583,7 @@
             }
           }
         ],
-        "tags": ["translation"],
+        "tags": ["translation", "general"],
         "responses": {
           "200": {
             "description": "Returns the list of all translations"
@@ -1615,7 +1656,7 @@
             }
           }
         ],
-        "tags": ["translation"],
+        "tags": ["translation", "general"],
         "responses": {
           "200": {
             "description": "Returns the translation with id you specified"
@@ -1664,6 +1705,11 @@
                     "type": "string",
                     "description": "Release day of the translation",
                     "example": "2023-01-01"
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "description": "If the translation is completed",
+                    "example": "true"
                   }
                 }
               }
