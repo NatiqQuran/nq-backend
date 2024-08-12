@@ -54,8 +54,8 @@
   ],
   "paths": {
     "/account/sendCode": {
-      "description": "Send code for sign in or sign up",
       "post": {
+        "description": "Send code for sign in or sign up",
         "requestBody": {
           "content": {
             "application/json": {
@@ -83,8 +83,8 @@
       }
     },
     "/account/verify": {
-      "description": "Return the new user token",
       "post": {
+        "description": "Return the new user token",
         "requestBody": {
           "content": {
             "application/json": {
@@ -117,9 +117,9 @@
       }
     },
     "/account/logout": {
-      "description": "Expire the user token",
       "get": {
-       "security": [
+        "description": "Expire the user token",
+        "security": [
           {
             "ApiKeyAuth": []
           }
@@ -808,8 +808,8 @@
       }
     },
     "/permission_conditions": {
-      "description": "Returns the list of all permission conditions",
       "get": {
+        "description": "Returns the list of all permission conditions",
         "security": [
           {
             "ApiKeyAuth": []
@@ -824,8 +824,8 @@
       }
     },
     "/mushaf": {
-      "description": "Returns the list of mushafs",
       "get": {
+        "description": "Returns the list of mushafs",
         "parameters": [
           {
             "in": "query",
@@ -1017,8 +1017,8 @@
       }
     },
     "/surah": {
-      "description": "Returns the list of surahs",
       "get": {
+        "description": "Returns the list of surahs",
         "parameters": [
           {
             "in": "query",
@@ -1128,8 +1128,8 @@
       }
     },
     "/surah/{surah_uuid}": {
-      "description": "Returns the single surah",
       "get": {
+        "description": "Returns the single surah",
         "parameters": [
           {
             "in": "path",
@@ -1423,7 +1423,7 @@
           }
         },
         "tags": ["quran"],
-        "response": {
+        "responses": {
           "200": {
             "description": "This means new word added"
           }
@@ -1523,11 +1523,6 @@
     "/translation": {
       "get": {
         "description": "Ruturn the list of all translations",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
         "parameters": [
           {
             "in": "query",
@@ -1641,11 +1636,6 @@
     "/translation/{translation_uuid}": {
       "get": {
         "description": "View translation with id you specified",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
         "parameters": [
           {
             "in": "path",
@@ -1823,6 +1813,11 @@
       },
       "delete": {
         "description": "Delete a single translation_text",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
