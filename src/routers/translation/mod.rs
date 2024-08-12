@@ -25,7 +25,8 @@ pub struct SimpleTranslation {
 #[serde(rename_all = "lowercase")]
 pub enum TranslationStatus {
     Ok,
-    Error,
+    NotApproved,
+    Incomplete,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -44,7 +45,6 @@ pub struct ViewableTranslation {
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
-    pub approved: bool,
     pub status: TranslationStatus,
     pub ayahs: Vec<TranslationAyah>,
 }
@@ -63,10 +63,11 @@ pub struct SimpleTranslationText {
     pub text: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct TranslationListQuery {
+    language: Option<String>,
     mushaf: String,
-    master_account: Option<Uuid>,
+    translator_account: Option<Uuid>,
 
     sort: Option<String>,
     order: Option<Order>,

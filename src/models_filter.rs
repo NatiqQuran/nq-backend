@@ -64,7 +64,8 @@ impl Filter for QuranSurah {
                 )),
             },
 
-            None => Ok(quran_surahs.internal_into_boxed()),
+            // Default order by number.asc
+            None => Ok(quran_surahs.internal_into_boxed().order(number.asc())),
         }?;
 
         _query = match filters.to() {
@@ -108,7 +109,7 @@ impl Filter for QuranAyah {
                 )),
             },
 
-            None => Ok(quran_ayahs.internal_into_boxed()),
+            None => Ok(quran_ayahs.internal_into_boxed().order(ayah_number.asc())),
         }?;
 
         _query = match filters.to() {
@@ -152,7 +153,7 @@ impl Filter for QuranWord {
                 )),
             },
 
-            None => Ok(quran_words.internal_into_boxed()),
+            None => Ok(quran_words.internal_into_boxed().order(created_at.asc())),
         }?;
 
         _query = match filters.to() {
@@ -196,7 +197,7 @@ impl Filter for QuranMushaf {
                 )),
             },
 
-            None => Ok(mushafs.internal_into_boxed()),
+            None => Ok(mushafs.internal_into_boxed().order(created_at.asc())),
         }?;
 
         _query = match filters.to() {
@@ -336,7 +337,7 @@ impl Filter for ErrorLog {
                 )),
             },
 
-            None => Ok(app_error_logs.internal_into_boxed()),
+            None => Ok(app_error_logs.internal_into_boxed().order(created_at.asc())),
         }?;
 
         _query = match filters.to() {

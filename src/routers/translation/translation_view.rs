@@ -3,12 +3,19 @@ use crate::models::Translation;
 use crate::{DbPool, TranslationAyah, TranslationStatus, ViewableTranslation};
 use ::uuid::Uuid;
 use actix_web::web;
-use diesel::prelude::*;
+use diesel::{prelude::*, query_dsl::boxed_dsl::BoxedDsl};
+use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize, Serialize)]
+pub struct TranslationViewQuery {
+    surah_uuid: Option<Uuid>,
+}
 
 /// Return's a single translation
 pub async fn translation_view(
     path: web::Path<Uuid>,
     pool: web::Data<DbPool>,
+    web::Query(query): web::Query<TranslationViewQuery>,
 ) -> Result<web::Json<ViewableTranslation>, RouterError> {
     use crate::schema::app_accounts::dsl::{
         app_accounts, id as account_table_id, uuid as account_uuid,
@@ -17,6 +24,7 @@ pub async fn translation_view(
     use crate::schema::quran_ayahs::dsl::{ayah_number, quran_ayahs, uuid as ayah_uuid};
     use crate::schema::quran_surahs::dsl::{
         mushaf_id as surah_mushaf_id, number as surah_number, quran_surahs,
+        uuid as surah_table_uuid,
     };
     use crate::schema::translations::dsl::{translations, uuid as translation_uuid};
     use crate::schema::translations_text::dsl::{
@@ -43,8 +51,15 @@ pub async fn translation_view(
             .select(account_uuid)
             .get_result(&mut conn)?;
 
-        let ayahs = quran_surahs
+        let mut ayahs = quran_surahs
             .inner_join(quran_ayahs.left_outer_join(translations_text))
+            .internal_into_boxed();
+
+        if let Some(uuid) = query.surah_uuid {
+            ayahs = ayahs.filter(surah_table_uuid.eq(uuid));
+        }
+
+        let result = ayahs
             .filter(surah_mushaf_id.eq(translation.mushaf_id))
             .filter(
                 translation_id
@@ -63,9 +78,9 @@ pub async fn translation_view(
         let mut result_ayahs = vec![];
         let mut status = TranslationStatus::Ok;
 
-        for (text, a_uuid, a_number, s_number, text_uuid) in ayahs {
+        for (text, a_uuid, a_number, s_number, text_uuid) in result {
             if text_uuid.is_none() {
-                status = TranslationStatus::Error;
+                status = TranslationStatus::Incomplete;
             }
             result_ayahs.push(TranslationAyah {
                 uuid: a_uuid,
@@ -76,10 +91,13 @@ pub async fn translation_view(
             });
         }
 
+        if matches!(status, TranslationStatus::Ok) && !translation.approved {
+            status = TranslationStatus::NotApproved;
+        }
+
         Ok(web::Json(ViewableTranslation {
             ayahs: result_ayahs,
             status,
-            approved: translation.approved,
             source: translation.source,
             language: translation.language,
             release_date: translation.release_date,

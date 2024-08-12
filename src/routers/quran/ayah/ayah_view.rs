@@ -1,7 +1,7 @@
 use super::SimpleWord;
 use crate::error::RouterError;
 use crate::models::{QuranAyah, QuranWord};
-use crate::{AyahWithContent, DbPool, Sajdeh};
+use crate::{Sajdah, AyahWithContent, DbPool};
 use ::uuid::Uuid;
 use actix_web::web;
 use diesel::prelude::*;
@@ -62,7 +62,7 @@ pub async fn ayah_view(
             uuid: quran_ayah.uuid,
             surah: surah.0,
             mushaf,
-            sajdeh: Sajdeh::from_option_string(quran_ayah.sajdeh),
+            sajdah: Sajdah::from_option_string(quran_ayah.sajdah),
             ayah_number: quran_ayah.ayah_number,
             words: words_simple,
             text,

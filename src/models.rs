@@ -244,7 +244,7 @@ pub struct QuranAyah {
     pub surah_id: i32,
 
     pub ayah_number: i32,
-    pub sajdeh: Option<String>,
+    pub sajdah: Option<String>,
 
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
@@ -258,7 +258,7 @@ pub struct NewQuranAyah {
     pub creator_user_id: i32,
     pub surah_id: i32,
     pub ayah_number: i32,
-    pub sajdeh: Option<String>,
+    pub sajdah: Option<String>,
 }
 
 #[derive(Clone, Selectable, Identifiable, Associations, Queryable, PartialEq, Debug, Serialize)]
