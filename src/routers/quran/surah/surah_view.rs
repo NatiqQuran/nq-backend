@@ -1,8 +1,7 @@
-use super::{
-    Ayah, AyahTextType, Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse,
-};
+use super::{Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah, QuranWord};
 use crate::routers::multip;
+use crate::AyahTy;
 use crate::{error::RouterError, DbPool};
 use actix_web::web;
 use diesel::prelude::*;
@@ -37,25 +36,26 @@ pub async fn surah_view(
             multip(result, |ayah| SimpleAyah {
                 number: ayah.ayah_number,
                 uuid: ayah.uuid,
-                sajdeh: ayah.sajdeh,
+                sajdah: ayah.sajdah,
             });
 
         let final_ayahs = ayahs_as_map
             .into_iter()
-            .map(|(ayah, words)| Ayah {
-                ayah,
-                content: match query.format {
-                    Format::Text => AyahTextType::Text(
-                        words
-                            .into_iter()
-                            .map(|qword| qword.word)
-                            .collect::<Vec<String>>()
-                            .join(" "),
-                    ),
-                    Format::Word => AyahTextType::Words(words),
-                },
+            .map(|(ayah, words)| match query.format {
+                Format::Text => AyahTy::Text(crate::AyahWithText {
+                    ayah,
+                    text: words
+                        .into_iter()
+                        .map(|word| word.word)
+                        .collect::<Vec<String>>()
+                        .join(" "),
+                }),
+                Format::Word => AyahTy::Words(crate::AyahWithWords {
+                    ayah,
+                    words: words.into_iter().map(|word| word.word).collect(),
+                }),
             })
-            .collect::<Vec<Ayah>>();
+            .collect::<Vec<AyahTy>>();
 
         // Get the surah
         let surah = quran_surahs

@@ -13,7 +13,7 @@ pub async fn ayah_edit(
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::quran_ayahs::dsl::{
-        ayah_number, quran_ayahs, sajdeh as ayah_sajdeh, uuid as ayah_uuid,
+        ayah_number, quran_ayahs, sajdah as ayah_sajdah, uuid as ayah_uuid,
     };
 
     let new_ayah = new_ayah.into_inner();
@@ -22,12 +22,12 @@ pub async fn ayah_edit(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        let new_sajdeh = new_ayah.sajdeh.map(|sajdeh| sajdeh.to_string());
+        let new_sajdah = new_ayah.sajdah.map(|sajdah| sajdah.to_string());
 
         diesel::update(quran_ayahs.filter(ayah_uuid.eq(target_ayah_uuid)))
             .set((
                 ayah_number.eq(new_ayah.ayah_number),
-                ayah_sajdeh.eq(new_sajdeh),
+                ayah_sajdah.eq(new_sajdah),
             ))
             .execute(&mut conn)?;
 

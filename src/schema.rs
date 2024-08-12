@@ -176,7 +176,7 @@ diesel::table! {
         creator_user_id -> Int4,
         surah_id -> Int4,
         ayah_number -> Int4,
-        sajdeh -> Nullable<Varchar>,
+        sajdah -> Nullable<Varchar>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }

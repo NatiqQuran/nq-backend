@@ -13,12 +13,12 @@ use crate::filter::{Filters, Order};
 
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
-pub enum Sajdeh {
+pub enum Sajdah {
     Mostahab,
     Vajib,
 }
 
-impl Display for Sajdeh {
+impl Display for Sajdah {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Mostahab => write!(f, "mostahab"),
@@ -27,7 +27,7 @@ impl Display for Sajdeh {
     }
 }
 
-impl Sajdeh {
+impl Sajdah {
     pub fn from_option_string(value: Option<String>) -> Option<Self> {
         let value = value?;
 
@@ -52,7 +52,7 @@ pub struct AyahWithContent {
     mushaf: Uuid,
     surah: Uuid,
     ayah_number: i32,
-    sajdeh: Option<Sajdeh>,
+    sajdah: Option<Sajdah>,
     text: String,
     words: Vec<SimpleWord>,
 }
@@ -60,7 +60,7 @@ pub struct AyahWithContent {
 #[derive(Serialize, Deserialize)]
 pub struct SimpleAyah {
     pub ayah_number: i32,
-    pub sajdeh: Option<Sajdeh>,
+    pub sajdah: Option<Sajdah>,
 }
 
 #[derive(Deserialize)]

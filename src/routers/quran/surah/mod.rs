@@ -4,10 +4,7 @@ pub mod surah_edit;
 pub mod surah_list;
 pub mod surah_view;
 
-use crate::{
-    filter::{Filters, Order},
-    models::QuranWord,
-};
+use crate::filter::{Filters, Order};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -25,28 +22,34 @@ impl Default for Format {
     }
 }
 
-/// Quran text type
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "lowercase")]
-pub enum AyahTextType {
-    Words(Vec<QuranWord>),
-    Text(String),
-}
-
 /// The Ayah type that will return in the response
 #[derive(PartialOrd, Ord, Eq, Hash, PartialEq, Serialize, Clone, Debug)]
 pub struct SimpleAyah {
     number: i32,
     uuid: Uuid,
-    sajdeh: Option<String>,
+    sajdah: Option<String>,
 }
 
 /// it contains ayah info and the content
 #[derive(Serialize, Clone, Debug)]
-pub struct Ayah {
+pub struct AyahWithText {
     #[serde(flatten)]
     ayah: SimpleAyah,
-    content: AyahTextType,
+    text: String,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub struct AyahWithWords {
+    #[serde(flatten)]
+    ayah: SimpleAyah,
+    words: Vec<String>,
+}
+
+#[derive(Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum AyahTy {
+    Text(AyahWithText),
+    Words(AyahWithWords),
 }
 
 /// The final response body
@@ -54,7 +57,7 @@ pub struct Ayah {
 pub struct QuranResponseData {
     #[serde(flatten)]
     surah: SingleSurahResponse,
-    ayahs: Vec<Ayah>,
+    ayahs: Vec<AyahTy>,
 }
 
 /// the query for the /surah/{uuid}
