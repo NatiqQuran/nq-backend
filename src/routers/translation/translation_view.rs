@@ -1,6 +1,6 @@
 use crate::error::RouterError;
 use crate::models::Translation;
-use crate::{DbPool, TranslationAyah, TranslationStatus, ViewableTranslation};
+use crate::{DbPool, TranslationAyah, TranslationStatus, TranslatorData, ViewableTranslation};
 use ::uuid::Uuid;
 use actix_web::web;
 use diesel::{prelude::*, query_dsl::boxed_dsl::BoxedDsl};
@@ -18,7 +18,11 @@ pub async fn translation_view(
     web::Query(query): web::Query<TranslationViewQuery>,
 ) -> Result<web::Json<ViewableTranslation>, RouterError> {
     use crate::schema::app_accounts::dsl::{
-        app_accounts, id as account_table_id, uuid as account_uuid,
+        app_accounts, id as account_table_id, username as acc_username, uuid as account_uuid,
+    };
+    use crate::schema::app_user_names::dsl::{
+        app_user_names, first_name as user_first_name, last_name as user_last_name,
+        primary_name as user_primary_name,
     };
     use crate::schema::mushafs::dsl::{id as mushaf_table_id, mushafs, uuid as mushaf_table_uuid};
     use crate::schema::quran_ayahs::dsl::{ayah_number, quran_ayahs, uuid as ayah_uuid};
@@ -46,10 +50,17 @@ pub async fn translation_view(
             .select(mushaf_table_uuid)
             .get_result(&mut conn)?;
 
-        let translator_account_uuid: Uuid = app_accounts
+        let translator = app_accounts
+            .left_join(app_user_names)
             .filter(account_table_id.eq(translation.translator_account_id))
-            .select(account_uuid)
-            .get_result(&mut conn)?;
+            .filter(user_primary_name.eq(true).or(user_primary_name.is_null()))
+            .select((
+                account_uuid,
+                acc_username,
+                user_first_name.nullable(),
+                user_last_name.nullable(),
+            ))
+            .get_result::<(Uuid, String, Option<String>, Option<String>)>(&mut conn)?;
 
         let mut ayahs = quran_surahs
             .inner_join(quran_ayahs.left_outer_join(translations_text))
@@ -66,6 +77,7 @@ pub async fn translation_view(
                     .eq(translation.id)
                     .or(translation_id.is_null()),
             )
+            .order(ayah_number.asc())
             .select((
                 translation_text.nullable(),
                 ayah_uuid,
@@ -102,7 +114,13 @@ pub async fn translation_view(
             language: translation.language,
             release_date: translation.release_date,
             mushaf_uuid,
-            translator_account_uuid,
+            translator: TranslatorData {
+                account_uuid: translator.0,
+                username: translator.1,
+                first_name: translator.2,
+                last_name: translator.3,
+            },
+            bismillah_text: translation.bismillah_text,
         }))
     })
     .await
