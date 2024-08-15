@@ -221,6 +221,7 @@ diesel::table! {
         release_date -> Nullable<Date>,
         source -> Nullable<Varchar>,
         approved -> Bool,
+        bismillah_text -> Text,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }

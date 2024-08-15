@@ -14,6 +14,14 @@ use uuid::Uuid;
 use crate::filter::{Filters, Order};
 
 #[derive(Serialize, Deserialize)]
+pub struct TranslatorData {
+    account_uuid: Uuid,
+    username: String,
+    first_name: Option<String>,
+    last_name: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct SimpleTranslation {
     pub translator_account_uuid: Option<Uuid>,
     pub language: String,
@@ -41,11 +49,12 @@ pub struct TranslationAyah {
 #[derive(Serialize, Deserialize)]
 pub struct ViewableTranslation {
     pub mushaf_uuid: Uuid,
-    pub translator_account_uuid: Uuid,
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
     pub status: TranslationStatus,
+    pub bismillah_text: String,
+    pub translator: TranslatorData,
     pub ayahs: Vec<TranslationAyah>,
 }
 
@@ -55,7 +64,7 @@ pub struct EditableSimpleTranslation {
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
-    pub approved: bool,
+    pub bismillah_text: String,
 }
 
 #[derive(Serialize, Deserialize)]

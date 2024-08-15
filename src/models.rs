@@ -457,6 +457,10 @@ pub struct Translation {
     /// translation content status
     pub approved: bool,
 
+    /// Translated Bissmillah
+    #[serde(skip_serializing)]
+    pub bismillah_text: String,
+
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
     #[serde(skip_serializing)]
