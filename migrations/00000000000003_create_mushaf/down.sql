@@ -1,1 +1,1 @@
-DROP TABLE mushafs;
+DROP TABLE quran_mushafs;
