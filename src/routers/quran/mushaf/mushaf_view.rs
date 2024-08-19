@@ -10,7 +10,7 @@ pub async fn mushaf_view(
     path: web::Path<Uuid>,
     pool: web::Data<DbPool>,
 ) -> Result<web::Json<QuranMushaf>, RouterError> {
-    use crate::schema::mushafs::dsl::{mushafs, uuid as mushaf_uuid};
+    use crate::schema::quran_mushafs::dsl::{quran_mushafs, uuid as mushaf_uuid};
 
     let requested_mushaf_uuid = path.into_inner();
 
@@ -18,11 +18,11 @@ pub async fn mushaf_view(
         let mut conn = pool.get().unwrap();
 
         // Get the single mushaf from the database
-        let quran_mushafs: QuranMushaf = mushafs
+        let result: QuranMushaf = quran_mushafs
             .filter(mushaf_uuid.eq(requested_mushaf_uuid))
             .get_result(&mut conn)?;
 
-        Ok(web::Json(quran_mushafs))
+        Ok(web::Json(result))
     })
     .await
     .unwrap()

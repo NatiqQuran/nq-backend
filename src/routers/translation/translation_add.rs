@@ -12,7 +12,7 @@ pub async fn translation_add(
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_accounts::dsl::{app_accounts, id as account_id, uuid as account_uuid};
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
-    use crate::schema::translations::dsl::translations;
+    use crate::schema::quran_translations::dsl::quran_translations;
 
     let new_translation = new_translation.into_inner();
     let data = data.into_inner();
@@ -45,7 +45,7 @@ pub async fn translation_add(
             language: new_translation.language,
             release_date: new_translation.release_date,
         }
-        .insert_into(translations)
+        .insert_into(quran_translations)
         .execute(&mut conn)?;
 
         Ok("Added")

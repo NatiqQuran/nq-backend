@@ -12,8 +12,6 @@ use async_trait::async_trait;
 use auth_z::{CheckPermission, GetModel, ModelPermission, ParsedPath};
 use diesel::prelude::*;
 
-const ANY_FILTER: char = '*';
-
 #[derive(Debug)]
 /// Request Action
 enum Action {
@@ -74,7 +72,7 @@ impl CheckPermission for AuthZController {
         req_addr: SocketAddr,
         headers: HeaderMap,
         uri: Uri,
-        subject: Option<u32>,
+        account_id: Option<u32>,
         path: ParsedPath,
         method: String,
     ) -> Result<(), Box<dyn ResponseError>> {
@@ -82,8 +80,8 @@ impl CheckPermission for AuthZController {
             app_permission_conditions, name, value,
         };
         use crate::schema::app_permissions::dsl::{
-            action as permission_action, app_permissions, id as permission_id,
-            object as permission_object, subject as permission_subject,
+            account_id as permission_account_id, action as permission_action, app_permissions,
+            id as permission_id, object as permission_object,
         };
 
         let mut error_detail_builder = RouterErrorDetail::builder();
@@ -103,24 +101,17 @@ impl CheckPermission for AuthZController {
             Box::new(RouterError::from_predefined("AUTHZ_PERMISSION_DENIED"));
 
         // these will be moved to the web::block closure
-        let subject_copy = subject;
         let path_copy = path.clone();
 
         let mut conn = self.db_pool.get().unwrap();
         let select_result: Result<(Vec<i32>, Vec<(String, String)>), RouterError> =
             web::block(move || {
-                // Default subject query
-                let subject_query = match subject_copy {
-                    Some(subject) => vec![subject.to_string(), ANY_FILTER.to_string()],
-                    None => vec![ANY_FILTER.to_string()],
-                };
-
                 // Found the requested Action
                 let calculated_action = Action::from_auth_z(&path_copy, method.as_str());
 
                 // Check the permissions and get the conditions
                 let permissions_filter = app_permissions
-                    .filter(permission_subject.eq_any(subject_query))
+                    .filter(permission_account_id.eq(account_id.unwrap() as i32))
                     .filter(permission_object.eq(path_copy.controller.unwrap().clone()))
                     .filter(permission_action.eq::<&str>(calculated_action.into()));
 
@@ -184,7 +175,7 @@ impl CheckPermission for AuthZController {
 
             let attr = model.get_attr(model_attr.clone()).await;
 
-            let inner_subject = subject.map(|id| id.to_string());
+            let inner_subject = account_id.map(|id| id.to_string());
 
             let result = ModelAttribResult::from(model_attr).validate(
                 attr,

@@ -21,12 +21,12 @@ pub async fn translation_text_modify(
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
     use crate::schema::quran_ayahs::dsl::{id as ayah_id, quran_ayahs, uuid as ayah_uuid};
-    use crate::schema::translations::dsl::{
-        id as translation_id, translations, uuid as translation_uuid,
+    use crate::schema::quran_translations::dsl::{
+        id as translation_id, quran_translations, uuid as translation_uuid,
     };
-    use crate::schema::translations_text::dsl::{
-        ayah_id as text_ayah_id, text as text_content, translation_id as text_translation_id,
-        translations_text,
+    use crate::schema::quran_translations_text::dsl::{
+        ayah_id as text_ayah_id, quran_translations_text, text as text_content,
+        translation_id as text_translation_id,
     };
 
     let new_translation_text = new_translation_text.into_inner();
@@ -38,7 +38,7 @@ pub async fn translation_text_modify(
         let mut conn = pool.get().unwrap();
 
         // Get the target translation
-        let translation: i32 = translations
+        let translation: i32 = quran_translations
             .filter(translation_uuid.eq(path))
             .select(translation_id)
             .get_result(&mut conn)?;
@@ -51,7 +51,7 @@ pub async fn translation_text_modify(
 
         // Now check if the translation_text exists
         let text: bool = select(exists(
-            translations_text
+            quran_translations_text
                 .filter(text_ayah_id.eq(ayah))
                 .filter(text_translation_id.eq(translation)),
         ))
@@ -59,7 +59,7 @@ pub async fn translation_text_modify(
 
         if text {
             // This means the translation_text exists, we just need to update it
-            diesel::update(translations_text)
+            diesel::update(quran_translations_text)
                 .filter(text_ayah_id.eq(ayah))
                 .filter(text_translation_id.eq(translation))
                 .set((text_content.eq(new_translation_text.text),))
@@ -80,7 +80,7 @@ pub async fn translation_text_modify(
                 translation_id: translation,
                 ayah_id: ayah,
             }
-            .insert_into(translations_text)
+            .insert_into(quran_translations_text)
             .execute(&mut conn)?;
 
             Ok("Added")

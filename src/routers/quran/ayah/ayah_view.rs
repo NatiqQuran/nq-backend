@@ -1,7 +1,7 @@
 use super::SimpleWord;
 use crate::error::RouterError;
 use crate::models::{QuranAyah, QuranWord};
-use crate::{Sajdah, AyahWithContent, DbPool};
+use crate::{AyahWithContent, DbPool, Sajdah};
 use ::uuid::Uuid;
 use actix_web::web;
 use diesel::prelude::*;
@@ -11,8 +11,8 @@ pub async fn ayah_view(
     path: web::Path<Uuid>,
     pool: web::Data<DbPool>,
 ) -> Result<web::Json<AyahWithContent>, RouterError> {
-    use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, uuid as mushaf_uuid};
     use crate::schema::quran_ayahs::dsl::{quran_ayahs, uuid as ayah_uuid};
+    use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs, uuid as mushaf_uuid};
     use crate::schema::quran_surahs::dsl::{
         id as surah_id, mushaf_id as surah_mushaf_id, quran_surahs, uuid as surah_uuid,
     };
@@ -33,7 +33,7 @@ pub async fn ayah_view(
             .select((surah_uuid, surah_mushaf_id))
             .get_result(&mut conn)?;
 
-        let mushaf: Uuid = mushafs
+        let mushaf: Uuid = quran_mushafs
             .filter(mushaf_id.eq(surah.1))
             .select(mushaf_uuid)
             .get_result(&mut conn)?;

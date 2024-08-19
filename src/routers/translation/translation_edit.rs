@@ -10,9 +10,9 @@ pub async fn translation_edit(
     new_translation: web::Json<EditableSimpleTranslation>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
-    use crate::schema::translations::dsl::{
+    use crate::schema::quran_translations::dsl::{
         bismillah_text as translation_bismillah_text, language as translation_language,
-        release_date as translation_release_date, source as translation_source, translations,
+        quran_translations, release_date as translation_release_date, source as translation_source,
         uuid as translation_uuid,
     };
 
@@ -22,7 +22,7 @@ pub async fn translation_edit(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        diesel::update(translations.filter(translation_uuid.eq(path)))
+        diesel::update(quran_translations.filter(translation_uuid.eq(path)))
             .set((
                 translation_source.eq(new_translation.source),
                 translation_release_date.eq(new_translation.release_date),

@@ -1,4 +1,3 @@
-
 use crate::{error::RouterError, DbPool};
 use actix_web::web;
 use diesel::prelude::*;
@@ -9,14 +8,14 @@ pub async fn translation_delete(
     path: web::Path<Uuid>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
-    use crate::schema::translations::dsl::{translations, uuid as translation_uuid};
+    use crate::schema::quran_translations::dsl::{quran_translations, uuid as translation_uuid};
 
     let path = path.into_inner();
 
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        diesel::delete(translations.filter(translation_uuid.eq(path))).execute(&mut conn)?;
+        diesel::delete(quran_translations.filter(translation_uuid.eq(path))).execute(&mut conn)?;
 
         Ok("Deleted")
     })

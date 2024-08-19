@@ -48,8 +48,10 @@ pub async fn translation_list(
         app_user_names, first_name as user_first_name, last_name as user_last_name,
         primary_name as user_primary_name,
     };
-    use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, short_name as mushaf_short_name};
-    use crate::schema::translations::dsl::{
+    use crate::schema::quran_mushafs::dsl::{
+        id as mushaf_id, quran_mushafs, short_name as mushaf_short_name,
+    };
+    use crate::schema::quran_translations::dsl::{
         language as translation_lang, mushaf_id as translation_mushaf_id,
     };
 
@@ -60,7 +62,7 @@ pub async fn translation_list(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        let mushafid: i32 = mushafs
+        let mushafid: i32 = quran_mushafs
             .filter(mushaf_short_name.eq(query.mushaf.clone()))
             .select(mushaf_id)
             .get_result(&mut conn)?;

@@ -325,7 +325,7 @@ pub struct NewQuranSurah {
 }
 
 #[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Selectable, Debug)]
-#[diesel(table_name = mushafs)]
+#[diesel(table_name = quran_mushafs)]
 pub struct QuranMushaf {
     #[serde(skip_serializing)]
     pub id: i32,
@@ -345,7 +345,7 @@ pub struct QuranMushaf {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = mushafs)]
+#[diesel(table_name = quran_mushafs)]
 pub struct NewQuranMushaf<'a> {
     pub creator_user_id: i32,
     pub short_name: Option<&'a str>,
@@ -356,6 +356,7 @@ pub struct NewQuranMushaf<'a> {
 
 #[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable)]
 #[diesel(table_name = app_permissions)]
+#[diesel(belongs_to(Account))]
 pub struct Permission {
     #[serde(skip_serializing)]
     pub id: i32,
@@ -363,7 +364,7 @@ pub struct Permission {
 
     pub creator_user_id: i32,
 
-    pub subject: String,
+    pub account_id: i32,
     pub object: String,
     pub action: String,
 
@@ -377,7 +378,7 @@ pub struct Permission {
 #[diesel(table_name = app_permissions)]
 pub struct NewPermission<'a> {
     pub creator_user_id: i32,
-    pub subject: &'a String,
+    pub account_id: i32,
     pub object: &'a String,
     pub action: &'a String,
 }
@@ -434,7 +435,7 @@ pub struct NewPermissionCondition {
     Selectable,
     Associations,
 )]
-#[diesel(table_name = translations)]
+#[diesel(table_name = quran_translations)]
 #[diesel(belongs_to(Account, foreign_key = translator_account_id))]
 pub struct Translation {
     #[serde(skip_serializing)]
@@ -468,7 +469,7 @@ pub struct Translation {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = translations)]
+#[diesel(table_name = quran_translations)]
 pub struct NewTranslation {
     pub creator_user_id: i32,
     pub translator_account_id: i32,
@@ -490,7 +491,7 @@ pub struct NewTranslation {
     Selectable,
     QueryableByName,
 )]
-#[diesel(table_name = translations_text)]
+#[diesel(table_name = quran_translations_text)]
 #[diesel(belongs_to(Translation))]
 #[diesel(belongs_to(QuranAyah, foreign_key = ayah_id))]
 pub struct TranslationText {
@@ -516,7 +517,7 @@ pub struct TranslationText {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = translations_text)]
+#[diesel(table_name = quran_translations_text)]
 pub struct NewTranslationText<'a> {
     pub creator_user_id: i32,
     pub translation_id: i32,

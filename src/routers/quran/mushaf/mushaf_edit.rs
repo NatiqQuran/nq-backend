@@ -12,8 +12,8 @@ pub async fn mushaf_edit(
     new_mushaf: web::Json<SimpleMushaf>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
-    use crate::schema::mushafs::dsl::{
-        bismillah_text, mushafs, name as mushaf_name, short_name as mushaf_short_name,
+    use crate::schema::quran_mushafs::dsl::{
+        bismillah_text, quran_mushafs, name as mushaf_name, short_name as mushaf_short_name,
         source as mushaf_source, uuid as mushaf_uuid,
     };
 
@@ -23,7 +23,7 @@ pub async fn mushaf_edit(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
-        diesel::update(mushafs.filter(mushaf_uuid.eq(target_mushaf_uuid)))
+        diesel::update(quran_mushafs.filter(mushaf_uuid.eq(target_mushaf_uuid)))
             .set((
                 mushaf_name.eq(new_mushaf.name),
                 mushaf_short_name.eq(new_mushaf.short_name),

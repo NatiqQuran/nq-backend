@@ -24,15 +24,18 @@ pub async fn translation_view(
         app_user_names, first_name as user_first_name, last_name as user_last_name,
         primary_name as user_primary_name,
     };
-    use crate::schema::mushafs::dsl::{id as mushaf_table_id, mushafs, uuid as mushaf_table_uuid};
     use crate::schema::quran_ayahs::dsl::{ayah_number, quran_ayahs, uuid as ayah_uuid};
+    use crate::schema::quran_mushafs::dsl::{
+        id as mushaf_table_id, quran_mushafs, uuid as mushaf_table_uuid,
+    };
     use crate::schema::quran_surahs::dsl::{
         mushaf_id as surah_mushaf_id, number as surah_number, quran_surahs,
         uuid as surah_table_uuid,
     };
-    use crate::schema::translations::dsl::{translations, uuid as translation_uuid};
-    use crate::schema::translations_text::dsl::{
-        text as translation_text, translation_id, translations_text, uuid as translation_text_uuid,
+    use crate::schema::quran_translations::dsl::{quran_translations, uuid as translation_uuid};
+    use crate::schema::quran_translations_text::dsl::{
+        quran_translations_text, text as translation_text, translation_id,
+        uuid as translation_text_uuid,
     };
 
     let path = path.into_inner();
@@ -41,11 +44,11 @@ pub async fn translation_view(
         let mut conn = pool.get().unwrap();
 
         // Get the single translation from the database
-        let translation: Translation = translations
+        let translation: Translation = quran_translations
             .filter(translation_uuid.eq(path))
             .get_result(&mut conn)?;
 
-        let mushaf_uuid: Uuid = mushafs
+        let mushaf_uuid: Uuid = quran_mushafs
             .filter(mushaf_table_id.eq(translation.mushaf_id))
             .select(mushaf_table_uuid)
             .get_result(&mut conn)?;
@@ -63,7 +66,7 @@ pub async fn translation_view(
             .get_result::<(Uuid, String, Option<String>, Option<String>)>(&mut conn)?;
 
         let mut ayahs = quran_surahs
-            .inner_join(quran_ayahs.left_outer_join(translations_text))
+            .inner_join(quran_ayahs.left_outer_join(quran_translations_text))
             .internal_into_boxed();
 
         if let Some(uuid) = query.surah_uuid {
