@@ -23,12 +23,13 @@ pub async fn edit_permission(
     pool: web::Data<DbPool>,
     data: web::ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
+    use crate::schema::app_accounts::dsl::{app_accounts, id as acc_id, uuid as acc_uuid};
     use crate::schema::app_permission_conditions::dsl::{
         app_permission_conditions, id as condition_id, name as condition_name,
         value as condition_value,
     };
     use crate::schema::app_permissions::dsl::{
-        action, app_permissions, object, subject, uuid as uuid_of_permission,
+        action, app_permissions, object, account_id as permission_account_id, uuid as uuid_of_permission,
     };
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users};
 
@@ -39,10 +40,15 @@ pub async fn edit_permission(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
+        let account: i32 = app_accounts
+            .filter(acc_uuid.eq(new_permission.subject))
+            .select(acc_id)
+            .get_result(&mut conn)?;
+
         let permission: Permission = diesel::update(app_permissions)
             .filter(uuid_of_permission.eq(target_permission))
             .set((
-                subject.eq(new_permission.subject),
+                permission_account_id.eq(account),
                 object.eq(new_permission.object),
                 action.eq(new_permission.action),
             ))

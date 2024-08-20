@@ -11,7 +11,7 @@ pub async fn surah_add(
     data: web::ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
-    use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, uuid as mushaf_uuid};
+    use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs, uuid as mushaf_uuid};
     use crate::schema::quran_surahs::dsl::quran_surahs;
 
     let new_surah = new_surah.into_inner();
@@ -22,14 +22,14 @@ pub async fn surah_add(
 
         // Select the mushaf by uuid
         // and get the mushaf id
-        let mushaf: i32 = mushafs
+        let mushaf: i32 = quran_mushafs
             .filter(mushaf_uuid.eq(new_surah.mushaf_uuid))
             .select(mushaf_id)
             .get_result(&mut conn)?;
 
         // Calculate amount of surahs in mushaf
         let latest_surah_number: i64 = quran_surahs
-            .inner_join(mushafs)
+            .inner_join(quran_mushafs)
             .filter(mushaf_id.eq(mushaf))
             .count()
             .get_result(&mut conn)?;

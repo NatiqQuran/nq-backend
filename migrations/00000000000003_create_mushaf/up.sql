@@ -1,4 +1,4 @@
-CREATE TABLE mushafs (
+CREATE TABLE quran_mushafs (
     id serial NOT NULL,
     uuid uuid DEFAULT uuid_generate_v4 () NOT NULL,
     creator_user_id serial NOT NULL,

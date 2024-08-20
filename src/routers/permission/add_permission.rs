@@ -13,6 +13,7 @@ pub async fn add_permission(
     new_permission: web::Json<NewPermissionData>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
+    use crate::schema::app_accounts::dsl::{app_accounts, id as acc_id, uuid as acc_uuid};
     use crate::schema::app_permission_conditions::dsl::app_permission_conditions;
     use crate::schema::app_permissions::dsl::app_permissions;
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
@@ -23,6 +24,11 @@ pub async fn add_permission(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
+        let account: i32 = app_accounts
+            .filter(acc_uuid.eq(new_permission_data.subject))
+            .select(acc_id)
+            .get_result(&mut conn)?;
+
         let user: i32 = app_users
             .filter(user_acc_id.eq(data as i32))
             .select(user_id)
@@ -31,7 +37,7 @@ pub async fn add_permission(
         // First Insert a brand new Permission
         let new_permission: Permission = NewPermission {
             creator_user_id: user,
-            subject: &new_permission_data.subject,
+            account_id: account,
             object: &new_permission_data.object,
             action: &new_permission_data.action,
         }

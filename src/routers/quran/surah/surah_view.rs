@@ -14,8 +14,8 @@ pub async fn surah_view(
     query: web::Query<GetSurahQuery>,
     pool: web::Data<DbPool>,
 ) -> Result<web::Json<QuranResponseData>, RouterError> {
-    use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs};
     use crate::schema::quran_ayahs::dsl::quran_ayahs;
+    use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs};
     use crate::schema::quran_surahs::dsl::quran_surahs;
     use crate::schema::quran_surahs::dsl::uuid as surah_uuid;
     use crate::schema::quran_words::dsl::quran_words;
@@ -63,7 +63,7 @@ pub async fn surah_view(
             .get_result::<QuranSurah>(&mut conn)?;
 
         // Get the mushaf
-        let mushaf = mushafs
+        let mushaf = quran_mushafs
             .filter(mushaf_id.eq(surah.mushaf_id))
             .get_result::<QuranMushaf>(&mut conn)?;
 

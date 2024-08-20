@@ -100,7 +100,7 @@ diesel::table! {
         id -> Int4,
         uuid -> Uuid,
         creator_user_id -> Int4,
-        subject -> Varchar,
+        account_id -> Int4,
         object -> Varchar,
         action -> Varchar,
         created_at -> Timestamptz,
@@ -156,20 +156,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    mushafs (id) {
-        id -> Int4,
-        uuid -> Uuid,
-        creator_user_id -> Int4,
-        short_name -> Nullable<Varchar>,
-        name -> Nullable<Varchar>,
-        source -> Nullable<Varchar>,
-        bismillah_text -> Nullable<Text>,
-        created_at -> Timestamptz,
-        updated_at -> Timestamptz,
-    }
-}
-
-diesel::table! {
     quran_ayahs (id) {
         id -> Int4,
         uuid -> Uuid,
@@ -177,6 +163,20 @@ diesel::table! {
         surah_id -> Int4,
         ayah_number -> Int4,
         sajdah -> Nullable<Varchar>,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    quran_mushafs (id) {
+        id -> Int4,
+        uuid -> Uuid,
+        creator_user_id -> Int4,
+        short_name -> Nullable<Varchar>,
+        name -> Nullable<Varchar>,
+        source -> Nullable<Varchar>,
+        bismillah_text -> Nullable<Text>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
@@ -199,19 +199,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    quran_words (id) {
-        id -> Int4,
-        uuid -> Uuid,
-        creator_user_id -> Int4,
-        ayah_id -> Int4,
-        word -> Text,
-        created_at -> Timestamptz,
-        updated_at -> Timestamptz,
-    }
-}
-
-diesel::table! {
-    translations (id) {
+    quran_translations (id) {
         id -> Int4,
         uuid -> Uuid,
         mushaf_id -> Int4,
@@ -228,13 +216,25 @@ diesel::table! {
 }
 
 diesel::table! {
-    translations_text (id) {
+    quran_translations_text (id) {
         id -> Int4,
         uuid -> Uuid,
         creator_user_id -> Int4,
         translation_id -> Int4,
         ayah_id -> Int4,
         text -> Text,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    quran_words (id) {
+        id -> Int4,
+        uuid -> Uuid,
+        creator_user_id -> Int4,
+        ayah_id -> Int4,
+        word -> Text,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
@@ -249,24 +249,25 @@ diesel::joinable!(app_organizations -> app_accounts (account_id));
 diesel::joinable!(app_organizations -> app_users (creator_user_id));
 diesel::joinable!(app_permission_conditions -> app_permissions (permission_id));
 diesel::joinable!(app_permission_conditions -> app_users (creator_user_id));
+diesel::joinable!(app_permissions -> app_accounts (account_id));
 diesel::joinable!(app_permissions -> app_users (creator_user_id));
 diesel::joinable!(app_tokens -> app_accounts (account_id));
 diesel::joinable!(app_user_names -> app_accounts (account_id));
 diesel::joinable!(app_user_names -> app_users (creator_user_id));
 diesel::joinable!(app_users -> app_accounts (account_id));
-diesel::joinable!(mushafs -> app_users (creator_user_id));
 diesel::joinable!(quran_ayahs -> app_users (creator_user_id));
 diesel::joinable!(quran_ayahs -> quran_surahs (surah_id));
+diesel::joinable!(quran_mushafs -> app_users (creator_user_id));
 diesel::joinable!(quran_surahs -> app_users (creator_user_id));
-diesel::joinable!(quran_surahs -> mushafs (mushaf_id));
+diesel::joinable!(quran_surahs -> quran_mushafs (mushaf_id));
+diesel::joinable!(quran_translations -> app_accounts (translator_account_id));
+diesel::joinable!(quran_translations -> app_users (creator_user_id));
+diesel::joinable!(quran_translations -> quran_mushafs (mushaf_id));
+diesel::joinable!(quran_translations_text -> app_users (creator_user_id));
+diesel::joinable!(quran_translations_text -> quran_ayahs (ayah_id));
+diesel::joinable!(quran_translations_text -> quran_translations (translation_id));
 diesel::joinable!(quran_words -> app_users (creator_user_id));
 diesel::joinable!(quran_words -> quran_ayahs (ayah_id));
-diesel::joinable!(translations -> app_accounts (translator_account_id));
-diesel::joinable!(translations -> app_users (creator_user_id));
-diesel::joinable!(translations -> mushafs (mushaf_id));
-diesel::joinable!(translations_text -> app_users (creator_user_id));
-diesel::joinable!(translations_text -> quran_ayahs (ayah_id));
-diesel::joinable!(translations_text -> translations (translation_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     app_accounts,
@@ -281,10 +282,10 @@ diesel::allow_tables_to_appear_in_same_query!(
     app_user_names,
     app_users,
     app_verify_codes,
-    mushafs,
     quran_ayahs,
+    quran_mushafs,
     quran_surahs,
+    quran_translations,
+    quran_translations_text,
     quran_words,
-    translations,
-    translations_text,
 );

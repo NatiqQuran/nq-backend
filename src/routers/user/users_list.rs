@@ -26,16 +26,16 @@ pub async fn users_list(
         // this is the best way to make query in this situation
         //
         // good luck if you gonna read this :)
-        let users: Vec<(Uuid, String, User, String, String, String)> = app_users
+        let users: Vec<(Uuid, String, User, Option<String>, Option<String>, Option<String>)> = app_users
             .inner_join(
                 // Join the accounts, emails and user_names
                 // tables together
                 app_accounts
-                    .inner_join(app_emails)
-                    .inner_join(app_user_names),
+                    .left_join(app_emails)
+                    .left_join(app_user_names),
             )
             // We only want the primary user name
-            .filter(primary_name.eq(true))
+            .filter(primary_name.eq(true).or(primary_name.is_null()))
             .select((
                 // select the uuid of account
                 uuid_of_account,
@@ -44,11 +44,11 @@ pub async fn users_list(
                 // The User Model
                 User::as_select(),
                 // User's primary email
-                email_address,
+                email_address.nullable(),
                 // First name from names table
-                f_name,
+                f_name.nullable(),
                 // and last name
-                l_name,
+                l_name.nullable(),
             ))
             .load(&mut conn)?;
 
@@ -60,8 +60,8 @@ pub async fn users_list(
                     email,
                     username,
                     birthday: user.birthday,
-                    last_name: Some(last_name),
-                    first_name: Some(first_name),
+                    last_name,
+                    first_name,
                     profile_image: user.profile_image,
                     language: user.language,
                 },

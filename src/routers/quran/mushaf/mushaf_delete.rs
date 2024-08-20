@@ -9,7 +9,7 @@ pub async fn mushaf_delete(
     path: web::Path<Uuid>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
-    use crate::schema::mushafs::dsl::{mushafs, uuid as mushaf_uuid};
+    use crate::schema::quran_mushafs::dsl::{quran_mushafs, uuid as mushaf_uuid};
 
     let target_mushaf_uuid = path.into_inner();
 
@@ -17,7 +17,8 @@ pub async fn mushaf_delete(
         let mut conn = pool.get().unwrap();
 
         // remove mushaf
-        diesel::delete(mushafs.filter(mushaf_uuid.eq(target_mushaf_uuid))).execute(&mut conn)?;
+        diesel::delete(quran_mushafs.filter(mushaf_uuid.eq(target_mushaf_uuid)))
+            .execute(&mut conn)?;
 
         Ok("Deleted")
     })

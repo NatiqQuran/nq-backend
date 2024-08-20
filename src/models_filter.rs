@@ -1,10 +1,10 @@
 use crate::models::{ErrorLog, QuranAyah, QuranMushaf, QuranSurah, QuranWord, Translation};
 use crate::schema::app_error_logs::BoxedQuery as AppErrorBoxedQuery;
-use crate::schema::mushafs::BoxedQuery as MushafBoxedQuery;
 use crate::schema::quran_ayahs::BoxedQuery as AyahBoxedQuery;
+use crate::schema::quran_mushafs::BoxedQuery as MushafBoxedQuery;
 use crate::schema::quran_surahs::BoxedQuery as SurahBoxedQuery;
+use crate::schema::quran_translations::BoxedQuery as TranslationBoxed;
 use crate::schema::quran_words::BoxedQuery as WordBoxedQuery;
-use crate::schema::translations::BoxedQuery as TranslationBoxed;
 use crate::{
     error::RouterError,
     filter::{Filter, Filters, Order},
@@ -171,25 +171,25 @@ impl Filter for QuranMushaf {
     type Output = Result<MushafBoxedQuery<'static, Pg>, RouterError>;
 
     fn filter(filters: Box<dyn Filters>) -> Self::Output {
-        use crate::schema::mushafs::dsl::*;
+        use crate::schema::quran_mushafs::dsl::*;
 
-        let mut _query = mushafs.into_boxed();
+        let mut _query = quran_mushafs.into_boxed();
 
         _query = match filters.sort() {
             Some(sort_str) => match sort_str.as_str() {
                 "name" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => mushafs.order(name.asc()).internal_into_boxed(),
-                    Order::Desc => mushafs.order(name.desc()).internal_into_boxed(),
+                    Order::Asc => quran_mushafs.order(name.asc()).internal_into_boxed(),
+                    Order::Desc => quran_mushafs.order(name.desc()).internal_into_boxed(),
                 }),
 
                 "createTime" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => mushafs.order(created_at.asc()).internal_into_boxed(),
-                    Order::Desc => mushafs.order(created_at.desc()).internal_into_boxed(),
+                    Order::Asc => quran_mushafs.order(created_at.asc()).internal_into_boxed(),
+                    Order::Desc => quran_mushafs.order(created_at.desc()).internal_into_boxed(),
                 }),
 
                 "updateTime" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => mushafs.order(updated_at.asc()).internal_into_boxed(),
-                    Order::Desc => mushafs.order(updated_at.desc()).internal_into_boxed(),
+                    Order::Asc => quran_mushafs.order(updated_at.asc()).internal_into_boxed(),
+                    Order::Desc => quran_mushafs.order(updated_at.desc()).internal_into_boxed(),
                 }),
 
                 _ => Err(RouterError::from_predefined(
@@ -197,7 +197,7 @@ impl Filter for QuranMushaf {
                 )),
             },
 
-            None => Ok(mushafs.internal_into_boxed().order(created_at.asc())),
+            None => Ok(quran_mushafs.internal_into_boxed().order(created_at.asc())),
         }?;
 
         _query = match filters.to() {
@@ -230,10 +230,10 @@ impl Filter for Translation {
         //use crate::schema::app_user_names::dsl::{
         //    account_id, app_user_names, first_name as user_first_name, last_name as user_last_name,
         //};
-        //use crate::schema::mushafs::dsl::{mushafs, name as mushaf_name};
-        use crate::schema::translations::dsl::*;
+        //use crate::schema::quran_mushafs::dsl::{mushafs, name as mushaf_name};
+        use crate::schema::quran_translations::dsl::*;
 
-        let mut _query = translations
+        let mut _query = quran_translations
             //.inner_join(app_accounts)
             //.left_join(app_user_names.on(account_id.eq(acc_id)))
             .into_boxed();
@@ -241,17 +241,29 @@ impl Filter for Translation {
         _query = match filters.sort() {
             Some(sort_str) => match sort_str.as_str() {
                 "language" => match filters.order().unwrap_or_default() {
-                    Order::Asc => Ok(translations.order(language.asc()).internal_into_boxed()),
-                    Order::Desc => Ok(translations.order(language.desc()).internal_into_boxed()),
+                    Order::Asc => Ok(quran_translations
+                        .order(language.asc())
+                        .internal_into_boxed()),
+                    Order::Desc => Ok(quran_translations
+                        .order(language.desc())
+                        .internal_into_boxed()),
                 },
                 "createTime" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => translations.order(created_at.asc()).internal_into_boxed(),
-                    Order::Desc => translations.order(created_at.desc()).internal_into_boxed(),
+                    Order::Asc => quran_translations
+                        .order(created_at.asc())
+                        .internal_into_boxed(),
+                    Order::Desc => quran_translations
+                        .order(created_at.desc())
+                        .internal_into_boxed(),
                 }),
 
                 "updateTime" => Ok(match filters.order().unwrap_or_default() {
-                    Order::Asc => translations.order(updated_at.asc()).internal_into_boxed(),
-                    Order::Desc => translations.order(updated_at.desc()).internal_into_boxed(),
+                    Order::Asc => quran_translations
+                        .order(updated_at.asc())
+                        .internal_into_boxed(),
+                    Order::Desc => quran_translations
+                        .order(updated_at.desc())
+                        .internal_into_boxed(),
                 }),
 
                 _ => Err(RouterError::from_predefined(
@@ -259,7 +271,7 @@ impl Filter for Translation {
                 )),
             },
 
-            None => Ok(translations.order(language.asc()).into_boxed()),
+            None => Ok(quran_translations.order(language.asc()).into_boxed()),
         }?;
 
         _query = match filters.to() {

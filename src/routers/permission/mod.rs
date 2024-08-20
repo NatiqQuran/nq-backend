@@ -2,7 +2,7 @@ use crate::{
     authz::{Condition, ConditionValueType, ModelAttrib, ModelAttribResult},
     difference::GetKey,
     error::RouterError,
-    models::{Permission, PermissionCondition},
+    models::PermissionCondition,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -15,7 +15,7 @@ pub mod view_permission;
 
 #[derive(Serialize, Deserialize)]
 pub struct NewPermissionData {
-    subject: String,
+    subject: Uuid,
     object: String,
     action: String,
     conditions: Vec<SimpleCondition>,
@@ -57,7 +57,9 @@ impl SimpleCondition {
 
         if value_type != self_value_type {
             // TODO: log this to db
-            return Err(RouterError::from_predefined("PERMISSION_CONDITION_VALUE_NOT_VALID"));
+            return Err(RouterError::from_predefined(
+                "PERMISSION_CONDITION_VALUE_NOT_VALID",
+            ));
         }
 
         Ok(())
@@ -65,25 +67,21 @@ impl SimpleCondition {
 }
 
 #[derive(Serialize, Eq, Ord, Hash, Debug, Clone, PartialEq, PartialOrd)]
+pub struct PermissionAccount {
+    uuid: Option<Uuid>,
+    username: Option<String>,
+    first_name: Option<String>,
+    last_name: Option<String>,
+}
+
+#[derive(Serialize, Eq, Ord, Hash, Debug, Clone, PartialEq, PartialOrd)]
 pub struct SimplePermission {
     #[serde(skip_serializing)]
     id: i32,
     uuid: Uuid,
-    subject: String,
+    account: PermissionAccount,
     object: String,
     action: String,
-}
-
-impl From<Permission> for SimplePermission {
-    fn from(value: Permission) -> Self {
-        Self {
-            id: value.id,
-            uuid: value.uuid,
-            subject: value.subject,
-            object: value.object,
-            action: value.action,
-        }
-    }
 }
 
 #[derive(Debug, Clone, Serialize)]

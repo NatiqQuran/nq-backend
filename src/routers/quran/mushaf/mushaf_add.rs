@@ -13,7 +13,7 @@ pub async fn mushaf_add(
     data: web::ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
-    use crate::schema::mushafs::dsl::mushafs;
+    use crate::schema::quran_mushafs::dsl::quran_mushafs;
 
     let new_mushaf = new_mushaf.into_inner();
     let data = data.into_inner();
@@ -33,7 +33,7 @@ pub async fn mushaf_add(
             source: Some(&new_mushaf.source),
             bismillah_text: new_mushaf.bismillah_text,
         }
-        .insert_into(mushafs)
+        .insert_into(quran_mushafs)
         .execute(&mut conn)?;
 
         Ok("Added")

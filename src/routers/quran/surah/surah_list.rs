@@ -14,7 +14,7 @@ pub async fn surah_list(
     pool: web::Data<DbPool>,
     req: HttpRequest,
 ) -> Result<web::Json<Vec<SurahListResponse>>, RouterError> {
-    use crate::schema::mushafs::dsl::{mushafs, short_name as mushaf_name};
+    use crate::schema::quran_mushafs::dsl::{quran_mushafs, short_name as mushaf_name};
     use crate::schema::quran_surahs::dsl::*;
 
     let query = query.into_inner();
@@ -27,7 +27,7 @@ pub async fn surah_list(
 
         // Select the specific mushaf
         // and check if it exists
-        let mushaf = mushafs
+        let mushaf = quran_mushafs
             .filter(mushaf_name.eq(&query.mushaf))
             .get_result::<QuranMushaf>(&mut conn)?;
 

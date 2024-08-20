@@ -12,10 +12,10 @@ pub async fn surah_edit(
     new_surah: web::Json<SimpleSurah>,
     pool: web::Data<DbPool>,
 ) -> Result<&'static str, RouterError> {
-    use crate::schema::mushafs::dsl::{id as mushaf_id, mushafs, uuid as mushaf_uuid};
+    use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs, uuid as mushaf_uuid};
     use crate::schema::quran_surahs::dsl::{
-        bismillah_status, bismillah_as_first_ayah, mushaf_id as surah_mushaf_id, name, number, period, quran_surahs,
-        uuid as surah_uuid,
+        bismillah_as_first_ayah, bismillah_status, mushaf_id as surah_mushaf_id, name, number,
+        period, quran_surahs, uuid as surah_uuid,
     };
 
     let new_surah = new_surah.into_inner();
@@ -26,7 +26,7 @@ pub async fn surah_edit(
 
         // Select the mushaf by uuid
         // and get the mushaf id
-        let mushaf: i32 = mushafs
+        let mushaf: i32 = quran_mushafs
             .filter(mushaf_uuid.eq(new_surah.mushaf_uuid))
             .select(mushaf_id)
             .get_result(&mut conn)?;

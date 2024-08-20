@@ -1,1 +1,1 @@
-DROP TABLE translations_text;
+DROP TABLE quran_translations_text;
