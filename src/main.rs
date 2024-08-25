@@ -48,6 +48,7 @@ use routers::organization::{add, delete, edit, list, name, view};
 use routers::permission::{
     add_permission, delete_permission, edit_permission, permissions_list, view_permission,
 };
+use routers::phrase::{add_phrase, delete_phrase, edit_phrase, phrase_list, view_phrase};
 use routers::profile::{profile_edit, profile_view};
 use routers::quran::{ayah::*, mushaf::*, surah::*, word::*};
 use routers::translation::*;
@@ -326,6 +327,19 @@ async fn main() -> std::io::Result<()> {
                     .wrap(AuthZ::new(auth_z_controller.clone()))
                     .wrap(TokenAuth::new(user_id_from_token.clone(), true))
                     .route("", web::get().to(errors_list)),
+            )
+            .service(
+                web::scope("/phrase")
+                    .wrap(AuthZ::new(auth_z_controller.clone()))
+                    .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                    .route("", web::get().to(phrase_list::list_phrase))
+                    .route("", web::post().to(add_phrase::add_phrase))
+                    .route("/{language}", web::get().to(view_phrase::view_phrase))
+                    .route("/{language}", web::post().to(edit_phrase::edit_phrase))
+                    .route(
+                        "/{language}",
+                        web::delete().to(delete_phrase::delete_phrase),
+                    ),
             )
     })
     .bind(("0.0.0.0", 8080))?

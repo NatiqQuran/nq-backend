@@ -109,6 +109,28 @@ diesel::table! {
 }
 
 diesel::table! {
+    app_phrase_translations (id) {
+        id -> Int4,
+        uuid -> Uuid,
+        phrase_id -> Int4,
+        text -> Text,
+        language -> Varchar,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    app_phrases (id) {
+        id -> Int4,
+        uuid -> Uuid,
+        phrase -> Text,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
     app_tokens (id) {
         id -> Int4,
         account_id -> Int4,
@@ -251,6 +273,7 @@ diesel::joinable!(app_permission_conditions -> app_permissions (permission_id));
 diesel::joinable!(app_permission_conditions -> app_users (creator_user_id));
 diesel::joinable!(app_permissions -> app_accounts (account_id));
 diesel::joinable!(app_permissions -> app_users (creator_user_id));
+diesel::joinable!(app_phrase_translations -> app_phrases (phrase_id));
 diesel::joinable!(app_tokens -> app_accounts (account_id));
 diesel::joinable!(app_user_names -> app_accounts (account_id));
 diesel::joinable!(app_user_names -> app_users (creator_user_id));
@@ -278,6 +301,8 @@ diesel::allow_tables_to_appear_in_same_query!(
     app_organizations,
     app_permission_conditions,
     app_permissions,
+    app_phrase_translations,
+    app_phrases,
     app_tokens,
     app_user_names,
     app_users,

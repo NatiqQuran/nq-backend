@@ -17,11 +17,10 @@ pub async fn view_phrase(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
+        // TODO: fix nullable bug
         let phrases: Vec<(String, Option<String>)> = app_phrases
             .left_join(app_phrase_translations)
-            .filter(
-                phrase_lang.eq(path.into_inner())
-            )
+            .filter(phrase_lang.eq(path.clone()).or(phrase_lang.is_null()))
             .select((phrase, phrase_translated.nullable()))
             .get_results(&mut conn)?;
 
