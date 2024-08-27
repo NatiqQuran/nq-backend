@@ -57,6 +57,7 @@ pub async fn translation_text_modify(
         ))
         .get_result(&mut conn)?;
 
+        // TODO: use (on conflict do update)
         if text {
             // This means the translation_text exists, we just need to update it
             diesel::update(quran_translations_text)

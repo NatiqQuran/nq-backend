@@ -569,3 +569,63 @@ pub struct NewErrorLog<'a> {
     pub request_body: Option<Vec<u8>>,
     pub request_body_content_type: Option<String>,
 }
+
+#[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable)]
+#[diesel(table_name = app_phrases)]
+pub struct Phrase {
+    #[serde(skip_serializing)]
+    id: i32,
+    uuid: Uuid,
+
+    phrase: String,
+
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = app_phrases)]
+pub struct NewPhrase<'a> {
+    pub phrase: &'a str,
+}
+
+#[derive(
+    Deserialize,
+    Serialize,
+    Clone,
+    Validate,
+    Identifiable,
+    Queryable,
+    Debug,
+    Associations,
+    Selectable,
+    QueryableByName,
+)]
+#[diesel(table_name = app_phrase_translations)]
+#[diesel(belongs_to(Phrase))]
+pub struct PhraseTranslation {
+    #[serde(skip_serializing)]
+    id: i32,
+    uuid: Uuid,
+
+    #[serde(skip_serializing)]
+    phrase_id: i32,
+
+    text: String,
+    language: String,
+
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = app_phrase_translations)]
+pub struct NewPhraseTranslation<'a> {
+    pub phrase_id: i32,
+    pub text: &'a str,
+    pub language: &'a str,
+}

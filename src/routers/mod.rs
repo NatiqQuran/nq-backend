@@ -6,6 +6,7 @@ pub mod permission;
 pub mod translation;
 pub mod profile;
 pub mod error;
+pub mod phrase;
 
 use std::collections::BTreeMap;
 use std::hash::Hash;
