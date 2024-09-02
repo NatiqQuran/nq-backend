@@ -215,6 +215,8 @@ diesel::table! {
         bismillah_status -> Bool,
         bismillah_as_first_ayah -> Bool,
         mushaf_id -> Int4,
+        name_pronunciation -> Nullable<Text>,
+        name_translation_phrase -> Nullable<Text>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }

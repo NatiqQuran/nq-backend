@@ -66,14 +66,16 @@ pub struct QuranResponseData {
 pub struct GetSurahQuery {
     #[serde(default)]
     format: Format,
+
+    lang_code: Option<String>,
 }
 
 /// The query needs the mushaf
 /// for example /surah?mushaf=hafs
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct SurahListQuery {
+    lang_code: Option<String>,
     mushaf: String,
-
     sort: Option<String>,
     order: Option<Order>,
 
@@ -99,15 +101,23 @@ impl Filters for SurahListQuery {
     }
 }
 
+#[derive(Serialize, Clone, Debug)]
+pub struct SurahName {
+    pub arabic: String,
+    pub pronunciation: Option<String>,
+    pub translation_phrase: Option<String>,
+    pub translation: Option<String>,
+}
+
 /// The response type for /surah/{id}
 #[derive(Serialize, Clone, Debug)]
 pub struct SingleSurahResponse {
     pub mushaf_uuid: Uuid,
     pub mushaf_name: Option<String>,
-    pub surah_uuid: Uuid,
-    pub surah_name: String,
-    pub surah_period: Option<String>,
-    pub surah_number: i32,
+    pub uuid: Uuid,
+    pub name: Vec<SurahName>,
+    pub period: Option<String>,
+    pub number: i32,
     pub bismillah_status: bool,
     pub bismillah_as_first_ayah: bool,
     pub bismillah_text: Option<String>,
@@ -118,7 +128,7 @@ pub struct SingleSurahResponse {
 #[derive(Serialize, Clone, Debug)]
 pub struct SurahListResponse {
     pub uuid: Uuid,
-    pub name: String,
+    pub name: Vec<SurahName>,
     pub period: Option<String>,
     pub number: i32,
     pub number_of_ayahs: i64,
@@ -129,6 +139,8 @@ pub struct SurahListResponse {
 #[derive(Serialize, Clone, Debug, Deserialize)]
 pub struct SimpleSurah {
     pub name: String,
+    pub name_pronunciation: Option<String>,
+    pub name_translation_phrase: Option<String>,
     pub period: Option<String>,
     pub number: i32,
     pub bismillah_status: bool,

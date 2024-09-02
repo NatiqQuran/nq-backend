@@ -306,6 +306,9 @@ pub struct QuranSurah {
     pub bismillah_as_first_ayah: bool,
     pub mushaf_id: i32,
 
+    pub name_pronunciation: Option<String>,
+    pub name_translation_phrase: Option<String>,
+
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
     #[serde(skip_serializing)]
@@ -322,6 +325,8 @@ pub struct NewQuranSurah {
     pub bismillah_status: bool,
     pub bismillah_as_first_ayah: bool,
     pub mushaf_id: i32,
+    pub name_pronunciation: Option<String>,
+    pub name_translation_phrase: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Selectable, Debug)]

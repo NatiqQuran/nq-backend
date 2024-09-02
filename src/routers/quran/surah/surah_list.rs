@@ -3,6 +3,7 @@ use crate::error::RouterErrorDetailBuilder;
 use crate::filter::Filter;
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah};
 use crate::schema::quran_ayahs::surah_id;
+use crate::SurahName;
 use crate::{error::RouterError, DbPool};
 use actix_web::{web, HttpRequest};
 use diesel::dsl::count;
@@ -14,6 +15,10 @@ pub async fn surah_list(
     pool: web::Data<DbPool>,
     req: HttpRequest,
 ) -> Result<web::Json<Vec<SurahListResponse>>, RouterError> {
+    use crate::schema::app_phrase_translations::dsl::{
+        app_phrase_translations, language as p_t_lang, text as p_t_text,
+    };
+    use crate::schema::app_phrases::dsl::{app_phrases, phrase as p_phrase};
     use crate::schema::quran_mushafs::dsl::{quran_mushafs, short_name as mushaf_name};
     use crate::schema::quran_surahs::dsl::*;
 
@@ -31,7 +36,7 @@ pub async fn surah_list(
             .filter(mushaf_name.eq(&query.mushaf))
             .get_result::<QuranMushaf>(&mut conn)?;
 
-        let filtered_surahs = match QuranSurah::filter(Box::from(query)) {
+        let filtered_surahs = match QuranSurah::filter(Box::from(query.clone())) {
             Ok(filtred) => filtred,
             Err(err) => return Err(err.log_to_db(pool, error_detail)),
         };
@@ -58,12 +63,39 @@ pub async fn surah_list(
         let surahs = surahs
             .into_iter()
             .zip(ayahs)
-            .map(|(surah, number_of_ayahs)| SurahListResponse {
-                uuid: surah.uuid,
-                name: surah.name,
-                number: surah.number,
-                period: surah.period,
-                number_of_ayahs,
+            .map(|(surah, number_of_ayahs)| {
+                let translation = if let Some(ref phrase) = surah.name_translation_phrase {
+                    let mut p = app_phrases.left_join(app_phrase_translations).into_boxed();
+
+                    if let Some(ref l) = query.lang_code{
+                        p = p.filter(p_t_lang.eq(l));
+                    } else {
+                        p = p.filter(p_t_lang.eq("en"));
+                    }
+
+                    let result = p
+                        .filter(p_phrase.eq(phrase))
+                        .select(p_t_text.nullable())
+                        .get_result(&mut conn)
+                        .unwrap();
+
+                    result
+                } else {
+                    None
+                };
+
+                SurahListResponse {
+                    uuid: surah.uuid,
+                    name: vec![SurahName {
+                        arabic: surah.name,
+                        translation,
+                        translation_phrase: surah.name_translation_phrase,
+                        pronunciation: surah.name_pronunciation,
+                    }],
+                    number: surah.number,
+                    period: surah.period,
+                    number_of_ayahs,
+                }
             })
             .collect::<Vec<SurahListResponse>>();
 
