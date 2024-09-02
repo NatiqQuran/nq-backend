@@ -29,7 +29,7 @@ pub async fn edit_phrase(
             let exists: bool = diesel::select(exists(
                 app_phrase_translations
                     .filter(phrase_id.eq(p_id))
-                    .filter(t_lang.eq(path.clone()))
+                    .filter(t_lang.eq(path.clone())),
             ))
             .get_result(&mut conn)?;
 

@@ -8,10 +8,13 @@ CREATE TABLE quran_surahs (
     bismillah_status BOOLEAN NOT NULL,
     bismillah_as_first_ayah BOOLEAN NOT NULL,
     mushaf_id serial NOT NULL,
+    name_pronunciation TEXT,
+    name_translation_phrase TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT quran_surahs_id PRIMARY KEY (id),
     CONSTRAINT surah_fk_user_id_rel FOREIGN KEY(creator_user_id) REFERENCES app_users(id),
+    CONSTRAINT surah_fk_name_translation_phrase FOREIGN KEY(name_translation_phrase) REFERENCES app_phrases(phrase),
     CONSTRAINT fk_mushaf_id FOREIGN KEY(mushaf_id) REFERENCES quran_mushafs(id)
         on delete cascade
 );

@@ -1,8 +1,8 @@
 use super::{Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah, QuranWord};
 use crate::routers::multip;
-use crate::AyahTy;
 use crate::{error::RouterError, DbPool};
+use crate::{AyahTy, SurahName};
 use actix_web::web;
 use diesel::prelude::*;
 use std::collections::BTreeMap;
@@ -14,6 +14,10 @@ pub async fn surah_view(
     query: web::Query<GetSurahQuery>,
     pool: web::Data<DbPool>,
 ) -> Result<web::Json<QuranResponseData>, RouterError> {
+    use crate::schema::app_phrase_translations::dsl::{
+        app_phrase_translations, language as p_t_lang, text as p_t_text,
+    };
+    use crate::schema::app_phrases::dsl::{app_phrases, phrase as p_phrase};
     use crate::schema::quran_ayahs::dsl::quran_ayahs;
     use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs};
     use crate::schema::quran_surahs::dsl::quran_surahs;
@@ -73,14 +77,38 @@ pub async fn surah_view(
             mushaf.bismillah_text // this is Option<String>
         };
 
+        let translation = if let Some(ref phrase) = surah.name_translation_phrase {
+            let mut p = app_phrases.left_join(app_phrase_translations).into_boxed();
+
+            if let Some(ref l) = query.lang_code {
+                p = p.filter(p_t_lang.eq(l));
+            } else {
+                p = p.filter(p_t_lang.eq("en"));
+            }
+
+            let result = p
+                .filter(p_phrase.eq(phrase))
+                .select(p_t_text.nullable())
+                .get_result(&mut conn)?;
+
+            result
+        } else {
+            None
+        };
+
         Ok(web::Json(QuranResponseData {
             surah: SingleSurahResponse {
                 mushaf_uuid: mushaf.uuid,
                 mushaf_name: mushaf.name,
-                surah_uuid: surah.uuid,
-                surah_name: surah.name,
-                surah_period: surah.period,
-                surah_number: surah.number,
+                uuid: surah.uuid,
+                name: vec![SurahName {
+                    arabic: surah.name,
+                    translation,
+                    translation_phrase: surah.name_translation_phrase,
+                    pronunciation: surah.name_pronunciation,
+                }],
+                period: surah.period,
+                number: surah.number,
                 bismillah_status: surah.bismillah_status,
                 bismillah_as_first_ayah: surah.bismillah_as_first_ayah,
                 bismillah_text: mushaf_bismillah_text,

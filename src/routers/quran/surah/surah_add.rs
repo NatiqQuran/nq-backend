@@ -1,7 +1,11 @@
+use std::sync::Arc;
+
 use super::SimpleSurah;
+use crate::error::RouterErrorDetail;
 use crate::models::NewQuranSurah;
 use crate::{error::RouterError, DbPool};
 use actix_web::web;
+use diesel::dsl::exists;
 use diesel::prelude::*;
 
 // Add's and new surah
@@ -10,6 +14,7 @@ pub async fn surah_add(
     pool: web::Data<DbPool>,
     data: web::ReqData<u32>,
 ) -> Result<&'static str, RouterError> {
+    use crate::schema::app_phrases::dsl::{app_phrases, phrase as phrase_text};
     use crate::schema::app_users::dsl::{account_id as user_acc_id, app_users, id as user_id};
     use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs, uuid as mushaf_uuid};
     use crate::schema::quran_surahs::dsl::quran_surahs;
@@ -39,6 +44,18 @@ pub async fn surah_add(
             .select(user_id)
             .get_result(&mut conn)?;
 
+        if let Some(ref phrase) = new_surah.name_translation_phrase {
+            let phrase_exists: bool =
+                diesel::select(exists(app_phrases.filter(phrase_text.eq(phrase))))
+                    .get_result(&mut conn)?;
+
+            if !phrase_exists {
+                return Err(RouterError::from_predefined("PHRASE_NOT_FOUND")
+                    // TODO: FIX default
+                    .log_to_db(pool.clone().into_inner(), RouterErrorDetail::default()))?;
+            }
+        }
+
         // Add a new surah
         NewQuranSurah {
             creator_user_id: user,
@@ -48,6 +65,8 @@ pub async fn surah_add(
             mushaf_id: mushaf,
             bismillah_status: new_surah.bismillah_status,
             bismillah_as_first_ayah: new_surah.bismillah_as_first_ayah,
+            name_pronunciation: new_surah.name_pronunciation,
+            name_translation_phrase: new_surah.name_translation_phrase,
         }
         .insert_into(quran_surahs)
         .execute(&mut conn)?;
