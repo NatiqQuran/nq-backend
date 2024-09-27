@@ -309,6 +309,8 @@ pub struct QuranSurah {
     pub name_pronunciation: Option<String>,
     pub name_translation_phrase: Option<String>,
 
+    pub name_transliteration: Option<String>,
+
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
     #[serde(skip_serializing)]
@@ -327,6 +329,7 @@ pub struct NewQuranSurah {
     pub mushaf_id: i32,
     pub name_pronunciation: Option<String>,
     pub name_translation_phrase: Option<String>,
+    pub name_transliteration: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Selectable, Debug)]
@@ -335,6 +338,7 @@ pub struct QuranMushaf {
     #[serde(skip_serializing)]
     pub id: i32,
     pub uuid: Uuid,
+    #[serde(skip_serializing)]
     pub creator_user_id: i32,
 
     pub short_name: Option<String>,
@@ -465,7 +469,7 @@ pub struct Translation {
 
     /// Translated Bissmillah
     #[serde(skip_serializing)]
-    pub bismillah_text: String,
+    pub bismillah: String,
 
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,

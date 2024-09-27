@@ -30,7 +30,7 @@ pub struct TranslationItem {
     pub approved: bool,
 
     /// Translated Bissmillah
-    pub bismillah_text: String,
+    pub bismillah: String,
 
     pub translator: TranslatorData,
 }
@@ -95,7 +95,7 @@ pub async fn translation_list(
                 .map(
                     |(t, a_u, username, first_name, last_name)| TranslationItem {
                         uuid: t.uuid,
-                        bismillah_text: t.bismillah_text,
+                        bismillah: t.bismillah,
                         source: t.source,
                         language: t.language,
                         approved: t.approved,
@@ -126,7 +126,7 @@ pub async fn translation_list(
                 .map(
                     |(t, a_u, username, first_name, last_name)| TranslationItem {
                         uuid: t.uuid,
-                        bismillah_text: t.bismillah_text,
+                        bismillah: t.bismillah,
                         source: t.source,
                         language: t.language,
                         approved: t.approved,

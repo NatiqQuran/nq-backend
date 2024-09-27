@@ -1,7 +1,7 @@
 use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::Filter;
 use crate::models::QuranMushaf;
-use crate::DbPool;
+use crate::{DbPool, MushafListItem};
 use actix_web::{web, HttpRequest};
 use diesel::prelude::*;
 
@@ -12,7 +12,7 @@ pub async fn mushaf_list(
     pool: web::Data<DbPool>,
     web::Query(query): web::Query<MushafListQuery>,
     req: HttpRequest,
-) -> Result<web::Json<Vec<QuranMushaf>>, RouterError> {
+) -> Result<web::Json<Vec<MushafListItem>>, RouterError> {
     let pool = pool.into_inner();
 
     let error_detail = RouterErrorDetailBuilder::from_http_request(&req).build();
@@ -27,7 +27,17 @@ pub async fn mushaf_list(
         }
         .load::<QuranMushaf>(&mut conn)?;
 
-        Ok(web::Json(quran_mushafs))
+        Ok(web::Json(
+            quran_mushafs
+                .into_iter()
+                .map(|m| MushafListItem {
+                    uuid: m.uuid,
+                    name: m.name,
+                    short_name: m.short_name,
+                    source: m.source,
+                })
+                .collect(),
+        ))
     })
     .await
     .unwrap()

@@ -4,9 +4,18 @@ pub mod mushaf_edit;
 pub mod mushaf_list;
 pub mod mushaf_view;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
-use crate::filter::{Order, Filters};
+use crate::filter::{Filters, Order};
+
+#[derive(Serialize)]
+pub struct MushafListItem {
+    pub uuid: Uuid,
+    pub short_name: Option<String>,
+    pub name: Option<String>,
+    pub source: Option<String>,
+}
 
 #[derive(Deserialize)]
 pub struct SimpleMushaf {

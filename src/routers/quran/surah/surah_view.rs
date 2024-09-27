@@ -2,7 +2,7 @@ use super::{Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahRes
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah, QuranWord};
 use crate::routers::multip;
 use crate::{error::RouterError, DbPool};
-use crate::{AyahTy, SurahName};
+use crate::{AyahTy, SingleSurahMushaf, SurahName};
 use actix_web::web;
 use diesel::prelude::*;
 use std::collections::BTreeMap;
@@ -74,7 +74,7 @@ pub async fn surah_view(
         let mushaf_bismillah_text = if surah.bismillah_as_first_ayah {
             None
         } else {
-            mushaf.bismillah_text // this is Option<String>
+            mushaf.bismillah_text.clone() // this is Option<String>
         };
 
         let translation = if let Some(ref phrase) = surah.name_translation_phrase {
@@ -98,14 +98,14 @@ pub async fn surah_view(
 
         Ok(web::Json(QuranResponseData {
             surah: SingleSurahResponse {
-                mushaf_uuid: mushaf.uuid,
-                mushaf_name: mushaf.name,
                 uuid: surah.uuid,
-                name: vec![SurahName {
+                mushaf: SingleSurahMushaf::from(mushaf),
+                names: vec![SurahName {
                     arabic: surah.name,
                     translation,
                     translation_phrase: surah.name_translation_phrase,
                     pronunciation: surah.name_pronunciation,
+                    transliteration: surah.name_transliteration,
                 }],
                 period: surah.period,
                 number: surah.number,

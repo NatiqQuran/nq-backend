@@ -1,6 +1,6 @@
 [package]
 name = "nq-api"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [workspace]
@@ -37,3 +37,4 @@ lettre = { version = "0.10.1", default-features = false, features = [
 validator = { version = "0.16.0", features = ["derive"] }
 diesel_migrations = "2.0.0"
 async-trait = "0.1.68"
+regex = "1.10.6"
