@@ -10,6 +10,7 @@ CREATE TABLE quran_surahs (
     mushaf_id serial NOT NULL,
     name_pronunciation TEXT,
     name_translation_phrase TEXT,
+    name_transliteration TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT quran_surahs_id PRIMARY KEY (id),
