@@ -67,7 +67,7 @@ pub async fn surah_list(
                 let translation = if let Some(ref phrase) = surah.name_translation_phrase {
                     let mut p = app_phrases.left_join(app_phrase_translations).into_boxed();
 
-                    if let Some(ref l) = query.lang_code{
+                    if let Some(ref l) = query.lang_code {
                         p = p.filter(p_t_lang.eq(l));
                     } else {
                         p = p.filter(p_t_lang.eq("en"));
@@ -86,11 +86,12 @@ pub async fn surah_list(
 
                 SurahListResponse {
                     uuid: surah.uuid,
-                    name: vec![SurahName {
+                    names: vec![SurahName {
                         arabic: surah.name,
                         translation,
                         translation_phrase: surah.name_translation_phrase,
                         pronunciation: surah.name_pronunciation,
+                        transliteration: surah.name_transliteration,
                     }],
                     number: surah.number,
                     period: surah.period,

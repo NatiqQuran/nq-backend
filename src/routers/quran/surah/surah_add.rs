@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use super::SimpleSurah;
 use crate::error::RouterErrorDetail;
 use crate::models::NewQuranSurah;
@@ -67,6 +65,7 @@ pub async fn surah_add(
             bismillah_as_first_ayah: new_surah.bismillah_as_first_ayah,
             name_pronunciation: new_surah.name_pronunciation,
             name_translation_phrase: new_surah.name_translation_phrase,
+            name_transliteration: new_surah.name_transliteration,
         }
         .insert_into(quran_surahs)
         .execute(&mut conn)?;

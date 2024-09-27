@@ -4,7 +4,10 @@ pub mod surah_edit;
 pub mod surah_list;
 pub mod surah_view;
 
-use crate::filter::{Filters, Order};
+use crate::{
+    filter::{Filters, Order},
+    models::QuranMushaf,
+};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -107,15 +110,34 @@ pub struct SurahName {
     pub pronunciation: Option<String>,
     pub translation_phrase: Option<String>,
     pub translation: Option<String>,
+    pub transliteration: Option<String>,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub struct SingleSurahMushaf {
+    pub uuid: Uuid,
+    pub short_name: Option<String>,
+    pub name: Option<String>,
+    pub source: Option<String>,
+}
+
+impl From<QuranMushaf> for SingleSurahMushaf {
+    fn from(value: QuranMushaf) -> Self {
+        Self {
+            uuid: value.uuid,
+            short_name: value.short_name,
+            name: value.name,
+            source: value.source,
+        }
+    }
 }
 
 /// The response type for /surah/{id}
 #[derive(Serialize, Clone, Debug)]
 pub struct SingleSurahResponse {
-    pub mushaf_uuid: Uuid,
-    pub mushaf_name: Option<String>,
     pub uuid: Uuid,
-    pub name: Vec<SurahName>,
+    pub mushaf: SingleSurahMushaf,
+    pub names: Vec<SurahName>,
     pub period: Option<String>,
     pub number: i32,
     pub bismillah_status: bool,
@@ -128,10 +150,10 @@ pub struct SingleSurahResponse {
 #[derive(Serialize, Clone, Debug)]
 pub struct SurahListResponse {
     pub uuid: Uuid,
-    pub name: Vec<SurahName>,
-    pub period: Option<String>,
     pub number: i32,
+    pub period: Option<String>,
     pub number_of_ayahs: i64,
+    pub names: Vec<SurahName>,
 }
 
 // TODO: Remove number. number must be generated at api runtime
@@ -141,6 +163,7 @@ pub struct SimpleSurah {
     pub name: String,
     pub name_pronunciation: Option<String>,
     pub name_translation_phrase: Option<String>,
+    pub name_transliteration: Option<String>,
     pub period: Option<String>,
     pub number: i32,
     pub bismillah_status: bool,

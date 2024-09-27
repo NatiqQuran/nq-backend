@@ -53,7 +53,7 @@ pub struct ViewableTranslation {
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
     pub status: TranslationStatus,
-    pub bismillah_text: String,
+    pub bismillah: String,
     pub translator: TranslatorData,
     pub ayahs: Vec<TranslationAyah>,
 }
@@ -64,7 +64,7 @@ pub struct EditableSimpleTranslation {
     pub language: String,
     pub release_date: Option<NaiveDate>,
     pub source: Option<String>,
-    pub bismillah_text: String,
+    pub bismillah: String,
 }
 
 #[derive(Serialize, Deserialize)]

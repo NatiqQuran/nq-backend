@@ -217,6 +217,7 @@ diesel::table! {
         mushaf_id -> Int4,
         name_pronunciation -> Nullable<Text>,
         name_translation_phrase -> Nullable<Text>,
+        name_transliteration -> Nullable<Text>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
@@ -233,7 +234,7 @@ diesel::table! {
         release_date -> Nullable<Date>,
         source -> Nullable<Varchar>,
         approved -> Bool,
-        bismillah_text -> Text,
+        bismillah -> Text,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }

@@ -123,7 +123,7 @@ pub async fn translation_view(
                 first_name: translator.2,
                 last_name: translator.3,
             },
-            bismillah_text: translation.bismillah_text,
+            bismillah: translation.bismillah,
         }))
     })
     .await
