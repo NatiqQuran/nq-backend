@@ -9,7 +9,10 @@ use std::fmt::Display;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::filter::{Filters, Order};
+use crate::{
+    filter::{Filters, Order},
+    Format,
+};
 
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -63,8 +66,11 @@ pub struct SimpleAyah {
     pub sajdah: Option<Sajdah>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct AyahListQuery {
+    mushaf: String,
+    format: Format,
+
     sort: Option<String>,
     order: Option<Order>,
 
