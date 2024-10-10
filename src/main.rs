@@ -1,5 +1,6 @@
 use crate::error::PreDefinedResponseError;
 use actix_cors::Cors;
+use actix_web::web::PathConfig;
 use actix_web::{middleware, web, App, HttpServer};
 use authz::AuthZController;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
@@ -10,7 +11,7 @@ use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool};
 use dotenvy::dotenv;
 use email::EmailManager;
-use error::PreDefinedResponseErrors;
+use error::{path_error_handler, PreDefinedResponseErrors};
 use lettre::transport::smtp::authentication::Credentials;
 use log::LevelFilter;
 use log4rs::append::file::FileAppender;
@@ -150,6 +151,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .wrap(middleware::DefaultHeaders::new().add(("Cache-Control", "no-cache")))
+            .app_data(PathConfig::default().error_handler(path_error_handler))
             .app_data(web::Data::new(pool.clone()))
             .app_data(web::Data::new(mailer.clone()))
             .service(

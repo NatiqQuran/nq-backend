@@ -238,6 +238,7 @@ pub struct QuranAyah {
     #[serde(skip_serializing)]
     pub id: i32,
     pub uuid: Uuid,
+    #[serde(skip_serializing)]
     pub creator_user_id: i32,
 
     #[serde(skip_serializing)]

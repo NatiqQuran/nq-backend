@@ -28,24 +28,24 @@ impl Default for Format {
 /// The Ayah type that will return in the response
 #[derive(PartialOrd, Ord, Eq, Hash, PartialEq, Serialize, Clone, Debug)]
 pub struct SimpleAyah {
-    number: i32,
-    uuid: Uuid,
-    sajdah: Option<String>,
+    pub number: i32,
+    pub uuid: Uuid,
+    pub sajdah: Option<String>,
 }
 
 /// it contains ayah info and the content
 #[derive(Serialize, Clone, Debug)]
 pub struct AyahWithText {
     #[serde(flatten)]
-    ayah: SimpleAyah,
-    text: String,
+    pub ayah: SimpleAyah,
+    pub text: String,
 }
 
 #[derive(Serialize, Clone, Debug)]
 pub struct AyahWithWords {
     #[serde(flatten)]
-    ayah: SimpleAyah,
-    words: Vec<String>,
+    pub ayah: SimpleAyah,
+    pub words: Vec<String>,
 }
 
 #[derive(Serialize, Clone, Debug)]

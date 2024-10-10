@@ -1,5 +1,5 @@
 use actix_web::{
-    error::ResponseError,
+    error::{PathError, ResponseError},
     http::{header::ContentType, StatusCode},
     HttpMessage, HttpRequest, HttpResponse,
 };
@@ -321,4 +321,14 @@ impl From<UuidError> for RouterError {
     fn from(_value: UuidError) -> Self {
         Self::from_predefined("UUID_ERROR")
     }
+}
+
+pub fn path_error_handler(err: PathError, _req: &HttpRequest) -> actix_web::Error {
+    let e = match err {
+        PathError::Deserialize(e) => e.to_string(),
+
+        _ => String::new(),
+    };
+
+    RouterError::from_predefined_with_detail("BAD_PATH", &e).into()
 }
