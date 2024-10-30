@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use actix_web::web;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -30,7 +28,7 @@ pub async fn list_phrase(
             .select((p_t_lang, phrase))
             .get_results(&mut conn)?;
 
-        let multi: BTreeMap<String, Vec<String>> = multip(list, |val| String::from(val));
+        let multi = multip(list, |val| val);
 
         let mut result: Vec<LangWithStatus> = vec![];
 

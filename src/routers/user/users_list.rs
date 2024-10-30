@@ -26,13 +26,11 @@ pub async fn users_list(
         // this is the best way to make query in this situation
         //
         // good luck if you gonna read this :)
-        let users: Vec<(Uuid, String, User, Option<String>, Option<String>, Option<String>)> = app_users
+        let users = app_users
             .inner_join(
                 // Join the accounts, emails and user_names
                 // tables together
-                app_accounts
-                    .left_join(app_emails)
-                    .left_join(app_user_names),
+                app_accounts.left_join(app_emails).left_join(app_user_names),
             )
             // We only want the primary user name
             .filter(primary_name.eq(true).or(primary_name.is_null()))
@@ -50,7 +48,14 @@ pub async fn users_list(
                 // and last name
                 l_name.nullable(),
             ))
-            .load(&mut conn)?;
+            .get_results::<(
+                Uuid,
+                String,
+                User,
+                Option<String>,
+                Option<String>,
+                Option<String>,
+            )>(&mut conn)?;
 
         let users: Vec<FullUserProfile> = users
             .into_iter()

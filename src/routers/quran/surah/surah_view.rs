@@ -1,11 +1,10 @@
 use super::{Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
-use crate::models::{QuranAyah, QuranMushaf, QuranSurah, QuranWord};
+use crate::models::{QuranAyah, QuranMushaf, QuranSurah};
 use crate::routers::multip;
 use crate::{error::RouterError, DbPool};
 use crate::{AyahTy, SingleSurahMushaf, SurahName};
 use actix_web::web;
 use diesel::prelude::*;
-use std::collections::BTreeMap;
 use uuid::Uuid;
 
 /// View Surah
@@ -22,7 +21,7 @@ pub async fn surah_view(
     use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs};
     use crate::schema::quran_surahs::dsl::quran_surahs;
     use crate::schema::quran_surahs::dsl::uuid as surah_uuid;
-    use crate::schema::quran_words::dsl::quran_words;
+    use crate::schema::quran_words::dsl::{quran_words, word as q_word};
 
     let query = query.into_inner();
     let requested_surah_uuid = path.into_inner();
@@ -33,31 +32,23 @@ pub async fn surah_view(
         let result = quran_surahs
             .filter(surah_uuid.eq(requested_surah_uuid))
             .inner_join(quran_ayahs.inner_join(quran_words))
-            .select((QuranAyah::as_select(), QuranWord::as_select()))
-            .load::<(QuranAyah, QuranWord)>(&mut conn)?;
+            .select((QuranAyah::as_select(), q_word))
+            .load::<(QuranAyah, String)>(&mut conn)?;
 
-        let ayahs_as_map: BTreeMap<SimpleAyah, Vec<QuranWord>> =
-            multip(result, |ayah| SimpleAyah {
-                number: ayah.ayah_number,
-                uuid: ayah.uuid,
-                sajdah: ayah.sajdah,
-            });
+        let ayahs_as_map = multip(result, |ayah| SimpleAyah {
+            number: ayah.ayah_number as u32,
+            uuid: ayah.uuid,
+            sajdah: ayah.sajdah,
+        });
 
         let final_ayahs = ayahs_as_map
             .into_iter()
             .map(|(ayah, words)| match query.format {
                 Format::Text => AyahTy::Text(crate::AyahWithText {
                     ayah,
-                    text: words
-                        .into_iter()
-                        .map(|word| word.word)
-                        .collect::<Vec<String>>()
-                        .join(" "),
+                    text: words.join(" "),
                 }),
-                Format::Word => AyahTy::Words(crate::AyahWithWords {
-                    ayah,
-                    words: words.into_iter().map(|word| word.word).collect(),
-                }),
+                Format::Word => AyahTy::Words(crate::AyahWithWords { ayah, words }),
             })
             .collect::<Vec<AyahTy>>();
 
@@ -86,12 +77,9 @@ pub async fn surah_view(
                 p = p.filter(p_t_lang.eq("en"));
             }
 
-            let result = p
-                .filter(p_phrase.eq(phrase))
+            p.filter(p_phrase.eq(phrase))
                 .select(p_t_text.nullable())
-                .get_result(&mut conn)?;
-
-            result
+                .get_result(&mut conn)?
         } else {
             None
         };

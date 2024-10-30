@@ -73,13 +73,10 @@ pub async fn surah_list(
                         p = p.filter(p_t_lang.eq("en"));
                     }
 
-                    let result = p
-                        .filter(p_phrase.eq(phrase))
+                    p.filter(p_phrase.eq(phrase))
                         .select(p_t_text.nullable())
                         .get_result(&mut conn)
-                        .unwrap();
-
-                    result
+                        .unwrap()
                 } else {
                     None
                 };

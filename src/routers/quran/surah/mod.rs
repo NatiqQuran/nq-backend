@@ -4,6 +4,8 @@ pub mod surah_edit;
 pub mod surah_list;
 pub mod surah_view;
 
+use std::hash::Hash;
+
 use crate::{
     filter::{Filters, Order},
     models::QuranMushaf,
@@ -25,10 +27,45 @@ impl Default for Format {
     }
 }
 
+// This is for Surah router
+// which is faster than SimpleAyah in sorting
+#[derive(Eq, Serialize, Clone, Debug)]
+pub struct SimpleAyahSurah {
+    pub number: u32,
+    pub uuid: Uuid,
+    pub sajdah: Option<String>,
+}
+
+// WARNING: Only hashing 'number' ?
+// This can lead to collisions in hashmap if the number is not unique
+impl Hash for SimpleAyahSurah {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.number.hash(state);
+    }
+}
+
+impl Ord for SimpleAyahSurah {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.number.cmp(&other.number)
+    }
+}
+
+impl PartialEq for SimpleAyahSurah {
+    fn eq(&self, other: &Self) -> bool {
+        self.number == other.number
+    }
+}
+
+impl PartialOrd for SimpleAyahSurah {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.number.cmp(&other.number))
+    }
+}
+
 /// The Ayah type that will return in the response
-#[derive(PartialOrd, Ord, Eq, Hash, PartialEq, Serialize, Clone, Debug)]
+#[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug)]
 pub struct SimpleAyah {
-    pub number: i32,
+    pub number: u32,
     pub uuid: Uuid,
     pub sajdah: Option<String>,
 }
