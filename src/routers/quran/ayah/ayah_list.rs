@@ -41,7 +41,7 @@ pub async fn ayah_list(
             .get_results::<(QuranAyah, String)>(&mut conn)?;
 
         let ayahs_as_map = multip(ayahs, |a| SimpleAyah {
-            number: a.ayah_number,
+            number: a.ayah_number as u32,
             uuid: a.uuid,
             sajdah: a.sajdah,
         });
@@ -49,18 +49,11 @@ pub async fn ayah_list(
         let final_ayahs = ayahs_as_map
             .into_iter()
             .map(|(ayah, words)| match query.format {
-                Format::Text => AyahTy::Text(crate::AyahWithText {
+                Some(Format::Text) | None => AyahTy::Text(crate::AyahWithText {
                     ayah,
-                    text: words
-                        .into_iter()
-                        .map(|word| word)
-                        .collect::<Vec<String>>()
-                        .join(" "),
+                    text: words.join(" "),
                 }),
-                Format::Word => AyahTy::Words(crate::AyahWithWords {
-                    ayah,
-                    words: words.into_iter().map(|word| word).collect(),
-                }),
+                Some(Format::Word) => AyahTy::Words(crate::AyahWithWords { ayah, words }),
             })
             .collect::<Vec<AyahTy>>();
 

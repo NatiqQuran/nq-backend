@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use crate::{
     error::RouterError,
     models::{Permission, PermissionCondition},
@@ -11,7 +9,6 @@ use crate::{
 };
 use actix_web::web;
 use diesel::prelude::*;
-use uuid::Uuid;
 
 /// Returns the list of Permissions
 ///
@@ -32,16 +29,7 @@ pub async fn get_list_of_permissions(
         let mut conn = pool.get().unwrap();
 
         // TODO: fix None Condition
-        let permissions_with_conditions: Vec<(
-            (
-                Option<String>,
-                Option<String>,
-                Option<String>,
-                Option<Uuid>,
-                Permission,
-            ),
-            Option<PermissionCondition>,
-        )> = app_permissions
+        let permissions_with_conditions = app_permissions
             .left_join(app_permission_conditions)
             .left_join(app_accounts.left_join(app_user_names))
             .select((
@@ -59,10 +47,7 @@ pub async fn get_list_of_permissions(
             .map(|(un, fname, lname, u, p, pc)| ((un, fname, lname, u, p), pc))
             .collect();
 
-        let permissions_with_conditions_map: BTreeMap<
-            SimplePermission,
-            Vec<Option<PermissionCondition>>,
-        > = multip(permissions_with_conditions, |(un, fname, lname, u, p)| {
+        let permissions_with_conditions_map = multip(permissions_with_conditions, |(un, fname, lname, u, p)| {
             SimplePermission {
                 id: p.id,
                 uuid: p.uuid,
