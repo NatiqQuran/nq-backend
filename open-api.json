@@ -902,22 +902,6 @@
         }
       }
     },
-    "/permission_conditions": {
-      "get": {
-        "description": "Returns the list of all permission conditions",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "tags": ["permission"],
-        "responses": {
-          "200": {
-            "description": "Returns the list of all permission conditions"
-          }
-        }
-      }
-    },
     "/mushaf": {
       "get": {
         "description": "Returns the list of mushafs",
