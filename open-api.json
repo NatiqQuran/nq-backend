@@ -575,6 +575,30 @@
             "description": "Organization with id you specified edited"
           }
         }
+      },
+      "delete": {
+        "description": "Delete a single organization with id you specified",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "account_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["organization"],
+        "responses": {
+          "200": {
+            "description": "The organization with id you specified deleted"
+          }
+        }
       }
     },
     "/organization/name": {
