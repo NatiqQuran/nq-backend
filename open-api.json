@@ -9,7 +9,7 @@
       "url": "https://api.natiq.net"
     }
   ],
-   "components": {
+  "components": {
     "securitySchemes": {
       "ApiKeyAuth": {
         "type": "apiKey",
@@ -20,7 +20,7 @@
   },
   "tags": [
     {
-      "name" : "general",
+      "name": "general",
       "description": "Simple public api's"
     },
     {
@@ -148,6 +148,76 @@
         }
       }
     },
+    "post": {
+      "description": "Create new account",
+      "security": [
+        {
+          "ApiKeyAuth": []
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "description": "The unique username for new profile",
+                  "example": "Abbas123",
+                  "minLength": 6,
+                  "maxLength": 12
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "pattern": "\\.[Ii][Oo]$",
+                  "description": "Unique email for the a account",
+                  "example": "info@natiq.com"
+                },
+                "first_name": {
+                  "type": "string",
+                  "description": "The first name of user",
+                  "example": "Abbas",
+                  "minLength": 1,
+                  "maxLength": 16
+                },
+                "last_name": {
+                  "type": "string",
+                  "description": "The last name of user",
+                  "example": "Mowzoon",
+                  "minLength": 1,
+                  "maxLength": 16
+                },
+                "birthday": {
+                  "type": "string",
+                  "description": "Birthday date of user profile, minDate is 200 years past",
+                  "example": "1988-03-12"
+                },
+                "profile_image": {
+                  "type": "string",
+                  "description": "The url of a profile image",
+                  "example": "https://assets.natiq.com/mahdi-profile-image.jpg"
+                },
+                "language": {
+                  "type": "string",
+                  "description": "User's speaking language.",
+                  "example": "en",
+                  "minLength": 1,
+                  "maxLength": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "tags": ["user"],
+      "responses": {
+        "200": {
+          "description": "New account created"
+        }
+      }
+    },
     "/user/{user_uuid}": {
       "get": {
         "description": "Return's single user profile",
@@ -223,21 +293,21 @@
                   "username": {
                     "type": "string",
                     "description": "The unique username for new profile",
-                    "example": "Mahdi1279",
+                    "example": "Abbas123",
                     "minLength": 6,
                     "maxLength": 12
                   },
                   "first_name": {
                     "type": "string",
                     "description": "The first name of user",
-                    "example": "Mahdi",
+                    "example": "Abbas",
                     "minLength": 1,
                     "maxLength": 16
                   },
                   "last_name": {
                     "type": "string",
                     "description": "The last name of user",
-                    "example": "Mohammadi",
+                    "example": "Mowzoon",
                     "minLength": 1,
                     "maxLength": 16
                   },
@@ -327,6 +397,7 @@
                     "type": "string",
                     "description": "User's speaking language.",
                     "example": "en",
+                    "minLength": 1,
                     "maxLength": 2
                   }
                 }
@@ -502,6 +573,30 @@
         "responses": {
           "200": {
             "description": "Organization with id you specified edited"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a single organization with id you specified",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "account_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["organization"],
+        "responses": {
+          "200": {
+            "description": "The organization with id you specified deleted"
           }
         }
       }
@@ -803,22 +898,6 @@
         "responses": {
           "200": {
             "description": "Permission with id you specified deleted"
-          }
-        }
-      }
-    },
-    "/permission_conditions": {
-      "get": {
-        "description": "Returns the list of all permission conditions",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "tags": ["permission"],
-        "responses": {
-          "200": {
-            "description": "Returns the list of all permission conditions"
           }
         }
       }
@@ -1278,7 +1357,7 @@
                   "sajdeh": {
                     "type": "string",
                     "description": "Ayah have sajdeh or no",
-                    "example": "none | maki | madani"
+                    "example": "vajib | mustahab | null"
                   },
                   "ayah_number": {
                     "type": "number",
@@ -1326,7 +1405,7 @@
           }
         ],
         "parameters": [
-         {
+          {
             "in": "path",
             "required": true,
             "name": "ayah_uuid",
@@ -1349,7 +1428,7 @@
                   "sajdeh": {
                     "type": "string",
                     "description": "Ayah have sajdeh or no",
-                    "example": "none | maki | madani"
+                    "example": "vajib | mustahab | null"
                   },
                   "ayah_number": {
                     "type": "number",
@@ -1412,7 +1491,7 @@
                     "description": "The ayah_uuid",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
-                  "word":{
+                  "word": {
                     "type": "string",
                     "description": "The word text",
                     "example": "الیوم"
