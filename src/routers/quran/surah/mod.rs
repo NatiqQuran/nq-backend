@@ -62,12 +62,19 @@ impl PartialOrd for SimpleAyahSurah {
     }
 }
 
+#[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug, Deserialize)]
+pub struct AyahBismillah {
+    pub is_ayah: bool,
+    pub text: Option<String>,
+}
+
 /// The Ayah type that will return in the response
 #[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug)]
 pub struct SimpleAyah {
     pub number: u32,
     pub uuid: Uuid,
     pub sajdah: Option<String>,
+    pub bismillah: Option<AyahBismillah>,
 }
 
 /// it contains ayah info and the content
@@ -177,10 +184,8 @@ pub struct SingleSurahResponse {
     pub names: Vec<SurahName>,
     pub period: Option<String>,
     pub number: i32,
-    pub bismillah_status: bool,
-    pub bismillah_as_first_ayah: bool,
-    pub bismillah_text: Option<String>,
     pub number_of_ayahs: i64,
+    pub bismillah: Option<AyahBismillah>,
 }
 
 /// The response type for /surah
@@ -203,7 +208,5 @@ pub struct SimpleSurah {
     pub name_transliteration: Option<String>,
     pub period: Option<String>,
     pub number: i32,
-    pub bismillah_status: bool,
-    pub bismillah_as_first_ayah: bool,
     pub mushaf_uuid: Uuid,
 }

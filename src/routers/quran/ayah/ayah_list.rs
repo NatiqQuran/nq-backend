@@ -2,6 +2,7 @@ use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::Filter;
 use crate::models::QuranAyah;
 use crate::routers::multip;
+use crate::AyahBismillah;
 use crate::{
     routers::quran::surah::{AyahTy, Format, SimpleAyah},
     DbPool,
@@ -44,6 +45,18 @@ pub async fn ayah_list(
             number: a.ayah_number as u32,
             uuid: a.uuid,
             sajdah: a.sajdah,
+            bismillah: match (a.is_bismillah, a.bismillah_text) {
+                (true, None) => Some(AyahBismillah {
+                    is_ayah: true,
+                    text: None,
+                }),
+                (false, Some(text)) => Some(AyahBismillah {
+                    is_ayah: false,
+                    text: Some(text),
+                }),
+                (false, None) => None,
+                (_, _) => None,
+            },
         });
 
         let final_ayahs = ayahs_as_map
