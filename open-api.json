@@ -587,7 +587,7 @@
           {
             "in": "path",
             "required": true,
-            "name": "account_uuid",
+            "name": "organization_uuid",
             "schema": {
               "type": "string"
             }
