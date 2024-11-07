@@ -146,75 +146,75 @@
             "description": "Return's the list of users"
           }
         }
-      }
-    },
-    "post": {
-      "description": "Create new account",
-      "security": [
-        {
-          "ApiKeyAuth": []
-        }
-      ],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "username": {
-                  "type": "string",
-                  "description": "The unique username for new profile",
-                  "example": "Abbas123",
-                  "minLength": 6,
-                  "maxLength": 12
-                },
-                "email": {
-                  "type": "string",
-                  "format": "email",
-                  "pattern": "\\.[Ii][Oo]$",
-                  "description": "Unique email for the a account",
-                  "example": "info@natiq.com"
-                },
-                "first_name": {
-                  "type": "string",
-                  "description": "The first name of user",
-                  "example": "Abbas",
-                  "minLength": 1,
-                  "maxLength": 16
-                },
-                "last_name": {
-                  "type": "string",
-                  "description": "The last name of user",
-                  "example": "Mowzoon",
-                  "minLength": 1,
-                  "maxLength": 16
-                },
-                "birthday": {
-                  "type": "string",
-                  "description": "Birthday date of user profile, minDate is 200 years past",
-                  "example": "1988-03-12"
-                },
-                "profile_image": {
-                  "type": "string",
-                  "description": "The url of a profile image",
-                  "example": "https://assets.natiq.com/mahdi-profile-image.jpg"
-                },
-                "language": {
-                  "type": "string",
-                  "description": "User's speaking language.",
-                  "example": "en",
-                  "minLength": 1,
-                  "maxLength": 2
+      },
+      "post": {
+        "description": "Create new account",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "The unique username for new profile",
+                    "example": "Abbas123",
+                    "minLength": 6,
+                    "maxLength": 12
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "pattern": "\\.[Ii][Oo]$",
+                    "description": "Unique email for the a account",
+                    "example": "info@natiq.com"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "description": "The first name of user",
+                    "example": "Abbas",
+                    "minLength": 1,
+                    "maxLength": 16
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "description": "The last name of user",
+                    "example": "Mowzoon",
+                    "minLength": 1,
+                    "maxLength": 16
+                  },
+                  "birthday": {
+                    "type": "string",
+                    "description": "Birthday date of user profile, minDate is 200 years past",
+                    "example": "1988-03-12"
+                  },
+                  "profile_image": {
+                    "type": "string",
+                    "description": "The url of a profile image",
+                    "example": "https://assets.natiq.com/mahdi-profile-image.jpg"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "User's speaking language.",
+                    "example": "en",
+                    "minLength": 1,
+                    "maxLength": 2
+                  }
                 }
               }
             }
           }
-        }
-      },
-      "tags": ["user"],
-      "responses": {
-        "200": {
-          "description": "New account created"
+        },
+        "tags": ["user"],
+        "responses": {
+          "200": {
+            "description": "New account created"
+          }
         }
       }
     },
@@ -308,29 +308,29 @@
             "description": "User full profile edited"
           }
         }
-      }
-    },
-    "delete": {
-      "description": "Delete's single user profile",
-      "security": [
-        {
-          "ApiKeyAuth": []
-        }
-      ],
-      "parameters": [
-        {
-          "in": "path",
-          "required": true,
-          "name": "user_uuid",
-          "schema": {
-            "type": "string"
+      },
+      "delete": {
+        "description": "Delete's single user profile",
+        "security": [
+          {
+            "ApiKeyAuth": []
           }
-        }
-      ],
-      "tags": ["user"],
-      "responses": {
-        "200": {
-          "description": "Deleted"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "user_uuid",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["user"],
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          }
         }
       }
     },
@@ -587,7 +587,7 @@
           {
             "in": "path",
             "required": true,
-            "name": "organization_uuid",
+            "name": "account_uuid",
             "schema": {
               "type": "string"
             }
