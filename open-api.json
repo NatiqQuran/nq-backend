@@ -243,30 +243,6 @@
           }
         }
       },
-      "delete": {
-        "description": "Delete's single user profile",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "required": true,
-            "name": "user_uuid",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "tags": ["user"],
-        "responses": {
-          "200": {
-            "description": "Deleted"
-          }
-        }
-      },
       "post": {
         "description": "Edit the user full profile",
         "security": [
@@ -331,6 +307,30 @@
           "200": {
             "description": "User full profile edited"
           }
+        }
+      }
+    },
+    "delete": {
+      "description": "Delete's single user profile",
+      "security": [
+        {
+          "ApiKeyAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "required": true,
+          "name": "user_uuid",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "tags": ["user"],
+      "responses": {
+        "200": {
+          "description": "Deleted"
         }
       }
     },
