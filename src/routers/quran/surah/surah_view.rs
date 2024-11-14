@@ -4,7 +4,7 @@ use super::{
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah};
 use crate::routers::multip;
 use crate::{error::RouterError, DbPool};
-use crate::{AyahTy, SingleSurahMushaf, SurahName};
+use crate::{AyahTy, SingleSurahMushaf, SurahBismillah, SurahName};
 use actix_web::web;
 use diesel::prelude::*;
 use uuid::Uuid;
@@ -92,14 +92,28 @@ pub async fn surah_view(
             None
         };
 
+        // TODO: remove unwrap.
+        let (first_ayah_text, first_ayah_bismillah) = match final_ayahs.first().unwrap() {
+            AyahTy::Text(a) => (a.text.clone(), a.ayah.bismillah.clone()),
+            AyahTy::Words(a) => (a.words.join(" "), a.ayah.bismillah.clone()),
+        };
+
+        let surah_bismillah = first_ayah_bismillah.and_then(|bismillah| {
+            Some(SurahBismillah {
+                as_first_ayah: bismillah.is_ayah,
+                text: if bismillah.is_ayah {
+                    Some(first_ayah_text)
+                } else {
+                    bismillah.text
+                },
+            })
+        });
+
         Ok(web::Json(QuranResponseData {
             surah: SingleSurahResponse {
                 uuid: surah.uuid,
                 mushaf: SingleSurahMushaf::from(mushaf),
-                bismillah: match final_ayahs.first().unwrap() {
-                    AyahTy::Text(at) => at.ayah.bismillah.clone(),
-                    AyahTy::Words(at) => at.ayah.bismillah.clone(),
-                },
+                bismillah: surah_bismillah,
                 names: vec![SurahName {
                     arabic: surah.name,
                     translation,
