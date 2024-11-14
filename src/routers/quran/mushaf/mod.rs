@@ -22,6 +22,7 @@ pub struct SimpleMushaf {
     short_name: String,
     name: String,
     source: String,
+    bismillah_text: Option<String>,
 }
 
 #[derive(Deserialize)]
