@@ -4,7 +4,6 @@ diesel::table! {
     app_accounts (id) {
         id -> Int4,
         uuid -> Uuid,
-        #[max_length = 30]
         username -> Varchar,
         account_type -> Text,
     }
@@ -39,13 +38,11 @@ diesel::table! {
     app_error_logs (id) {
         id -> Int4,
         uuid -> Uuid,
-        #[max_length = 256]
         error_name -> Varchar,
         status_code -> Int4,
         message -> Text,
         detail -> Nullable<Text>,
         account_id -> Nullable<Int4>,
-        #[max_length = 64]
         request_token -> Nullable<Varchar>,
         request_user_agent -> Nullable<Text>,
         request_ipv4 -> Cidr,
@@ -66,9 +63,7 @@ diesel::table! {
         uuid -> Uuid,
         creator_user_id -> Int4,
         account_id -> Int4,
-        #[max_length = 300]
         name -> Varchar,
-        #[max_length = 8]
         language -> Varchar,
     }
 }
@@ -81,7 +76,6 @@ diesel::table! {
         owner_account_id -> Int4,
         profile_image -> Nullable<Text>,
         established_date -> Date,
-        #[max_length = 11]
         national_id -> Varchar,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
@@ -94,9 +88,7 @@ diesel::table! {
         uuid -> Uuid,
         creator_user_id -> Int4,
         permission_id -> Int4,
-        #[max_length = 450]
         name -> Varchar,
-        #[max_length = 255]
         value -> Varchar,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
@@ -109,9 +101,7 @@ diesel::table! {
         uuid -> Uuid,
         creator_user_id -> Int4,
         account_id -> Int4,
-        #[max_length = 255]
         object -> Varchar,
-        #[max_length = 255]
         action -> Varchar,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
@@ -124,7 +114,6 @@ diesel::table! {
         uuid -> Uuid,
         phrase_id -> Int4,
         text -> Text,
-        #[max_length = 3]
         language -> Varchar,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
@@ -145,7 +134,6 @@ diesel::table! {
     app_tokens (id) {
         id -> Int4,
         account_id -> Int4,
-        #[max_length = 64]
         token_hash -> Varchar,
         terminated -> Bool,
         terminated_by_id -> Int4,
@@ -160,11 +148,8 @@ diesel::table! {
         account_id -> Int4,
         creator_user_id -> Int4,
         primary_name -> Bool,
-        #[max_length = 100]
         first_name -> Varchar,
-        #[max_length = 200]
         last_name -> Varchar,
-        #[max_length = 4]
         language -> Varchar,
     }
 }
@@ -175,7 +160,6 @@ diesel::table! {
         account_id -> Int4,
         birthday -> Nullable<Date>,
         profile_image -> Nullable<Text>,
-        #[max_length = 4]
         language -> Nullable<Varchar>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
@@ -200,10 +184,7 @@ diesel::table! {
         creator_user_id -> Int4,
         surah_id -> Int4,
         ayah_number -> Int4,
-        #[max_length = 20]
         sajdah -> Nullable<Varchar>,
-        is_bismillah -> Bool,
-        bismillah_text -> Nullable<Text>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
@@ -214,12 +195,10 @@ diesel::table! {
         id -> Int4,
         uuid -> Uuid,
         creator_user_id -> Int4,
-        #[max_length = 200]
         short_name -> Nullable<Varchar>,
-        #[max_length = 400]
         name -> Nullable<Varchar>,
-        #[max_length = 300]
         source -> Nullable<Varchar>,
+        bismillah_text -> Nullable<Text>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
@@ -230,11 +209,11 @@ diesel::table! {
         id -> Int4,
         uuid -> Uuid,
         creator_user_id -> Int4,
-        #[max_length = 50]
         name -> Varchar,
-        #[max_length = 50]
         period -> Nullable<Varchar>,
         number -> Int4,
+        bismillah_status -> Bool,
+        bismillah_as_first_ayah -> Bool,
         mushaf_id -> Int4,
         name_pronunciation -> Nullable<Text>,
         name_translation_phrase -> Nullable<Text>,
@@ -251,10 +230,8 @@ diesel::table! {
         mushaf_id -> Int4,
         creator_user_id -> Int4,
         translator_account_id -> Int4,
-        #[max_length = 5]
         language -> Varchar,
         release_date -> Nullable<Date>,
-        #[max_length = 300]
         source -> Nullable<Varchar>,
         approved -> Bool,
         bismillah -> Text,
