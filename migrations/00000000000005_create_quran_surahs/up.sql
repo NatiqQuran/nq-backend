@@ -5,8 +5,6 @@ CREATE TABLE quran_surahs (
     name VARCHAR(50) NOT NULL,
     period VARCHAR(50),
     number serial NOT NULL,
-    bismillah_status BOOLEAN NOT NULL,
-    bismillah_as_first_ayah BOOLEAN NOT NULL,
     mushaf_id serial NOT NULL,
     name_pronunciation TEXT,
     name_translation_phrase TEXT,

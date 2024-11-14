@@ -204,19 +204,24 @@ async fn main() -> std::io::Result<()> {
                             .route(web::delete().to(translation_delete::translation_delete)),
                     )
                     .service(
-                        web::scope("/text").service(
-                            web::resource("/{translation_uuid}")
-                                .wrap(TokenAuth::new(user_id_from_token.clone(), false))
-                                .route(web::get().to(translation_text_view::translation_text_view))
-                                .route(
-                                    web::post()
-                                        .to(translation_text_modify::translation_text_modify),
-                                )
-                                .route(
-                                    web::delete()
-                                        .to(translation_text_delete::translation_text_delete),
-                                ),
-                        ),
+                        web::scope("/text")
+                            .route(
+                                "/{translation_uuid}",
+                                web::get().to(translation_text_view::translation_text_view),
+                            )
+                            .service(
+                                web::resource("/{translation_uuid}")
+                                    .wrap(AuthZ::new(auth_z_controller.clone()))
+                                    .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                                    .route(
+                                        web::post()
+                                            .to(translation_text_modify::translation_text_modify),
+                                    )
+                                    .route(
+                                        web::delete()
+                                            .to(translation_text_delete::translation_text_delete),
+                                    ),
+                            ),
                     ),
             )
             .service(
@@ -332,15 +337,18 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/phrase")
-                    .wrap(AuthZ::new(auth_z_controller.clone()))
-                    .wrap(TokenAuth::new(user_id_from_token.clone(), true))
                     .route("", web::get().to(phrase_list::list_phrase))
-                    .route("", web::post().to(add_phrase::add_phrase))
                     .route("/{language}", web::get().to(view_phrase::view_phrase))
-                    .route("/{language}", web::post().to(edit_phrase::edit_phrase))
-                    .route(
-                        "/{language}",
-                        web::delete().to(delete_phrase::delete_phrase),
+                    .service(
+                        web::scope("")
+                            .wrap(AuthZ::new(auth_z_controller.clone()))
+                            .wrap(TokenAuth::new(user_id_from_token.clone(), true))
+                            .route("", web::post().to(add_phrase::add_phrase))
+                            .route("/{language}", web::post().to(edit_phrase::edit_phrase))
+                            .route(
+                                "/{language}",
+                                web::delete().to(delete_phrase::delete_phrase),
+                            ),
                     ),
             )
     })
