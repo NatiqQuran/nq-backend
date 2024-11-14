@@ -206,6 +206,7 @@ async fn main() -> std::io::Result<()> {
                     .service(
                         web::scope("/text").service(
                             web::resource("/{translation_uuid}")
+                                .wrap(AuthZ::new(auth_z_controller.clone()))
                                 .wrap(TokenAuth::new(user_id_from_token.clone(), false))
                                 .route(web::get().to(translation_text_view::translation_text_view))
                                 .route(

@@ -61,8 +61,6 @@ pub async fn surah_add(
             period: new_surah.period,
             number: (latest_surah_number + 1) as i32,
             mushaf_id: mushaf,
-            bismillah_status: new_surah.bismillah_status,
-            bismillah_as_first_ayah: new_surah.bismillah_as_first_ayah,
             name_pronunciation: new_surah.name_pronunciation,
             name_translation_phrase: new_surah.name_translation_phrase,
             name_transliteration: new_surah.name_transliteration,
