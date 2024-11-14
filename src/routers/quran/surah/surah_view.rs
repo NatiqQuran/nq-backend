@@ -1,4 +1,6 @@
-use super::{Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
+use super::{
+    AyahBismillah, Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse,
+};
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah};
 use crate::routers::multip;
 use crate::{error::RouterError, DbPool};
@@ -39,6 +41,18 @@ pub async fn surah_view(
             number: ayah.ayah_number as u32,
             uuid: ayah.uuid,
             sajdah: ayah.sajdah,
+            bismillah: match (ayah.is_bismillah, ayah.bismillah_text) {
+                (true, None) => Some(AyahBismillah {
+                    is_ayah: true,
+                    text: None,
+                }),
+                (false, Some(text)) => Some(AyahBismillah {
+                    is_ayah: false,
+                    text: Some(text),
+                }),
+                (false, None) => None,
+                (_, _) => None,
+            },
         });
 
         let final_ayahs = ayahs_as_map
@@ -62,12 +76,6 @@ pub async fn surah_view(
             .filter(mushaf_id.eq(surah.mushaf_id))
             .get_result::<QuranMushaf>(&mut conn)?;
 
-        let mushaf_bismillah_text = if surah.bismillah_as_first_ayah {
-            None
-        } else {
-            mushaf.bismillah_text.clone() // this is Option<String>
-        };
-
         let translation = if let Some(ref phrase) = surah.name_translation_phrase {
             let mut p = app_phrases.left_join(app_phrase_translations).into_boxed();
 
@@ -88,6 +96,10 @@ pub async fn surah_view(
             surah: SingleSurahResponse {
                 uuid: surah.uuid,
                 mushaf: SingleSurahMushaf::from(mushaf),
+                bismillah: match final_ayahs.first().unwrap() {
+                    AyahTy::Text(at) => at.ayah.bismillah.clone(),
+                    AyahTy::Words(at) => at.ayah.bismillah.clone(),
+                },
                 names: vec![SurahName {
                     arabic: surah.name,
                     translation,
@@ -97,9 +109,6 @@ pub async fn surah_view(
                 }],
                 period: surah.period,
                 number: surah.number,
-                bismillah_status: surah.bismillah_status,
-                bismillah_as_first_ayah: surah.bismillah_as_first_ayah,
-                bismillah_text: mushaf_bismillah_text,
                 number_of_ayahs: final_ayahs.len() as i64,
             },
             ayahs: final_ayahs,
