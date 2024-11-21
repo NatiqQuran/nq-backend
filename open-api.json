@@ -48,6 +48,10 @@
       "description": "Manage translation"
     },
     {
+      "name": "phrase",
+      "description": "Manage phrase"
+    },
+    {
       "name": "report",
       "description": "Technical reports"
     }
@@ -1923,9 +1927,110 @@
         }
       }
     },
+    "/phrase": {
+      "get": {
+        "description": "View list of phrases",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": ["phrase"],
+        "responses": {
+          "200": {
+            "description": "return the list of all phrase"
+          }
+        }
+      },
+      "post": {
+        "description": "Add new phrase",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": ["phrase"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phrase": {
+                    "type": "string",
+                    "description": "The Quran phrase",
+                    "example": "كتب"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Your phrase added"
+          }
+        }
+      }
+    },
+    "/phrase/{language}": {
+      "get": {
+        "description": "Edit phrase eith id you specified",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "phrase_lang",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["phrase"],
+        "responses": {
+          "200": {
+            "description": "Return the phrase with id you specified"
+          }
+        },
+        "post": {
+          "description": "Edit phrase whit id you specified",
+          "security": [
+            {
+              "ApiKeyAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "required": true,
+              "name": "phrase_lang",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "tags": ["phrase"],
+          "responses": {
+            "200": {
+              "description": "phrase whit id you specified edited/added"
+            }
+          }
+        }
+      }
+    },
     "/error": {
       "get": {
         "description": "View List of errors",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "query",

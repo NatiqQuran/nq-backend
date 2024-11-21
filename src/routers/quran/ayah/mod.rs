@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 use crate::{
     filter::{Filters, Order},
-    AyahBismillah, Format,
+    Format,
 };
 
 #[derive(Deserialize, Serialize)]
@@ -64,7 +64,6 @@ pub struct AyahWithContent {
 pub struct SimpleAyah {
     pub ayah_number: i32,
     pub sajdah: Option<Sajdah>,
-    pub bismillah: Option<AyahBismillah>,
 }
 
 #[derive(Deserialize, Clone)]

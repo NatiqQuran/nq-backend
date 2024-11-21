@@ -246,8 +246,6 @@ pub struct QuranAyah {
 
     pub ayah_number: i32,
     pub sajdah: Option<String>,
-    pub is_bismillah: bool,
-    pub bismillah_text: Option<String>,
 
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
@@ -262,8 +260,6 @@ pub struct NewQuranAyah {
     pub surah_id: i32,
     pub ayah_number: i32,
     pub sajdah: Option<String>,
-    pub is_bismillah: bool,
-    pub bismillah_text: Option<String>,
 }
 
 #[derive(Clone, Selectable, Identifiable, Associations, Queryable, PartialEq, Debug, Serialize)]
@@ -307,6 +303,8 @@ pub struct QuranSurah {
     pub name: String,
     pub period: Option<String>,
     pub number: i32,
+    pub bismillah_status: bool,
+    pub bismillah_as_first_ayah: bool,
     pub mushaf_id: i32,
 
     pub name_pronunciation: Option<String>,
@@ -327,6 +325,8 @@ pub struct NewQuranSurah {
     pub name: String,
     pub period: Option<String>,
     pub number: i32,
+    pub bismillah_status: bool,
+    pub bismillah_as_first_ayah: bool,
     pub mushaf_id: i32,
     pub name_pronunciation: Option<String>,
     pub name_translation_phrase: Option<String>,
@@ -346,6 +346,8 @@ pub struct QuranMushaf {
     pub name: Option<String>,
     pub source: Option<String>,
 
+    pub bismillah_text: Option<String>,
+
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
     #[serde(skip_serializing)]
@@ -359,6 +361,7 @@ pub struct NewQuranMushaf<'a> {
     pub short_name: Option<&'a str>,
     pub name: Option<&'a str>,
     pub source: Option<&'a str>,
+    pub bismillah_text: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable)]
