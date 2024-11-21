@@ -68,13 +68,6 @@ pub struct AyahBismillah {
     pub text: Option<String>,
 }
 
-// This will be returned in /surah/{uuid} router
-#[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug, Deserialize)]
-pub struct SurahBismillah {
-    pub as_first_ayah: bool,
-    pub text: Option<String>,
-}
-
 /// The Ayah type that will return in the response
 #[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug)]
 pub struct SimpleAyah {
@@ -192,7 +185,7 @@ pub struct SingleSurahResponse {
     pub period: Option<String>,
     pub number: i32,
     pub number_of_ayahs: i64,
-    pub bismillah: Option<SurahBismillah>,
+    pub bismillah: Option<AyahBismillah>,
 }
 
 /// The response type for /surah
