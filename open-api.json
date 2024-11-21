@@ -591,7 +591,7 @@
           {
             "in": "path",
             "required": true,
-            "name": "account_uuid",
+            "name": "organization_uuid",
             "schema": {
               "type": "string"
             }
@@ -1779,10 +1779,10 @@
                     "description": "Release day of the translation",
                     "example": "2023-01-01"
                   },
-                  "completed": {
-                    "type": "boolean",
-                    "description": "If the translation is completed",
-                    "example": "true"
+                  "bismillah": {
+                    "type": "string",
+                    "description": "The translation bismillah text",
+                    "example": "بسم الله الرحمن الرحيم"
                   }
                 }
               }
@@ -1985,7 +1985,7 @@
           {
             "in": "path",
             "required": true,
-            "name": "phrase_lang",
+            "name": "language",
             "schema": {
               "type": "string"
             }
@@ -1996,29 +1996,53 @@
           "200": {
             "description": "Return the phrase with id you specified"
           }
-        },
-        "post": {
-          "description": "Edit phrase whit id you specified",
-          "security": [
-            {
-              "ApiKeyAuth": []
+        }
+      },
+      "post": {
+        "description": "Edit phrase whit id you specified",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "language",
+            "schema": {
+              "type": "string"
             }
-          ],
-          "parameters": [
-            {
-              "in": "path",
-              "required": true,
-              "name": "phrase_lang",
-              "schema": {
-                "type": "string"
-              }
+          }
+        ],
+        "tags": ["phrase"],
+        "responses": {
+          "200": {
+            "description": "phrase whit id you specified edited/added"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a single phrase with id you specified",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "language",
+            "schema": {
+              "type": "string"
             }
-          ],
-          "tags": ["phrase"],
-          "responses": {
-            "200": {
-              "description": "phrase whit id you specified edited/added"
-            }
+          }
+        ],
+        "tags": ["phrase"],
+        "responses": {
+          "200": {
+            "description": "Deleted phrase whit ia you specified"
           }
         }
       }
