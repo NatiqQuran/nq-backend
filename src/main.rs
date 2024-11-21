@@ -207,7 +207,7 @@ async fn main() -> std::io::Result<()> {
                         web::scope("/text")
                             .route(
                                 "/{translation_uuid}",
-                                web::get().to(translation_text_view::translation_text_view),
+                                web::get().to(translation_ayah_view::translation_ayah_view),
                             )
                             .service(
                                 web::resource("/{translation_uuid}")
@@ -215,11 +215,11 @@ async fn main() -> std::io::Result<()> {
                                     .wrap(TokenAuth::new(user_id_from_token.clone(), true))
                                     .route(
                                         web::post()
-                                            .to(translation_text_modify::translation_text_modify),
+                                            .to(translation_ayah_modify::translation_ayah_modify),
                                     )
                                     .route(
                                         web::delete()
-                                            .to(translation_text_delete::translation_text_delete),
+                                            .to(translation_ayah_delete::translation_ayah_delete),
                                     ),
                             ),
                     ),
