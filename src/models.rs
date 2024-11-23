@@ -465,10 +465,6 @@ pub struct Translation {
     /// translation content status
     pub approved: bool,
 
-    /// Translated Bissmillah
-    #[serde(skip_serializing)]
-    pub bismillah: String,
-
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
     #[serde(skip_serializing)]
@@ -498,10 +494,10 @@ pub struct NewTranslation {
     Selectable,
     QueryableByName,
 )]
-#[diesel(table_name = quran_translations_text)]
+#[diesel(table_name = quran_translations_ayahs)]
 #[diesel(belongs_to(Translation))]
 #[diesel(belongs_to(QuranAyah, foreign_key = ayah_id))]
-pub struct TranslationText {
+pub struct TranslationAyah {
     #[serde(skip_serializing)]
     pub id: i32,
     pub uuid: Uuid,
@@ -517,6 +513,10 @@ pub struct TranslationText {
 
     pub text: String,
 
+    /// Translated Bissmillah
+    #[serde(skip_serializing)]
+    pub bismillah: Option<String>,
+
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
     #[serde(skip_serializing)]
@@ -524,12 +524,13 @@ pub struct TranslationText {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = quran_translations_text)]
-pub struct NewTranslationText<'a> {
+#[diesel(table_name = quran_translations_ayahs)]
+pub struct NewTranslationAyah<'a> {
     pub creator_user_id: i32,
     pub translation_id: i32,
     pub ayah_id: i32,
     pub text: &'a String,
+    pub bismillah: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Debug, Selectable)]

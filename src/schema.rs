@@ -257,20 +257,20 @@ diesel::table! {
         #[max_length = 300]
         source -> Nullable<Varchar>,
         approved -> Bool,
-        bismillah -> Text,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
 }
 
 diesel::table! {
-    quran_translations_text (id) {
+    quran_translations_ayahs (id) {
         id -> Int4,
         uuid -> Uuid,
         creator_user_id -> Int4,
         translation_id -> Int4,
         ayah_id -> Int4,
         text -> Text,
+        bismillah -> Nullable<Text>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
@@ -312,9 +312,9 @@ diesel::joinable!(quran_surahs -> quran_mushafs (mushaf_id));
 diesel::joinable!(quran_translations -> app_accounts (translator_account_id));
 diesel::joinable!(quran_translations -> app_users (creator_user_id));
 diesel::joinable!(quran_translations -> quran_mushafs (mushaf_id));
-diesel::joinable!(quran_translations_text -> app_users (creator_user_id));
-diesel::joinable!(quran_translations_text -> quran_ayahs (ayah_id));
-diesel::joinable!(quran_translations_text -> quran_translations (translation_id));
+diesel::joinable!(quran_translations_ayahs -> app_users (creator_user_id));
+diesel::joinable!(quran_translations_ayahs -> quran_ayahs (ayah_id));
+diesel::joinable!(quran_translations_ayahs -> quran_translations (translation_id));
 diesel::joinable!(quran_words -> app_users (creator_user_id));
 diesel::joinable!(quran_words -> quran_ayahs (ayah_id));
 
@@ -337,6 +337,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     quran_mushafs,
     quran_surahs,
     quran_translations,
-    quran_translations_text,
+    quran_translations_ayahs,
     quran_words,
 );
