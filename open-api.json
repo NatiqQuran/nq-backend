@@ -209,7 +209,15 @@
                     "minLength": 1,
                     "maxLength": 2
                   }
-                }
+                },
+                "required": [
+                  "username",
+                  "email",
+                  "first_name",
+                  "last_name",
+                  "birthday",
+                  "language"
+                ]
               }
             }
           }
@@ -476,7 +484,13 @@
                     "maxLength": 11,
                     "example": "12345678911"
                   }
-                }
+                },
+                "required": [
+                  "username",
+                  "name",
+                  "established_date",
+                  "national_id"
+                ]
               }
             }
           }
