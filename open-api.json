@@ -983,22 +983,26 @@
                   "short_name": {
                     "type": "string",
                     "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
-                    "example": "hafs"
+                    "example": "hafs",
+                    "nullable": true
                   },
                   "name": {
                     "type": "string",
                     "description": "The mushaf full name",
-                    "example": "hafs from asem"
+                    "example": "hafs from asem",
+                    "nullable": true
                   },
                   "source": {
                     "type": "string",
                     "description": "The mushaf text source",
-                    "example": "tanzil"
+                    "example": "tanzil",
+                    "nullable": true
                   },
-                  "bismillah_text": {
-                    "type": "string",
-                    "description": "The mushaf bismillah text",
-                    "example": "بسم الله الرحمن الرحيم"
+                  "completed": {
+                    "type": "boolean",
+                    "description": "If the translation is completed",
+                    "example": "true OR false",
+                    "nullable": true
                   }
                 }
               }
@@ -1074,9 +1078,11 @@
                   "bismillah_text": {
                     "type": "string",
                     "description": "The mushaf bismillah text",
-                    "example": "بسم الله الرحمن الرحيم"
+                    "example": "بسم الله الرحمن الرحيم",
+                    "nullable": true
                   }
-                }
+                },
+                "required": ["short_name", "name", "source"]
               }
             }
           }
@@ -1952,7 +1958,29 @@
         "tags": ["phrase"],
         "responses": {
           "200": {
-            "description": "return the list of all phrase"
+            "description": "Return the list of all phrases",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "language": {
+                        "type": "string",
+                        "description": "The language code",
+                        "example": "en"
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "The status of the language phrases",
+                        "example": "complete"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -1972,10 +2000,11 @@
                 "properties": {
                   "phrase": {
                     "type": "string",
-                    "description": "The Quran phrase",
+                    "description": "A unique phrase from the Quran to be added to the database.",
                     "example": "كتب"
                   }
-                }
+                },
+                "required": ["phrase"]
               }
             }
           }
@@ -1989,7 +2018,7 @@
     },
     "/phrase/{language}": {
       "get": {
-        "description": "Edit phrase eith id you specified",
+        "description": "Returns a list of phrases and their translations for the specified language code. If a translation is not available for a phrase, it will be returned as null.",
         "security": [
           {
             "ApiKeyAuth": []
@@ -2001,19 +2030,21 @@
             "required": true,
             "name": "language",
             "schema": {
-              "type": "string"
-            }
+              "type": "string",
+              "example": "en"
+            },
+            "description": "The language code (e.g., 'en' for English, 'ar' for Arabic)."
           }
         ],
         "tags": ["phrase"],
         "responses": {
           "200": {
-            "description": "Return the phrase with id you specified"
+            "description": "Return's list of phrases related to language"
           }
         }
       },
       "post": {
-        "description": "Edit phrase whit id you specified",
+        "description": "Edit or add phrases and their translations for the specified language.",
         "security": [
           {
             "ApiKeyAuth": []
@@ -2026,18 +2057,36 @@
             "name": "language",
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "The language code (e.g., 'en' for English, 'ar' for Arabic)."
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "example": {
+                "ٱلصَّلَوٰةَ": "The prayer",
+                "ٱللَّهَ": "God"
+              }
+            }
+          },
+          "description": "A JSON object containing phrases as keys and their translations as values."
+        },
         "tags": ["phrase"],
         "responses": {
           "200": {
-            "description": "phrase whit id you specified edited/added"
+            "description": "Phrases edited or added successfully"
           }
         }
       },
       "delete": {
-        "description": "Delete a single phrase with id you specified",
+        "description": "Delete all phrases related to the specified language code",
         "security": [
           {
             "ApiKeyAuth": []
@@ -2056,7 +2105,7 @@
         "tags": ["phrase"],
         "responses": {
           "200": {
-            "description": "Deleted phrase whit ia you specified"
+            "description": "All phrases related to the language code have been deleted"
           }
         }
       }
