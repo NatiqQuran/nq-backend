@@ -68,6 +68,12 @@ pub struct AyahBismillah {
     pub text: Option<String>,
 }
 
+#[derive(Serialize, Clone, Debug)]
+pub struct AyahBismillahInSurah {
+    pub is_first_ayah: bool,
+    pub text: String,
+}
+
 /// The Ayah type that will return in the response
 #[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug)]
 pub struct SimpleAyah {
@@ -97,6 +103,39 @@ pub struct AyahWithWords {
 pub enum AyahTy {
     Text(AyahWithText),
     Words(AyahWithWords),
+}
+
+impl AyahTy {
+    pub fn format_bismillah_for_surah(&self) -> Option<AyahBismillahInSurah> {
+        match self {
+            AyahTy::Text(at) => at.ayah.bismillah.clone().map(|bismillah| {
+                if bismillah.is_ayah {
+                    AyahBismillahInSurah {
+                        is_first_ayah: true,
+                        text: at.text.clone(),
+                    }
+                } else {
+                    AyahBismillahInSurah {
+                        is_first_ayah: false,
+                        text: bismillah.text.unwrap_or(String::new()),
+                    }
+                }
+            }),
+            AyahTy::Words(at) => at.ayah.bismillah.clone().map(|bismillah| {
+                if bismillah.is_ayah {
+                    AyahBismillahInSurah {
+                        is_first_ayah: true,
+                        text: at.words.join("").clone(),
+                    }
+                } else {
+                    AyahBismillahInSurah {
+                        is_first_ayah: false,
+                        text: bismillah.text.unwrap_or(String::new()),
+                    }
+                }
+            }),
+        }
+    }
 }
 
 /// The final response body
@@ -185,7 +224,7 @@ pub struct SingleSurahResponse {
     pub period: Option<String>,
     pub number: i32,
     pub number_of_ayahs: i64,
-    pub bismillah: Option<AyahBismillah>,
+    pub bismillah: Option<AyahBismillahInSurah>,
 }
 
 /// The response type for /surah

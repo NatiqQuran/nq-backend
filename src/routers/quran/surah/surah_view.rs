@@ -96,10 +96,7 @@ pub async fn surah_view(
             surah: SingleSurahResponse {
                 uuid: surah.uuid,
                 mushaf: SingleSurahMushaf::from(mushaf),
-                bismillah: match final_ayahs.first().unwrap() {
-                    AyahTy::Text(at) => at.ayah.bismillah.clone(),
-                    AyahTy::Words(at) => at.ayah.bismillah.clone(),
-                },
+                bismillah: final_ayahs.first().unwrap().format_bismillah_for_surah(),
                 names: vec![SurahName {
                     arabic: surah.name,
                     translation,
