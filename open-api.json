@@ -1351,6 +1351,56 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "format",
+            "description": "The format of the ayahs.",
+            "schema": {
+              "type": "string",
+              "enum": ["Text", "Word"]
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "sort",
+            "description": "Sort the list by the specified field.",
+            "schema": {
+              "type": "string",
+              "enum": ["number", "createTime", "updateTime"]
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "description": "Order of the sorting.",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "from",
+            "description": "Starting point of the list (pagination).",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "to",
+            "description": "Ending point of the list (pagination).",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "tags": ["quran"],
