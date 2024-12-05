@@ -161,7 +161,6 @@
                       },
                       "email": {
                         "type": "string",
-                        "nullable": true,
                         "description": "Primary email address of the user, if available"
                       },
                       "username": {
@@ -170,28 +169,23 @@
                       },
                       "first_name": {
                         "type": "string",
-                        "nullable": true,
                         "description": "First name of the user, if available"
                       },
                       "last_name": {
                         "type": "string",
-                        "nullable": true,
                         "description": "Last name of the user, if available"
                       },
                       "birthday": {
                         "type": "string",
                         "format": "date",
-                        "nullable": true,
                         "description": "Birthday of the user, if available"
                       },
                       "profile_image": {
                         "type": "string",
-                        "nullable": true,
                         "description": "URL of the user's profile image, if available"
                       },
                       "language": {
                         "type": "string",
-                        "nullable": true,
                         "description": "Preferred language of the user, if available"
                       }
                     },
@@ -1042,26 +1036,22 @@
                   "short_name": {
                     "type": "string",
                     "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
-                    "example": "hafs",
-                    "nullable": true
+                    "example": "hafs"
                   },
                   "name": {
                     "type": "string",
                     "description": "The mushaf full name",
-                    "example": "hafs from asem",
-                    "nullable": true
+                    "example": "hafs from asem"
                   },
                   "source": {
                     "type": "string",
                     "description": "The mushaf text source",
-                    "example": "tanzil",
-                    "nullable": true
+                    "example": "tanzil"
                   },
                   "completed": {
                     "type": "boolean",
                     "description": "If the translation is completed",
-                    "example": "true OR false",
-                    "nullable": true
+                    "example": "true OR false"
                   }
                 }
               }
@@ -1137,8 +1127,7 @@
                   "bismillah_text": {
                     "type": "string",
                     "description": "The mushaf bismillah text",
-                    "example": "بسم الله الرحمن الرحيم",
-                    "nullable": true
+                    "example": "بسم الله الرحمن الرحيم"
                   }
                 },
                 "required": ["short_name", "name", "source"]
