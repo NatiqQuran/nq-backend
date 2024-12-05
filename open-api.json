@@ -1420,7 +1420,7 @@
             "description": "The format of the ayahs.",
             "schema": {
               "type": "string",
-              "enum": ["Text", "Word"]
+              "enum": ["text", "word"]
             }
           },
           {
