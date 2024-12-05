@@ -1297,7 +1297,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": ["text", "Word"],
+              "enum": ["text", "word"],
               "description": "Specifies the format of the response. Options are 'text' or 'word'"
             }
           }
