@@ -138,7 +138,7 @@
     },
     "/user": {
       "get": {
-        "description": "Get users list",
+        "description": "Get the list of all users",
         "security": [
           {
             "ApiKeyAuth": []
@@ -147,7 +147,59 @@
         "tags": ["user"],
         "responses": {
           "200": {
-            "description": "Return's the list of users"
+            "description": "Returns the list of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "uuid": {
+                        "type": "string",
+                        "description": "Unique identifier of the user"
+                      },
+                      "email": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Primary email address of the user, if available"
+                      },
+                      "username": {
+                        "type": "string",
+                        "description": "Username of the user"
+                      },
+                      "first_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "First name of the user, if available"
+                      },
+                      "last_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Last name of the user, if available"
+                      },
+                      "birthday": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true,
+                        "description": "Birthday of the user, if available"
+                      },
+                      "profile_image": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "URL of the user's profile image, if available"
+                      },
+                      "language": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Preferred language of the user, if available"
+                      }
+                    },
+                    "required": ["uuid", "username"]
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -171,7 +223,7 @@
                     "minLength": 6,
                     "maxLength": 12
                   },
-                  "email": {
+                  "primary_email": {
                     "type": "string",
                     "format": "email",
                     "pattern": "\\.[Ii][Oo]$",
@@ -308,8 +360,15 @@
                     "type": "string",
                     "description": "The url of a profile image",
                     "example": "https://assets.natiq.com/mahdi-profile-image.jpg"
+                  },
+                  "primary_email": {
+                    "type": "string",
+
+                    "description": "The primary email of the user",
+                    "example": "natiq@example.com"
                   }
-                }
+                },
+                "required": ["username", "first_name", "last_name"]
               }
             }
           }
