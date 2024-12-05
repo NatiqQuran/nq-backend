@@ -1,4 +1,4 @@
-CREATE TABLE quran_ayah_divide (
+CREATE TABLE quran_ayahs_divide (
     id serial NOT NULL,
     uuid uuid DEFAULT uuid_generate_v4 () NOT NULL,
     creator_user_id serial NOT NULL,
