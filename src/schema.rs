@@ -194,6 +194,19 @@ diesel::table! {
 }
 
 diesel::table! {
+    quran_ayah_divide (id) {
+        id -> Int4,
+        uuid -> Uuid,
+        creator_user_id -> Int4,
+        ayah_id -> Int4,
+        divider_account_id -> Int4,
+        #[sql_name = "type"]
+        #[max_length = 256]
+        type_ -> Varchar,
+    }
+}
+
+diesel::table! {
     quran_ayahs (id) {
         id -> Int4,
         uuid -> Uuid,
@@ -304,6 +317,9 @@ diesel::joinable!(app_tokens -> app_accounts (account_id));
 diesel::joinable!(app_user_names -> app_accounts (account_id));
 diesel::joinable!(app_user_names -> app_users (creator_user_id));
 diesel::joinable!(app_users -> app_accounts (account_id));
+diesel::joinable!(quran_ayah_divide -> app_accounts (divider_account_id));
+diesel::joinable!(quran_ayah_divide -> app_users (creator_user_id));
+diesel::joinable!(quran_ayah_divide -> quran_ayahs (ayah_id));
 diesel::joinable!(quran_ayahs -> app_users (creator_user_id));
 diesel::joinable!(quran_ayahs -> quran_surahs (surah_id));
 diesel::joinable!(quran_mushafs -> app_users (creator_user_id));
@@ -333,6 +349,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     app_user_names,
     app_users,
     app_verify_codes,
+    quran_ayah_divide,
     quran_ayahs,
     quran_mushafs,
     quran_surahs,
