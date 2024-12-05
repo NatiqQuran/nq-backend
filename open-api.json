@@ -1300,6 +1300,16 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["text", "Word"],
+              "description": "Specifies the format of the response. Options are 'text' or 'word'"
+            }
           }
         ],
         "tags": ["quran", "general"],
@@ -1362,7 +1372,8 @@
                     "description": "Determines if bismillah exists and its in the first_ayah content",
                     "example": "false"
                   }
-                }
+                },
+                "required": ["name", "period", "number", "mushaf_id"]
               }
             }
           }
