@@ -138,7 +138,7 @@
     },
     "/user": {
       "get": {
-        "description": "Get users list",
+        "description": "Get the list of all users",
         "security": [
           {
             "ApiKeyAuth": []
@@ -147,7 +147,53 @@
         "tags": ["user"],
         "responses": {
           "200": {
-            "description": "Return's the list of users"
+            "description": "Returns the list of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "uuid": {
+                        "type": "string",
+                        "description": "Unique identifier of the user"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "Primary email address of the user, if available"
+                      },
+                      "username": {
+                        "type": "string",
+                        "description": "Username of the user"
+                      },
+                      "first_name": {
+                        "type": "string",
+                        "description": "First name of the user, if available"
+                      },
+                      "last_name": {
+                        "type": "string",
+                        "description": "Last name of the user, if available"
+                      },
+                      "birthday": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Birthday of the user, if available"
+                      },
+                      "profile_image": {
+                        "type": "string",
+                        "description": "URL of the user's profile image, if available"
+                      },
+                      "language": {
+                        "type": "string",
+                        "description": "Preferred language of the user, if available"
+                      }
+                    },
+                    "required": ["uuid", "username"]
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -171,7 +217,7 @@
                     "minLength": 6,
                     "maxLength": 12
                   },
-                  "email": {
+                  "primary_email": {
                     "type": "string",
                     "format": "email",
                     "pattern": "\\.[Ii][Oo]$",
@@ -308,8 +354,15 @@
                     "type": "string",
                     "description": "The url of a profile image",
                     "example": "https://assets.natiq.com/mahdi-profile-image.jpg"
+                  },
+                  "primary_email": {
+                    "type": "string",
+
+                    "description": "The primary email of the user",
+                    "example": "natiq@example.com"
                   }
-                }
+                },
+                "required": ["username", "first_name", "last_name"]
               }
             }
           }
@@ -983,26 +1036,22 @@
                   "short_name": {
                     "type": "string",
                     "description": "The mushaf short name, Must be one word with only '_' and {'1'..'9'}",
-                    "example": "hafs",
-                    "nullable": true
+                    "example": "hafs"
                   },
                   "name": {
                     "type": "string",
                     "description": "The mushaf full name",
-                    "example": "hafs from asem",
-                    "nullable": true
+                    "example": "hafs from asem"
                   },
                   "source": {
                     "type": "string",
                     "description": "The mushaf text source",
-                    "example": "tanzil",
-                    "nullable": true
+                    "example": "tanzil"
                   },
                   "completed": {
                     "type": "boolean",
                     "description": "If the translation is completed",
-                    "example": "true OR false",
-                    "nullable": true
+                    "example": "true OR false"
                   }
                 }
               }
@@ -1078,8 +1127,7 @@
                   "bismillah_text": {
                     "type": "string",
                     "description": "The mushaf bismillah text",
-                    "example": "بسم الله الرحمن الرحيم",
-                    "nullable": true
+                    "example": "بسم الله الرحمن الرحيم"
                   }
                 },
                 "required": ["short_name", "name", "source"]
@@ -1128,7 +1176,8 @@
             "required": true,
             "name": "mushaf",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "hafs"
             }
           },
           {
@@ -1241,6 +1290,16 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["text", "word"],
+              "description": "Specifies the format of the response. Options are 'text' or 'word'"
+            }
           }
         ],
         "tags": ["quran", "general"],
@@ -1303,7 +1362,8 @@
                     "description": "Determines if bismillah exists and its in the first_ayah content",
                     "example": "false"
                   }
-                }
+                },
+                "required": ["name", "period", "number", "mushaf_id"]
               }
             }
           }
@@ -1349,7 +1409,58 @@
             "required": true,
             "name": "mushaf",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "hafs"
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "format",
+            "description": "The format of the ayahs.",
+            "schema": {
+              "type": "string",
+              "enum": ["text", "word"]
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "sort",
+            "description": "Sort the list by the specified field.",
+            "schema": {
+              "type": "string",
+              "enum": ["number", "createTime", "updateTime"]
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "description": "Order of the sorting.",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "from",
+            "description": "Starting point of the list (pagination).",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "to",
+            "description": "Ending point of the list (pagination).",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
           }
         ],
@@ -1632,7 +1743,8 @@
             "required": true,
             "name": "mushaf",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "hafs"
             }
           },
 
