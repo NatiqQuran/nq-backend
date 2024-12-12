@@ -520,6 +520,13 @@
                     "minLength": 1,
                     "maxLength": 16
                   },
+                  "primary_name": {
+                    "type": "string",
+                    "description": "The primary name for organization",
+                    "example": "github",
+                    "minLength": 1,
+                    "maxLength": 16
+                  },
                   "profile_image": {
                     "type": "string",
                     "description": "The url of a profile image",
@@ -975,6 +982,7 @@
     },
     "/mushaf": {
       "get": {
+        "summary": "Get the list of mushaf",
         "description": "Returns the list of mushafs",
         "parameters": [
           {
@@ -1172,6 +1180,17 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Mushaf not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "NOT_FOUND",
+                  "message": "Not found!."
+                }
+              }
+            }
           }
         }
       },
@@ -1281,62 +1300,147 @@
     },
     "/surah": {
       "get": {
-        "description": "Returns the list of surahs",
+        "summary": "Get the list of surahs",
+        "description": "This endpoint returns a list of surahs based on the provided query parameters.",
         "parameters": [
           {
+            "name": "mushaf",
             "in": "query",
             "required": true,
-            "name": "mushaf",
             "schema": {
               "type": "string",
               "default": "hafs"
-            }
+            },
+            "description": "The mushaf name to filter the surahs."
           },
           {
+            "name": "lang_code",
             "in": "query",
             "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en"
+            },
+            "description": "The language code for surah translations."
+          },
+          {
             "name": "sort",
-            "schema": {
-              "type": "string"
-            }
-          },
-
-          {
             "in": "query",
             "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["name", "number", "createTime", "updateTime"]
+            },
+            "description": "Sorting criteria for the surah list."
+          },
+          {
             "name": "order",
-            "schema": {
-              "type": "string"
-            }
-          },
-
-          {
             "in": "query",
             "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            },
+            "description": "Sort order (ascending or descending)."
+          },
+          {
             "name": "from",
-            "schema": {
-              "type": "number"
-            }
-          },
-
-          {
             "in": "query",
             "required": false,
-            "name": "to",
             "schema": {
-              "type": "number"
-            }
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Start index for pagination."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "End index for pagination."
           }
         ],
         "tags": ["quran", "general"],
         "responses": {
           "200": {
-            "description": "Returns the surahs list"
+            "description": "Successful response containing a list of surahs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Unique identifier for the surah."
+                      },
+                      "number": {
+                        "type": "integer",
+                        "description": "Surah number."
+                      },
+                      "period": {
+                        "type": "string",
+                        "description": "The period of revelation (e.g., Makki or Madani)."
+                      },
+                      "number_of_ayahs": {
+                        "type": "integer",
+                        "description": "The number of ayahs in the surah."
+                      },
+                      "names": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "arabic": {
+                              "type": "string",
+                              "description": "The Arabic name of the surah."
+                            },
+                            "pronunciation": {
+                              "type": "string",
+                              "description": "The way in which a word is pronounced.."
+                            },
+                            "translation_phrase": {
+                              "type": "string",
+                              "description": "A phrase that translates the meaning of the surah."
+                            },
+                            "translation": {
+                              "type": "string",
+                              "description": "Translation of the surah name."
+                            },
+                            "transliteration": {
+                              "type": "string",
+                              "description": "Transliteration of the surah name."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Surah not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "NOT_FOUND",
+                  "message": "Not found!."
+                }
+              }
+            }
           }
         }
       },
       "post": {
-        "description": "Add the new surah",
+        "description": "Add a new surah to the database.",
         "security": [
           {
             "ApiKeyAuth": []
@@ -1350,35 +1454,51 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "The surah name",
+                    "description": "The surah name.",
                     "example": "الفاتحة"
                   },
                   "period": {
                     "type": "string",
-                    "description": "Surah is makki or madani",
+                    "description": "Indicates whether the surah is Makki or Madani.",
                     "example": "makki"
                   },
                   "number": {
                     "type": "number",
-                    "description": "Number of surah",
+                    "description": "The number of the surah in the Mushaf.",
                     "example": 1
                   },
                   "mushaf_id": {
                     "type": "string",
-                    "description": "The mushaf_uuid",
+                    "description": "The UUID of the Mushaf in which the surah belongs.",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
                   "bismillah_status": {
                     "type": "boolean",
-                    "description": "Determines if bismillah exists in surah",
-                    "example": "true"
+                    "description": "Determines whether Bismillah exists in the surah.",
+                    "example": true
                   },
                   "bismillah_as_first_ayah": {
                     "type": "boolean",
-                    "description": "Determines if bismillah exists and its in the first_ayah content",
-                    "example": "false"
+                    "description": "Determines if Bismillah is the first ayah of the surah.",
+                    "example": false
+                  },
+                  "name_translation_phrase": {
+                    "type": "string",
+                    "description": "The translation phrase for the surah name in the desired language.",
+                    "example": "Al-Fatiha"
+                  },
+                  "name_pronunciation": {
+                    "type": "string",
+                    "description": "The pronunciation of the surah name in Arabic.",
+                    "example": "Al-Fatiha"
+                  },
+                  "name_transliteration": {
+                    "type": "string",
+                    "description": "The transliteration of the surah name from Arabic to Latin.",
+                    "example": "Al-Fatiha"
                   }
-                }
+                },
+                "required": ["name", "period", "number", "mushaf_id"]
               }
             }
           }
@@ -1386,7 +1506,14 @@
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "This means new surah added"
+            "description": "The surah has been successfully added to the database.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Added"
+                }
+              }
+            }
           }
         }
       }
@@ -1400,7 +1527,8 @@
             "required": true,
             "name": "surah_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "UUID of the surah"
             }
           },
           {
@@ -1412,12 +1540,206 @@
               "enum": ["text", "word"],
               "description": "Specifies the format of the response. Options are 'text' or 'word'"
             }
+          },
+          {
+            "in": "query",
+            "name": "lang_code",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Language code for the translation. Defaults to 'en' if not provided"
+            }
           }
         ],
         "tags": ["quran", "general"],
         "responses": {
           "200": {
-            "description": "Returns the single surah"
+            "description": "Returns the single surah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "surah": {
+                      "type": "object",
+                      "properties": {
+                        "uuid": {
+                          "type": "string",
+                          "description": "UUID of the surah"
+                        },
+                        "mushaf": {
+                          "type": "object",
+                          "properties": {
+                            "uuid": {
+                              "type": "string",
+                              "description": "UUID of the mushaf"
+                            },
+                            "short_name": {
+                              "type": "string",
+                              "description": "Short name of the mushaf"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Full name of the mushaf"
+                            },
+                            "source": {
+                              "type": "string",
+                              "description": "Source of the mushaf"
+                            }
+                          }
+                        },
+                        "names": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "arabic": {
+                                "type": "string",
+                                "description": "Arabic name of the surah"
+                              },
+                              "translation": {
+                                "type": "string",
+                                "description": "Translation of the surah name"
+                              },
+                              "translation_phrase": {
+                                "type": "string",
+                                "description": "Translation phrase for the surah name"
+                              },
+                              "pronunciation": {
+                                "type": "string",
+                                "description": "Pronunciation of the surah name"
+                              },
+                              "transliteration": {
+                                "type": "string",
+                                "description": "Transliteration of the surah name"
+                              }
+                            }
+                          }
+                        },
+                        "period": {
+                          "type": "string",
+                          "description": "Period of the surah (e.g., Makki or Madani)"
+                        },
+                        "number": {
+                          "type": "integer",
+                          "description": "Surah number"
+                        },
+                        "bismillah_status": {
+                          "type": "boolean",
+                          "description": "Indicates if the surah contains 'Bismillah'"
+                        },
+                        "bismillah_as_first_ayah": {
+                          "type": "boolean",
+                          "description": "Indicates if 'Bismillah' is the first ayah of the surah"
+                        },
+                        "bismillah_text": {
+                          "type": "string",
+                          "description": "Text of 'Bismillah' if it is the first ayah"
+                        },
+                        "number_of_ayahs": {
+                          "type": "integer",
+                          "description": "Number of ayahs in the surah"
+                        }
+                      }
+                    },
+                    "ayahs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "number": {
+                            "type": "integer",
+                            "description": "Ayah number in the surah"
+                          },
+                          "uuid": {
+                            "type": "string",
+                            "description": "UUID of the ayah"
+                          },
+                          "sajdah": {
+                            "type": "boolean",
+                            "description": "Indicates if the ayah has sajdah"
+                          },
+                          "text": {
+                            "type": "string",
+                            "description": "Text of the ayah (if format is 'text')"
+                          },
+                          "words": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "description": "Words of the ayah (if format is 'word')"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "surah": {
+                    "uuid": "ccbd8806-53e8-4658-8281-3aed10b50898",
+                    "mushaf": {
+                      "uuid": "f9339c7a-749a-408e-a03e-a22cd87fe3a1",
+                      "short_name": "hafs",
+                      "name": "Hafs an Asem",
+                      "source": "tanzil"
+                    },
+                    "names": [
+                      {
+                        "arabic": "الفاتحة",
+                        "translation": "The Opening",
+                        "translation_phrase": "Al-Fatiha",
+                        "pronunciation": "Al-Fatiha",
+                        "transliteration": "Al-Fātiḥa"
+                      }
+                    ],
+                    "period": "Makki",
+                    "number": 1,
+                    "bismillah_status": true,
+                    "bismillah_as_first_ayah": true,
+                    "bismillah_text": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
+                    "number_of_ayahs": 7
+                  },
+                  "ayahs": [
+                    {
+                      "number": 1,
+                      "uuid": "a2b23cd4-6f0f-4ecb-b9e0-abe34d928f12",
+                      "sajdah": false,
+                      "text": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
+                      "words": [
+                        "بِسْمِ",
+                        "اللَّهِ",
+                        "الرَّحْمَنِ",
+                        "الرَّحِيمِ"
+                      ]
+                    },
+                    {
+                      "number": 2,
+                      "uuid": "b4c3d5f4-36a8-4e99-aab9-7dba0de3e351",
+                      "sajdah": false,
+                      "text": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+                      "words": [
+                        "الْحَمْدُ",
+                        "لِلَّهِ",
+                        "رَبِّ",
+                        "الْعَالَمِينَ"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Surah not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "NOT_FOUND",
+                  "message": "not found!."
+                }
+              }
+            }
           }
         }
       },
