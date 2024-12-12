@@ -1447,6 +1447,8 @@
           }
         ],
         "requestBody": {
+          "required": true,
+          "description": "Details required to add the surah",
           "content": {
             "application/json": {
               "schema": {
@@ -1744,7 +1746,7 @@
         }
       },
       "post": {
-        "description": "Edit surah with id you specified",
+        "description": "Edit surah with the specified UUID.",
         "security": [
           {
             "ApiKeyAuth": []
@@ -1756,11 +1758,15 @@
             "required": true,
             "name": "surah_uuid",
             "schema": {
-              "type": "string"
-            }
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the surah to edit."
           }
         ],
         "requestBody": {
+          "required": true,
+          "description": "Details required to update the surah",
           "content": {
             "application/json": {
               "schema": {
@@ -1768,36 +1774,58 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "The surah name",
+                    "description": "The surah name in Arabic.",
                     "example": "الفاتحة"
+                  },
+                  "name_pronunciation": {
+                    "type": "string",
+                    "description": "Optional pronunciation of the surah name.",
+                    "example": "Al-Fatiha"
+                  },
+                  "name_translation_phrase": {
+                    "type": "string",
+                    "description": "Optional translation phrase of the surah name.",
+                    "example": "The Opening"
+                  },
+                  "name_transliteration": {
+                    "type": "string",
+                    "description": "Optional transliteration of the surah name.",
+                    "example": "Al-Fātiḥah"
                   },
                   "period": {
                     "type": "string",
-                    "description": "Surah is makki or madani",
-                    "example": "makki"
+                    "description": "Indicates whether the surah is Makki or Madani.",
+                    "example": "makki | madani"
                   },
                   "number": {
-                    "type": "number",
-                    "description": "Number of surah",
+                    "type": "integer",
+                    "description": "The surah number.",
                     "example": 1
-                  },
-                  "mushaf_id": {
-                    "type": "string",
-                    "description": "The mushaf_uuid",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
                   "bismillah_status": {
                     "type": "boolean",
-                    "description": "Determines if bismillah exists in surah",
-                    "example": "true"
+                    "description": "Determines if Bismillah is present in the surah.",
+                    "example": true
                   },
                   "bismillah_as_first_ayah": {
                     "type": "boolean",
-                    "description": "Determines if bismillah exists and its in the first_ayah content",
-                    "example": "false"
+                    "description": "Indicates if Bismillah is treated as the first ayah.",
+                    "example": false
+                  },
+                  "mushaf_uuid": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The UUID of the Mushaf associated with the surah.",
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   }
                 },
-                "required": ["name", "period", "number", "mushaf_id"]
+                "required": [
+                  "name",
+                  "number",
+                  "bismillah_status",
+                  "bismillah_as_first_ayah",
+                  "mushaf_uuid"
+                ]
               }
             }
           }
@@ -1805,12 +1833,52 @@
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "This means the surah edited"
+            "description": "Surah edited successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Edited"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Mushaf not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "NOT_FOUND",
+                  "message": "Not found!."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error_name": {
+                      "type": "string",
+                      "description": "A unique identifier for the error type.",
+                      "example": "INTERNAL_ERROR"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Detailed error message.",
+                      "example": "Internal Error!"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
       "delete": {
-        "description": "Delete surah with id you specified",
+        "description": "Deletes the surah identified by the specified UUID.",
         "security": [
           {
             "ApiKeyAuth": []
@@ -1822,14 +1890,16 @@
             "required": true,
             "name": "surah_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of the surah to be deleted."
             }
           }
         ],
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "Surah with id you specified deleted"
+            "description": "The surah identified by the UUID has been successfully deleted."
           }
         }
       }
