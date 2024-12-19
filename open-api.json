@@ -1097,11 +1097,6 @@
                     "type": "string",
                     "description": "The source of the mushaf's text.",
                     "example": "tanzil"
-                  },
-                  "bismillah_text": {
-                    "type": "string",
-                    "description": "Optional custom text for Bismillah.",
-                    "example": "In the name of Allah, the Most Gracious, the Most Merciful"
                   }
                 }
               }
@@ -1164,10 +1159,6 @@
                     "source": {
                       "type": "string",
                       "description": "Source of the mushaf"
-                    },
-                    "bismillah_text": {
-                      "type": "string",
-                      "description": "The Bismillah text in the mushaf"
                     }
                   }
                 },
@@ -1175,8 +1166,7 @@
                   "uuid": "ccbd8806-53e8-4658-8281-3aed10b50898",
                   "short_name": "hafs",
                   "name": "Hafs an Asem",
-                  "source": "tanzil",
-                  "bismillah_text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
+                  "source": "tanzil"
                 }
               }
             }
@@ -1235,11 +1225,6 @@
                     "type": "string",
                     "description": "The source of the mushaf's text.",
                     "example": "tanzil"
-                  },
-                  "bismillah_text": {
-                    "type": "string",
-                    "description": "Optional custom text for Bismillah.",
-                    "example": "بسم الله الرحمن الرحيم"
                   }
                 },
                 "required": ["short_name", "name", "source"]
@@ -1971,7 +1956,31 @@
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "Returns the ayahs list"
+            "description": "Returns the ayahs list",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "number": 1,
+                    "uuid": "123e4567-e89b-12d3-a456-426614174000",
+                    "sajdah": null,
+                    "text": "In the name of Allah, the Most Gracious, the Most Merciful.",
+                    "words": ["In", "the", "name", "of", "Allah", "..."]
+                  }
+                ]
+              }
+            }
+          },
+          "404": {
+            "description": "Ayah not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "NOT_FOUND",
+                  "message": "Not found!."
+                }
+              }
+            }
           }
         }
       },
@@ -1983,14 +1992,15 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "surah_id": {
+                  "surah_uuid": {
                     "type": "string",
-                    "description": "The surah_uuid",
+                    "description": "The UUID of the target surah",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
                   "sajdeh": {
@@ -1998,12 +2008,13 @@
                     "description": "Ayah have sajdeh or no",
                     "example": "vajib | mustahab | null"
                   },
-                  "ayah_number": {
-                    "type": "number",
-                    "description": "Number of ayah",
-                    "example": 1
+                  "text": {
+                    "type": "string",
+                    "description": "The text of the ayah.",
+                    "example": "In the name of Allah, the Most Gracious, the Most Merciful."
                   }
-                }
+                },
+                "required": ["surah_uuid", "text"]
               }
             }
           }
@@ -2032,7 +2043,33 @@
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "Returns the single ayah"
+            "description": "Returns the single ayah",
+            "content": {
+              "application/json": {
+                "example": {
+                  "uuid": "ae819d56-5071-4ca1-b964-9e170fac1118",
+                  "mushaf": "uuid-of-mushaf",
+                  "surah": "uuid-of-surah",
+                  "ayah_number": 1,
+                  "sajdah": null,
+                  "text": "هُدًى وَبُشْرَىٰ لِلْمُؤْمِنِينَ",
+                  "words": [
+                    {
+                      "uuid": "5743e20c-ed23-443c-be2d-7ee41fa1032e",
+                      "word": "هُدًى"
+                    },
+                    {
+                      "uuid": "e3d68b7c-ef58-4598-9c4a-c96fdfe8f7b4",
+                      "word": "وَبُشْرَىٰ"
+                    },
+                    {
+                      "uuid": "b1088c7c-8eae-42a7-9741-5c37b3d11526",
+                      "word": "لِلْمُؤْمِنِينَ"
+                    }
+                  ]
+                }
+              }
+            }
           }
         }
       },
@@ -2049,30 +2086,27 @@
             "required": true,
             "name": "ayah_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "The unique identifier for the ayah"
             }
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "surah_id": {
-                    "type": "string",
-                    "description": "The surah_uuid",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                  "ayah_number": {
+                    "type": "integer",
+                    "description": "Number of ayah",
+                    "example": 1
                   },
                   "sajdeh": {
                     "type": "string",
                     "description": "Ayah have sajdeh or no",
                     "example": "vajib | mustahab | null"
-                  },
-                  "ayah_number": {
-                    "type": "number",
-                    "description": "Number of ayah",
-                    "example": 1
                   }
                 }
               }
@@ -2284,7 +2318,8 @@
             "required": false,
             "name": "from",
             "schema": {
-              "type": "number"
+              "type": "integer",
+              "format": "int64"
             }
           },
 
@@ -2758,7 +2793,8 @@
             "required": false,
             "name": "from",
             "schema": {
-              "type": "number"
+              "type": "integer",
+              "format": "int64"
             }
           },
 
