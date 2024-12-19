@@ -489,7 +489,45 @@
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "Returns the list of all organizations"
+            "description": "Returns the list of all organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "uuid": {
+                        "type": "string",
+                        "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "org-username"
+                      },
+                      "primary_name": {
+                        "type": "string",
+                        "example": "Primary Organization Name"
+                      },
+                      "profile_image": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "http://example.com/image.jpg"
+                      },
+                      "established_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-01-01"
+                      },
+                      "national_id": {
+                        "type": "string",
+                        "example": "123456789"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -501,6 +539,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -529,6 +568,7 @@
                   },
                   "profile_image": {
                     "type": "string",
+                    "nullable": true,
                     "description": "The url of a profile image",
                     "example": "https://..."
                   },
@@ -548,6 +588,7 @@
                 "required": [
                   "username",
                   "name",
+                  "primary_name",
                   "established_date",
                   "national_id"
                 ]
@@ -577,14 +618,51 @@
             "required": true,
             "name": "organization_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "The UUID of the organization to view"
             }
           }
         ],
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "Returns the organization with id you specified"
+            "description": "Returns the organization with id you specified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "The unique username of the organization",
+                      "example": "github"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The full name of the organization",
+                      "example": "GitHub Organization"
+                    },
+                    "profile_image": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "The URL of the organization's profile image",
+                      "example": "https://assets.natiq.com/example-profile-image.jpg"
+                    },
+                    "established_date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "The established date of the organization",
+                      "example": "2008-04-10"
+                    },
+                    "national_id": {
+                      "type": "string",
+                      "description": "The national ID of the organization",
+                      "example": "12345678911"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -601,11 +679,15 @@
             "required": true,
             "name": "organization_uuid",
             "schema": {
-              "type": "string"
-            }
+              "type": "string",
+              "format": "uuid",
+              "example": "e0e1f46b-3b8c-4f9b-8c6f-467d31c60987"
+            },
+            "description": "The unique identifier of the organization to be edited"
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -627,11 +709,14 @@
                   },
                   "profile_image": {
                     "type": "string",
+                    "format": "url",
+                    "nullable": true,
                     "description": "The url of a profile image",
                     "example": "https://..."
                   },
                   "established_date": {
                     "type": "string",
+                    "format": "date",
                     "description": "The established date of organization(company), minYear is 200 year past",
                     "example": "1988-03-12"
                   },
@@ -642,7 +727,13 @@
                     "maxLength": 11,
                     "example": "12345678911"
                   }
-                }
+                },
+                "required": [
+                  "username",
+                  "name",
+                  "established_date",
+                  "national_id"
+                ]
               }
             }
           }
@@ -667,19 +758,93 @@
             "required": true,
             "name": "organization_uuid",
             "schema": {
-              "type": "string"
-            }
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The unique identifier (UUID) of the organization to be deleted"
           }
         ],
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "The organization with id you specified deleted"
+            "description": "Mushaf deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Deleted"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Organization not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "NOT_FOUND",
+                  "message": "Not found!."
+                }
+              }
+            }
           }
         }
       }
     },
     "/organization/name": {
+      "get": {
+        "description": "Returns the list of organization names for the specified organization UUID",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": ["organization"],
+        "responses": {
+          "200": {
+            "description": "Returns the list of organization names for the specified UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The organization name",
+                        "example": "Example Organization"
+                      },
+                      "language": {
+                        "type": "string",
+                        "description": "Language of the organization name",
+                        "example": "en"
+                      },
+                      "uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "UUID of the name entry",
+                        "example": "123e4567-e89b-12d3-a456-426614174001"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Organization not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "NOT_FOUND",
+                  "message": "Not found!."
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "description": "Add the organization name in another language",
         "security": [
@@ -688,6 +853,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -695,19 +861,20 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "New name",
+                    "description": "The new name of the organization",
                     "example": "ali",
                     "minLength": 1,
                     "maxLength": 16
                   },
                   "language": {
                     "type": "string",
-                    "description": "Language",
+                    "description": "The language code for the name (2 characters, e.g., 'en' or 'ar')",
                     "minLength": 2,
                     "maxLength": 2,
                     "example": "en"
                   }
-                }
+                },
+                "required": ["name", "language"]
               }
             }
           }
@@ -715,7 +882,20 @@
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "Organization name in another language added"
+            "description": "The organization name in another language has been successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Edited"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -734,14 +914,40 @@
             "required": true,
             "name": "name_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "Returns the organization name in another language with id you specified"
+            "description": "Returns the organization name in another language with the specified ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The organization name",
+                      "example": "Example Organization"
+                    },
+                    "language": {
+                      "type": "string",
+                      "description": "Language of the organization name",
+                      "example": "en"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "UUID of the organization name entry",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -758,11 +964,13 @@
             "required": true,
             "name": "name_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -775,7 +983,8 @@
                     "minLength": 1,
                     "maxLength": 16
                   }
-                }
+                },
+                "required": ["name"]
               }
             }
           }
@@ -783,7 +992,20 @@
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "The organization name in another language with id you specified edited"
+            "description": "The organization name in another language with the specified ID has been edited successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Edited"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -808,6 +1030,17 @@
         "responses": {
           "200": {
             "description": "The organization name in another language with id you specified deleted"
+          },
+          "404": {
+            "description": "Organization not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "NOT_FOUND",
+                  "message": "Not found!."
+                }
+              }
+            }
           }
         }
       }
