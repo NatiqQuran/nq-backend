@@ -1,4 +1,4 @@
-use crate::schema::*;
+use crate::{schema::*, AyahBismillah};
 use chrono::{NaiveDate, NaiveDateTime};
 use diesel::{
     deserialize::QueryableByName, Associations, Identifiable, Insertable, Queryable, Selectable,

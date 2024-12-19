@@ -210,15 +210,14 @@ diesel::table! {
 }
 
 diesel::table! {
-    quran_ayahs_divide (id) {
+    quran_ayahs_breakers (id) {
         id -> Int4,
         uuid -> Uuid,
         creator_user_id -> Int4,
         ayah_id -> Int4,
-        divider_account_id -> Int4,
-        #[sql_name = "type"]
+        owner_account_id -> Nullable<Int4>,
         #[max_length = 256]
-        type_ -> Varchar,
+        name -> Varchar,
     }
 }
 
@@ -302,15 +301,14 @@ diesel::table! {
 }
 
 diesel::table! {
-    quran_words_divide (id) {
+    quran_words_breakers (id) {
         id -> Int4,
         uuid -> Uuid,
         creator_user_id -> Int4,
         word_id -> Int4,
-        divider_account_id -> Int4,
-        #[sql_name = "type"]
+        owner_account_id -> Nullable<Int4>,
         #[max_length = 256]
-        type_ -> Varchar,
+        name -> Varchar,
     }
 }
 
@@ -332,9 +330,9 @@ diesel::joinable!(app_user_names -> app_users (creator_user_id));
 diesel::joinable!(app_users -> app_accounts (account_id));
 diesel::joinable!(quran_ayahs -> app_users (creator_user_id));
 diesel::joinable!(quran_ayahs -> quran_surahs (surah_id));
-diesel::joinable!(quran_ayahs_divide -> app_accounts (divider_account_id));
-diesel::joinable!(quran_ayahs_divide -> app_users (creator_user_id));
-diesel::joinable!(quran_ayahs_divide -> quran_ayahs (ayah_id));
+diesel::joinable!(quran_ayahs_breakers -> app_accounts (owner_account_id));
+diesel::joinable!(quran_ayahs_breakers -> app_users (creator_user_id));
+diesel::joinable!(quran_ayahs_breakers -> quran_ayahs (ayah_id));
 diesel::joinable!(quran_mushafs -> app_users (creator_user_id));
 diesel::joinable!(quran_surahs -> app_users (creator_user_id));
 diesel::joinable!(quran_surahs -> quran_mushafs (mushaf_id));
@@ -346,9 +344,9 @@ diesel::joinable!(quran_translations_ayahs -> quran_ayahs (ayah_id));
 diesel::joinable!(quran_translations_ayahs -> quran_translations (translation_id));
 diesel::joinable!(quran_words -> app_users (creator_user_id));
 diesel::joinable!(quran_words -> quran_ayahs (ayah_id));
-diesel::joinable!(quran_words_divide -> app_accounts (divider_account_id));
-diesel::joinable!(quran_words_divide -> app_users (creator_user_id));
-diesel::joinable!(quran_words_divide -> quran_words (word_id));
+diesel::joinable!(quran_words_breakers -> app_accounts (owner_account_id));
+diesel::joinable!(quran_words_breakers -> app_users (creator_user_id));
+diesel::joinable!(quran_words_breakers -> quran_words (word_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     app_accounts,
@@ -366,11 +364,11 @@ diesel::allow_tables_to_appear_in_same_query!(
     app_users,
     app_verify_codes,
     quran_ayahs,
-    quran_ayahs_divide,
+    quran_ayahs_breakers,
     quran_mushafs,
     quran_surahs,
     quran_translations,
     quran_translations_ayahs,
     quran_words,
-    quran_words_divide,
+    quran_words_breakers,
 );

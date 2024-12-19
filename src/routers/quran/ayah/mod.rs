@@ -71,6 +71,7 @@ pub struct SimpleAyah {
 pub struct AyahListQuery {
     mushaf: String,
     format: Option<Format>,
+    break_data: Option<bool>,
 
     sort: Option<String>,
     order: Option<Order>,
