@@ -2380,13 +2380,14 @@
     },
     "/word": {
       "post": {
-        "description": "Add the new word",
+        "description": "Add a new Quran word.",
         "security": [
           {
             "ApiKeyAuth": []
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -2394,15 +2395,16 @@
                 "properties": {
                   "ayah_uuid": {
                     "type": "string",
-                    "description": "The ayah_uuid",
+                    "description": "UUID of the ayah to which the word belongs.",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
                   "word": {
                     "type": "string",
-                    "description": "The word text",
+                    "description": "The word text to be added.",
                     "example": "الیوم"
                   }
-                }
+                },
+                "required": ["ayah_uuid", "word"]
               }
             }
           }
@@ -2410,7 +2412,36 @@
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "This means new word added"
+            "description": "The new word has been successfully added.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "added"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The ayah with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       }
@@ -2418,20 +2449,53 @@
     "/word/{word_uuid}": {
       "description": "Returns the single word",
       "get": {
+        "description": "Returns the single word.",
         "parameters": [
           {
             "in": "path",
             "required": true,
             "name": "word_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "UUID of the word to retrieve."
             }
           }
         ],
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "Returns the single word"
+            "description": "The word was successfully retrieved.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "uuid": "3ecb2468-4c4e-4adb-b172-064b9eb65ad0",
+                  "creator_user_id": 1,
+                  "word": "ٱلْحَمْدُ"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The word with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       },
@@ -2448,7 +2512,8 @@
             "required": true,
             "name": "word_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "UUID of the word to edit"
             }
           }
         ],
@@ -2460,13 +2525,13 @@
                 "properties": {
                   "ayah_uuid": {
                     "type": "string",
-                    "description": "The ayah_uuid",
+                    "description": "The ayah_uuid of the word",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
                   "word": {
                     "type": "string",
                     "description": "New word that want to replace",
-                    "example": ""
+                    "example": "الْحَمْدُ"
                   }
                 }
               }
@@ -2476,7 +2541,36 @@
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "This means the word edited"
+            "description": "This means the word was successfully edited",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Edited"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The word with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       },
@@ -2493,14 +2587,44 @@
             "required": true,
             "name": "word_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "UUID of the word to delete"
             }
           }
         ],
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "Word with id you specified deleted"
+            "description": "Word with id you specified deleted",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Deleted"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The word with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       }
