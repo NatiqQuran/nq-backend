@@ -1,8 +1,5 @@
-use super::{
-    calculate_break, AyahBismillah, Format, GetSurahQuery, QuranResponseData, SimpleAyah,
-    SingleSurahResponse,
-};
-use crate::models::{QuranAyah, QuranMushaf, QuranSurah};
+use super::{Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
+use crate::models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranSurah};
 use crate::routers::multip;
 use crate::{error::RouterError, DbPool};
 use crate::{AyahTy, AyahWord, SingleSurahMushaf, SurahName};
@@ -25,13 +22,9 @@ pub async fn surah_view(
     use crate::schema::quran_surahs::dsl::quran_surahs;
     use crate::schema::quran_surahs::dsl::uuid as surah_uuid;
     use crate::schema::quran_words::dsl::{quran_words, word as q_word};
-    use crate::schema::quran_words_breakers::dsl::{
-        quran_words_breakers, word_id as break_word_id,
-    };
+    use crate::schema::quran_words_breakers::dsl::{name as word_break_name, quran_words_breakers};
 
-    use crate::schema::quran_ayahs_breakers::dsl::{
-        quran_ayahs_breakers, type_ as ayah_break_type,
-    };
+    use crate::schema::quran_ayahs_breakers::dsl::{name as ayah_break_name, quran_ayahs_breakers};
 
     let query = query.into_inner();
     let requested_surah_uuid = path.into_inner();
@@ -49,12 +42,15 @@ pub async fn surah_view(
             .select((
                 QuranAyah::as_select(),
                 q_word,
-                break_word_id.nullable(),
-                ayah_break_type.nullable(),
+                Option::<QuranWordBreaker>::as_select(),
+                Option::<QuranAyahBreaker>::as_select(),
             ))
-            .load::<(QuranAyah, String, Option<i32>, Option<String>)>(&mut conn)?;
-
-        println!("{:?}", ayahs_words);
+            .load::<(
+                QuranAyah,
+                String,
+                Option<QuranWordBreaker>,
+                Option<QuranAyahBreaker>,
+            )>(&mut conn)?;
 
         let result = calculate_break(ayahs_words);
         let ayahs_as_map = multip(result, |ayah| ayah);

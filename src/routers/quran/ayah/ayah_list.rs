@@ -26,7 +26,7 @@ pub async fn ayah_list(
     };
 
     use crate::schema::quran_ayahs_breakers::dsl::{
-        quran_ayahs_breakers, type_ as ayah_break_type,
+        quran_ayahs_breakers, name as ayah_break_name,
     };
 
     let pool = pool.into_inner();
@@ -50,7 +50,7 @@ pub async fn ayah_list(
                 QuranAyah::as_select(),
                 q_word,
                 break_word_id.nullable(),
-                ayah_break_type.nullable(),
+                ayah_break_name.nullable(),
             ))
             .get_results::<(QuranAyah, String, Option<i32>, Option<String>)>(&mut conn)?;
 

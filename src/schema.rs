@@ -218,6 +218,8 @@ diesel::table! {
         owner_account_id -> Nullable<Int4>,
         #[max_length = 256]
         name -> Varchar,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
     }
 }
 
@@ -309,6 +311,8 @@ diesel::table! {
         owner_account_id -> Nullable<Int4>,
         #[max_length = 256]
         name -> Varchar,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
     }
 }
 
