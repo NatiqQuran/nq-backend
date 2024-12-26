@@ -231,6 +231,11 @@ pub struct NewEmployee {
     Associations,
     Clone,
     Debug,
+    Eq,
+    Ord,
+    PartialOrd,
+    Hash,
+    PartialEq,
 )]
 #[diesel(belongs_to(QuranSurah, foreign_key = surah_id))]
 #[diesel(table_name = quran_ayahs)]
@@ -636,4 +641,71 @@ pub struct NewPhraseTranslation<'a> {
     pub phrase_id: i32,
     pub text: &'a str,
     pub language: &'a str,
+}
+
+#[derive(
+    Deserialize,
+    Serialize,
+    Clone,
+    Validate,
+    Identifiable,
+    Queryable,
+    Debug,
+    Associations,
+    Selectable,
+    Eq,
+    Hash,
+    PartialEq,
+)]
+#[diesel(table_name = quran_ayahs_breakers)]
+#[diesel(belongs_to(QuranAyah, foreign_key = ayah_id))]
+pub struct QuranAyahBreaker {
+    #[serde(skip_serializing)]
+    id: i32,
+    uuid: Uuid,
+
+    #[serde(skip_serializing)]
+    owner_account_id: i32,
+
+    #[serde(skip_serializing)]
+    ayah_id: i32,
+
+    pub name: String,
+
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(
+    Deserialize,
+    Serialize,
+    Clone,
+    Validate,
+    Identifiable,
+    Queryable,
+    Debug,
+    Associations,
+    Selectable,
+)]
+#[diesel(table_name = quran_words_breakers)]
+#[diesel(belongs_to(QuranWord, foreign_key = word_id))]
+pub struct QuranWordBreaker {
+    #[serde(skip_serializing)]
+    id: i32,
+    uuid: Uuid,
+
+    #[serde(skip_serializing)]
+    owner_account_id: i32,
+
+    #[serde(skip_serializing)]
+    word_id: i32,
+
+    name: String,
+
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
 }

@@ -31,3 +31,31 @@ where
 
     map
 }
+
+/// a BTreeMap (We want the elements be in order)
+pub fn maybe_multip<T, U, F, NT>(
+    vector: Vec<(T, Option<U>)>,
+    insert_data_type: F,
+) -> BTreeMap<NT, Vec<U>>
+where
+    T: Sized + Clone,
+    U: Sized + Clone,
+    NT: Sized + Eq + Hash + Ord,
+    F: Fn(T) -> NT,
+{
+    let mut map: BTreeMap<NT, Vec<U>> = BTreeMap::new();
+    for item in vector {
+        map.entry(insert_data_type(item.clone().0))
+            .and_modify(|c| {
+                if let Some(value) = item.1.clone() {
+                    c.push(value.clone())
+                }
+            })
+            .or_insert(match item.1 {
+                Some(val) => vec![val],
+                None => vec![],
+            });
+    }
+
+    map
+}

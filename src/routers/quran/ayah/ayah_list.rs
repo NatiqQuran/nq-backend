@@ -2,7 +2,7 @@ use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::Filter;
 use crate::models::QuranAyah;
 use crate::routers::multip;
-use crate::AyahBismillah;
+use crate::{calculate_break, AyahBismillah};
 use crate::{
     routers::quran::surah::{AyahTy, Format, SimpleAyah},
     DbPool,
@@ -21,6 +21,13 @@ pub async fn ayah_list(
     use crate::schema::quran_mushafs::dsl::{quran_mushafs, short_name as mushaf_short_name};
     use crate::schema::quran_surahs::dsl::quran_surahs;
     use crate::schema::quran_words::dsl::{quran_words, word as q_word};
+    use crate::schema::quran_words_breakers::dsl::{
+        quran_words_breakers, word_id as break_word_id,
+    };
+
+    use crate::schema::quran_ayahs_breakers::dsl::{
+        quran_ayahs_breakers, name as ayah_break_name,
+    };
 
     let pool = pool.into_inner();
 
@@ -36,35 +43,34 @@ pub async fn ayah_list(
 
         let ayahs = filtered_ayahs
             .left_outer_join(quran_surahs.left_outer_join(quran_mushafs))
-            .inner_join(quran_words)
+            .left_join(quran_ayahs_breakers)
+            .inner_join(quran_words.left_join(quran_words_breakers))
             .filter(mushaf_short_name.eq(query.mushaf))
-            .select((QuranAyah::as_select(), q_word))
-            .get_results::<(QuranAyah, String)>(&mut conn)?;
+            .select((
+                QuranAyah::as_select(),
+                q_word,
+                break_word_id.nullable(),
+                ayah_break_name.nullable(),
+            ))
+            .get_results::<(QuranAyah, String, Option<i32>, Option<String>)>(&mut conn)?;
 
-        let ayahs_as_map = multip(ayahs, |a| SimpleAyah {
-            number: a.ayah_number as u32,
-            uuid: a.uuid,
-            sajdah: a.sajdah,
-            bismillah: match (a.is_bismillah, a.bismillah_text) {
-                (true, None) => Some(AyahBismillah {
-                    is_ayah: true,
-                    text: None,
-                }),
-                (false, Some(text)) => Some(AyahBismillah {
-                    is_ayah: false,
-                    text: Some(text),
-                }),
-                (false, None) => None,
-                (_, _) => None,
-            },
-        });
+        let result = calculate_break(ayahs);
+
+        let ayahs_as_map = multip(result, |a| a);
 
         let final_ayahs = ayahs_as_map
             .into_iter()
             .map(|(ayah, words)| match query.format {
                 Some(Format::Text) | None => AyahTy::Text(crate::AyahWithText {
+                    hizb: ayah.hizb,
+                    juz: ayah.juz,
+                    page: ayah.page,
                     ayah,
-                    text: words.join(" "),
+                    text: words
+                        .into_iter()
+                        .map(|w| w.word)
+                        .collect::<Vec<String>>()
+                        .join(" "),
                 }),
                 Some(Format::Word) => AyahTy::Words(crate::AyahWithWords { ayah, words }),
             })

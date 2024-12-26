@@ -59,6 +59,7 @@ pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
+/// Predefined NQ-api errors that is loadeded from (static) file has life time of static.
 pub static FIXED_ERROR_RESPONSES: OnceLock<PreDefinedResponseErrors> = OnceLock::new();
 pub const FIXED_ERROR_JSON: &str = include_str!("../error_codes.json");
 

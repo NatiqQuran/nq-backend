@@ -4,14 +4,18 @@ pub mod surah_edit;
 pub mod surah_list;
 pub mod surah_view;
 
-use std::hash::Hash;
+use std::{
+    collections::{BTreeMap, HashMap},
+    hash::Hash,
+};
 
 use crate::{
     filter::{Filters, Order},
-    models::QuranMushaf,
+    models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranWordBreaker},
+    routers::{maybe_multip, multip},
 };
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
+use uuid::{fmt::Simple, Uuid};
 
 /// The quran text format Each word has its own uuid
 #[derive(Debug, Clone, Deserialize)]
@@ -68,10 +72,83 @@ pub struct AyahBismillah {
     pub text: Option<String>,
 }
 
+impl AyahBismillah {
+    pub fn from_ayah_fields(is_bismillah: bool, bismillah_text: Option<String>) -> Option<Self> {
+        match (is_bismillah, bismillah_text) {
+            (true, None) => Some(Self {
+                is_ayah: true,
+                text: None,
+            }),
+            (false, Some(text)) => Some(Self {
+                is_ayah: false,
+                text: Some(text),
+            }),
+            (false, None) => None,
+            (_, _) => None,
+        }
+    }
+}
+
+/// input: Vec<(Ayah, Breaks(name))>
+pub fn calculate_break(
+    input: Vec<(
+        QuranAyah,
+        String,
+        Option<QuranWordBreaker>,
+        Option<QuranAyahBreaker>,
+    )>,
+) -> Vec<(SimpleAyah, Vec<AyahWord>)> {
+    let ayahs_with_breakers = input
+        .into_iter()
+        .map(|(ayah, _, _, breaker)| (ayah, breaker))
+        .collect::<Vec<(QuranAyah, Option<QuranAyahBreaker>)>>();
+    let ayah_breakers: BTreeMap<QuranAyah, Vec<QuranAyahBreaker>> =
+        maybe_multip(ayahs_with_breakers, |ayah| ayah);
+
+    let mut simple_ayahs = vec![];
+    // Calculate breakers
+    for (ayah, breakers) in ayah_breakers.into_iter() {
+        let mut breakers_map: HashMap<QuranAyahBreaker, u32> = HashMap::new();
+        for breaker in breakers {
+            breakers_map
+                .entry(breaker)
+                .and_modify(|v| *v += 1)
+                .or_insert(0);
+        }
+
+        let breakers = breakers_map
+            .into_iter()
+            .map(|(key, value)| Breaker {
+                name: key.name,
+                number: value,
+            })
+            .collect::<Vec<Breaker>>();
+
+        simple_ayahs.push(SimpleAyah {
+            bismillah: AyahBismillah::from_ayah_fields(ayah.is_bismillah, ayah.bismillah_text),
+            breakers: if breakers.is_empty() {
+                None
+            } else {
+                Some(breakers)
+            },
+            number: ayah.ayah_number as u32,
+            sajdah: ayah.sajdah,
+            uuid: ayah.uuid,
+        });
+    }
+    todo!()
+}
+
 #[derive(Serialize, Clone, Debug)]
 pub struct AyahBismillahInSurah {
     pub is_first_ayah: bool,
     pub text: String,
+}
+
+#[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug)]
+pub struct Breaker {
+    pub name: String,
+    pub number: u32,
 }
 
 /// The Ayah type that will return in the response
@@ -81,6 +158,7 @@ pub struct SimpleAyah {
     pub uuid: Uuid,
     pub sajdah: Option<String>,
     pub bismillah: Option<AyahBismillah>,
+    pub breakers: Option<Vec<Breaker>>,
 }
 
 /// it contains ayah info and the content
@@ -89,13 +167,28 @@ pub struct AyahWithText {
     #[serde(flatten)]
     pub ayah: SimpleAyah,
     pub text: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hizb: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub juz: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub page: Option<u32>,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub struct AyahWord {
+    pub word: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub breakers: Option<Vec<Breaker>>,
 }
 
 #[derive(Serialize, Clone, Debug)]
 pub struct AyahWithWords {
     #[serde(flatten)]
     pub ayah: SimpleAyah,
-    pub words: Vec<String>,
+    pub words: Vec<AyahWord>,
 }
 
 #[derive(Serialize, Clone, Debug)]
@@ -125,7 +218,13 @@ impl AyahTy {
                 if bismillah.is_ayah {
                     AyahBismillahInSurah {
                         is_first_ayah: true,
-                        text: at.words.join("").clone(),
+                        text: at
+                            .words
+                            .clone()
+                            .into_iter()
+                            .map(|w| w.word)
+                            .collect::<Vec<String>>()
+                            .join(" "),
                     }
                 } else {
                     AyahBismillahInSurah {
