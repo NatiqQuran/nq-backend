@@ -1047,7 +1047,7 @@
     },
     "/permission": {
       "get": {
-        "description": "Ruturn the list of all permissions",
+        "description": "Return the list of all permissions",
         "security": [
           {
             "ApiKeyAuth": []
@@ -1056,7 +1056,31 @@
         "tags": ["permission"],
         "responses": {
           "200": {
-            "description": "Returns the list of all permissions"
+            "description": "Returns the list of all permissions",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "uuid": "c7a4c02c-fdf7-4f66-90cf-5fd417fc7bcf",
+                    "account": {
+                      "uuid": "3b28d18b-13a9-46d6-b4c9-b3452b7280db",
+                      "username": "admin",
+                      "first_name": "Admin",
+                      "last_name": "User"
+                    },
+                    "object": "resource",
+                    "action": "delete",
+                    "conditions": [
+                      {
+                        "id": 1,
+                        "name": "time_based",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
           }
         }
       },
@@ -1076,25 +1100,51 @@
                   "subject": {
                     "type": "string",
                     "description": "The user uuid or * for all users",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1",
+                    "nullable": true
                   },
                   "object": {
                     "type": "string",
-                    "description": "The controller that the user need to access",
-                    "example": "Translation, Reciters & etc"
+                    "description": "The controller that the user needs to access",
+                    "example": "Translation, Reciters & etc",
+                    "nullable": false
                   },
                   "action": {
                     "type": "string",
                     "description": "The action for controller & etc",
-                    "example": "Add, Edit, View, List, Delete & etc"
+                    "example": "Add, Edit, View, List, Delete & etc",
+                    "nullable": false
                   },
                   "conditions": {
-                    "items": {},
                     "type": "array",
-                    "description": "Array of conditions, each condition is an object has name & value, currently only possible condition is isOwner(Boolean)",
-                    "example": "[{ \"name\": \"isOwner\", \"value\":\"true\"]"
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Unique ID of the condition. Nullable or auto-generated.",
+                          "nullable": true
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Condition name (e.g., isOwner)",
+                          "example": "isOwner",
+                          "nullable": false
+                        },
+                        "value": {
+                          "type": "string",
+                          "description": "Condition value (e.g., true)",
+                          "example": "true",
+                          "nullable": false
+                        }
+                      },
+                      "required": ["name", "value"]
+                    },
+                    "description": "Array of conditions, each condition is an object with a name & value. Currently, only the condition 'isOwner' is possible.",
+                    "example": "[{ \"name\": \"isOwner\", \"value\": \"true\" }]"
                   }
-                }
+                },
+                "required": ["object", "action", "conditions"]
               }
             }
           }
@@ -1102,14 +1152,32 @@
         "tags": ["permission"],
         "responses": {
           "200": {
-            "description": "This means new permission created"
+            "description": "Permission successfully edited",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Added"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       }
     },
     "/permission/{permission_uuid}": {
       "get": {
-        "description": "View permission with id you specified",
+        "description": "View permission with the ID you specified",
         "security": [
           {
             "ApiKeyAuth": []
@@ -1121,14 +1189,90 @@
             "required": true,
             "name": "permission_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "The unique UUID of the permission you want to view",
+              "example": "4454f3fc-acf5-4933-ac14-1ce0b055b523"
             }
           }
         ],
         "tags": ["permission"],
         "responses": {
           "200": {
-            "description": "Returns the permission with id you specified"
+            "description": "Returns the permission with the ID you specified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": {
+                      "type": "string",
+                      "description": "Unique UUID of the permission",
+                      "example": "4454f3fc-acf5-4933-ac14-1ce0b055b523"
+                    },
+                    "account": {
+                      "type": "object",
+                      "properties": {
+                        "uuid": {
+                          "type": "string",
+                          "description": "UUID of the account",
+                          "example": "456lj070-21ac-0d3j-0000-ac0s3n47ed08"
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "Username of the account",
+                          "example": "curator"
+                        },
+                        "first_name": {
+                          "type": "string",
+                          "description": "First name of the account holder",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "last_name": {
+                          "type": "string",
+                          "description": "Last name of the account holder",
+                          "nullable": true,
+                          "example": null
+                        }
+                      },
+                      "required": ["uuid", "username"]
+                    },
+                    "object": {
+                      "type": "string",
+                      "description": "The object that the permission applies to",
+                      "example": "permission"
+                    },
+                    "action": {
+                      "type": "string",
+                      "description": "The action allowed on the object",
+                      "example": "create"
+                    },
+                    "conditions": {
+                      "type": "array",
+                      "description": "Array of conditions associated with the permission",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Condition name",
+                            "example": "isOwner"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Condition value",
+                            "example": "true"
+                          }
+                        },
+                        "required": ["name", "value"]
+                      },
+                      "example": []
+                    }
+                  },
+                  "required": ["uuid", "account", "object", "action"]
+                }
+              }
+            }
           }
         }
       },
@@ -1145,7 +1289,8 @@
             "required": true,
             "name": "permission_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -1154,27 +1299,47 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["subject", "object", "action"],
                 "properties": {
                   "subject": {
                     "type": "string",
+                    "format": "uuid",
                     "description": "The user uuid or * for all users",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
                   "object": {
                     "type": "string",
                     "description": "The controller that the user need to access",
-                    "example": "Translation, Reciters & etc"
+                    "example": "Translation"
                   },
                   "action": {
                     "type": "string",
-                    "description": "The action for controller & etc",
-                    "example": "Add, Edit, View, List, Delete & etc"
+                    "description": "The action for controller",
+                    "example": "Edit"
                   },
                   "conditions": {
-                    "items": {},
                     "type": "array",
-                    "description": "Array of conditions, each condition is an object includ has name & value, currently only possible condition is isOwner(Boolean)",
-                    "example": "[{ \"name\": \"isOwner\", \"value\":\"true\"]"
+                    "description": "Array of conditions",
+                    "items": {
+                      "type": "object",
+                      "required": ["name", "value"],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the condition"
+                        },
+                        "value": {
+                          "type": "string",
+                          "description": "Value of the condition"
+                        }
+                      }
+                    },
+                    "example": [
+                      {
+                        "name": "isOwner",
+                        "value": "true"
+                      }
+                    ]
                   }
                 }
               }
@@ -1184,7 +1349,36 @@
         "tags": ["permission"],
         "responses": {
           "200": {
-            "description": "Permission with id you specified edited"
+            "description": "Permission successfully edited",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Edited"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The permission with the given UUID was not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       },
@@ -1208,7 +1402,36 @@
         "tags": ["permission"],
         "responses": {
           "200": {
-            "description": "Permission with id you specified deleted"
+            "description": "permission with id you specified deleted",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Deleted"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The permission with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       }
@@ -2380,13 +2603,14 @@
     },
     "/word": {
       "post": {
-        "description": "Add the new word",
+        "description": "Add a new Quran word.",
         "security": [
           {
             "ApiKeyAuth": []
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -2394,15 +2618,16 @@
                 "properties": {
                   "ayah_uuid": {
                     "type": "string",
-                    "description": "The ayah_uuid",
+                    "description": "UUID of the ayah to which the word belongs.",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
                   "word": {
                     "type": "string",
-                    "description": "The word text",
+                    "description": "The word text to be added.",
                     "example": "الیوم"
                   }
-                }
+                },
+                "required": ["ayah_uuid", "word"]
               }
             }
           }
@@ -2410,7 +2635,36 @@
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "This means new word added"
+            "description": "The new word has been successfully added.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "added"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The ayah with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       }
@@ -2418,20 +2672,53 @@
     "/word/{word_uuid}": {
       "description": "Returns the single word",
       "get": {
+        "description": "Returns the single word.",
         "parameters": [
           {
             "in": "path",
             "required": true,
             "name": "word_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "UUID of the word to retrieve."
             }
           }
         ],
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "Returns the single word"
+            "description": "The word was successfully retrieved.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "uuid": "3ecb2468-4c4e-4adb-b172-064b9eb65ad0",
+                  "creator_user_id": 1,
+                  "word": "ٱلْحَمْدُ"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The word with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       },
@@ -2448,7 +2735,8 @@
             "required": true,
             "name": "word_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "UUID of the word to edit"
             }
           }
         ],
@@ -2460,13 +2748,13 @@
                 "properties": {
                   "ayah_uuid": {
                     "type": "string",
-                    "description": "The ayah_uuid",
+                    "description": "The ayah_uuid of the word",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
                   },
                   "word": {
                     "type": "string",
                     "description": "New word that want to replace",
-                    "example": ""
+                    "example": "الْحَمْدُ"
                   }
                 }
               }
@@ -2476,7 +2764,36 @@
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "This means the word edited"
+            "description": "This means the word was successfully edited",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Edited"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The word with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       },
@@ -2493,14 +2810,44 @@
             "required": true,
             "name": "word_uuid",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "UUID of the word to delete"
             }
           }
         ],
         "tags": ["quran"],
         "responses": {
           "200": {
-            "description": "Word with id you specified deleted"
+            "description": "Word with id you specified deleted",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Deleted"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The word with the given UUID was not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "NOT_FOUND",
+                  "message": "Not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_name": "INTERNAL_ERROR",
+                  "message": "Internal Error!"
+                }
+              }
+            }
           }
         }
       }
