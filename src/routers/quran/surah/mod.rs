@@ -12,7 +12,7 @@ use std::{
 use crate::{
     filter::{Filters, Order},
     models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranWordBreaker},
-    routers::{maybe_multip, multip},
+    routers::{count, maybe_multip, multip},
 };
 use serde::{Deserialize, Serialize};
 use uuid::{fmt::Simple, Uuid};
@@ -89,54 +89,107 @@ impl AyahBismillah {
     }
 }
 
+fn calculate_word_break(word: String, breakers: Vec<QuranWordBreaker>) -> AyahWord {
+    // WARNING TODO: Hash and Eq impl for QuranWordBreaker is expensive
+    let breakers_map = count(breakers);
+
+    let breakers = breakers_map
+        .into_iter()
+        .map(|(key, value)| Breaker {
+            name: key.name,
+            number: value,
+        })
+        .collect::<Vec<Breaker>>();
+
+    AyahWord {
+        word,
+        breakers: if breakers.is_empty() {
+            None
+        } else {
+            Some(breakers)
+        },
+    }
+}
+
+pub fn calculate_words_break(input: Vec<(String, Option<QuranWordBreaker>)>) -> Vec<AyahWord> {
+    #[derive(PartialEq, PartialOrd, Eq, Ord, Hash)]
+    struct TempWordTy {
+        id: usize,
+        word: String,
+    }
+
+    // WARNING TODO: Change the |word| word, Could not be unique
+    let word_breakers = maybe_multip(input, |index, word| TempWordTy { id: index, word });
+
+    word_breakers
+        .into_iter()
+        .map(|(word, breakers)| calculate_word_break(word.word, breakers))
+        .collect()
+}
+
+fn calculate_ayah_break(ayah: QuranAyah, breakers: Vec<QuranAyahBreaker>) -> SimpleAyah {
+    let breakers_map = count(breakers);
+
+    let breakers = breakers_map
+        .into_iter()
+        .map(|(key, value)| Breaker {
+            name: key.name,
+            number: value,
+        })
+        .collect::<Vec<Breaker>>();
+
+    SimpleAyah {
+        bismillah: AyahBismillah::from_ayah_fields(ayah.is_bismillah, ayah.bismillah_text),
+        breakers: if breakers.is_empty() {
+            None
+        } else {
+            Some(breakers)
+        },
+        number: ayah.ayah_number as u32,
+        sajdah: ayah.sajdah,
+        uuid: ayah.uuid,
+    }
+}
+
 /// input: Vec<(Ayah, Breaks(name))>
-pub fn calculate_break(
+///
+/// Calculates ayahs breaks, and returns Vec of SimpleAyah's
+pub fn calculate_ayahs_break(input: Vec<(QuranAyah, Option<QuranAyahBreaker>)>) -> Vec<SimpleAyah> {
+    let ayah_breakers = maybe_multip(input, |index, ayah| (index, ayah));
+
+    ayah_breakers
+        .into_iter()
+        .map(|(ayah, breakers)| calculate_ayah_break(ayah.1, breakers))
+        .collect()
+}
+
+pub fn calculate_breaks(
     input: Vec<(
         QuranAyah,
         String,
         Option<QuranWordBreaker>,
         Option<QuranAyahBreaker>,
     )>,
-) -> Vec<(SimpleAyah, Vec<AyahWord>)> {
-    let ayahs_with_breakers = input
+) -> BTreeMap<SimpleAyah, Vec<AyahWord>> {
+    let ayahs = input
+        .clone()
         .into_iter()
-        .map(|(ayah, _, _, breaker)| (ayah, breaker))
-        .collect::<Vec<(QuranAyah, Option<QuranAyahBreaker>)>>();
-    let ayah_breakers: BTreeMap<QuranAyah, Vec<QuranAyahBreaker>> =
-        maybe_multip(ayahs_with_breakers, |ayah| ayah);
+        .map(|(ayah, _, _, br)| (ayah, br))
+        .collect();
 
-    let mut simple_ayahs = vec![];
-    // Calculate breakers
-    for (ayah, breakers) in ayah_breakers.into_iter() {
-        let mut breakers_map: HashMap<QuranAyahBreaker, u32> = HashMap::new();
-        for breaker in breakers {
-            breakers_map
-                .entry(breaker)
-                .and_modify(|v| *v += 1)
-                .or_insert(0);
-        }
+    let ayahs_breaks = calculate_ayahs_break(ayahs);
 
-        let breakers = breakers_map
-            .into_iter()
-            .map(|(key, value)| Breaker {
-                name: key.name,
-                number: value,
-            })
-            .collect::<Vec<Breaker>>();
+    let words = input
+        .into_iter()
+        .map(|(_, word, br, _)| (word, br))
+        .collect();
 
-        simple_ayahs.push(SimpleAyah {
-            bismillah: AyahBismillah::from_ayah_fields(ayah.is_bismillah, ayah.bismillah_text),
-            breakers: if breakers.is_empty() {
-                None
-            } else {
-                Some(breakers)
-            },
-            number: ayah.ayah_number as u32,
-            sajdah: ayah.sajdah,
-            uuid: ayah.uuid,
-        });
-    }
-    todo!()
+    let words_breaks = calculate_words_break(words);
+
+    let ayahs_words: Vec<(SimpleAyah, AyahWord)> =
+        ayahs_breaks.into_iter().zip(words_breaks).collect();
+
+    multip(ayahs_words, |ayah| ayah)
 }
 
 #[derive(Serialize, Clone, Debug)]
@@ -167,13 +220,6 @@ pub struct AyahWithText {
     #[serde(flatten)]
     pub ayah: SimpleAyah,
     pub text: String,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hizb: Option<u16>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub juz: Option<u16>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub page: Option<u32>,
 }
 
 #[derive(Serialize, Clone, Debug)]

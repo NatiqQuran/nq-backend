@@ -1,8 +1,9 @@
+use crate::calculate_breaks;
 use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::Filter;
-use crate::models::QuranAyah;
+use crate::models::{QuranAyah, QuranAyahBreaker, QuranWordBreaker};
 use crate::routers::multip;
-use crate::{calculate_break, AyahBismillah};
+use crate::AyahBismillah;
 use crate::{
     routers::quran::surah::{AyahTy, Format, SimpleAyah},
     DbPool,
@@ -25,9 +26,7 @@ pub async fn ayah_list(
         quran_words_breakers, word_id as break_word_id,
     };
 
-    use crate::schema::quran_ayahs_breakers::dsl::{
-        quran_ayahs_breakers, name as ayah_break_name,
-    };
+    use crate::schema::quran_ayahs_breakers::dsl::{name as ayah_break_name, quran_ayahs_breakers};
 
     let pool = pool.into_inner();
 
@@ -41,7 +40,7 @@ pub async fn ayah_list(
             Err(err) => return Err(err.log_to_db(pool, error_detail)),
         };
 
-        let ayahs = filtered_ayahs
+        let ayahs_words = filtered_ayahs
             .left_outer_join(quran_surahs.left_outer_join(quran_mushafs))
             .left_join(quran_ayahs_breakers)
             .inner_join(quran_words.left_join(quran_words_breakers))
@@ -49,22 +48,22 @@ pub async fn ayah_list(
             .select((
                 QuranAyah::as_select(),
                 q_word,
-                break_word_id.nullable(),
-                ayah_break_name.nullable(),
+                Option::<QuranWordBreaker>::as_select(),
+                Option::<QuranAyahBreaker>::as_select(),
             ))
-            .get_results::<(QuranAyah, String, Option<i32>, Option<String>)>(&mut conn)?;
+            .get_results::<(
+                QuranAyah,
+                String,
+                Option<QuranWordBreaker>,
+                Option<QuranAyahBreaker>,
+            )>(&mut conn)?;
 
-        let result = calculate_break(ayahs);
-
-        let ayahs_as_map = multip(result, |a| a);
+        let ayahs_as_map = calculate_breaks(ayahs_words);
 
         let final_ayahs = ayahs_as_map
             .into_iter()
             .map(|(ayah, words)| match query.format {
                 Some(Format::Text) | None => AyahTy::Text(crate::AyahWithText {
-                    hizb: ayah.hizb,
-                    juz: ayah.juz,
-                    page: ayah.page,
                     ayah,
                     text: words
                         .into_iter()

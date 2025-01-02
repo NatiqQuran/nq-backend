@@ -665,10 +665,13 @@ pub struct QuranAyahBreaker {
     uuid: Uuid,
 
     #[serde(skip_serializing)]
-    owner_account_id: i32,
+    creator_user_id: i32,
 
     #[serde(skip_serializing)]
     ayah_id: i32,
+
+    #[serde(skip_serializing)]
+    owner_account_id: Option<i32>,
 
     pub name: String,
 
@@ -688,6 +691,9 @@ pub struct QuranAyahBreaker {
     Debug,
     Associations,
     Selectable,
+    PartialEq,
+    Eq,
+    Hash,
 )]
 #[diesel(table_name = quran_words_breakers)]
 #[diesel(belongs_to(QuranWord, foreign_key = word_id))]
@@ -697,12 +703,15 @@ pub struct QuranWordBreaker {
     uuid: Uuid,
 
     #[serde(skip_serializing)]
-    owner_account_id: i32,
+    creator_user_id: i32,
 
     #[serde(skip_serializing)]
     word_id: i32,
 
-    name: String,
+    #[serde(skip_serializing)]
+    owner_account_id: Option<i32>,
+
+    pub name: String,
 
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
