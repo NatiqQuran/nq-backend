@@ -1177,7 +1177,7 @@
     },
     "/permission/{permission_uuid}": {
       "get": {
-        "description": "View permission with the ID you specified",
+        "description": "View permission with the UUID you specified",
         "security": [
           {
             "ApiKeyAuth": []
@@ -1198,7 +1198,7 @@
         "tags": ["permission"],
         "responses": {
           "200": {
-            "description": "Returns the permission with the ID you specified",
+            "description": "Returns the permission with the UUID you specified",
             "content": {
               "application/json": {
                 "schema": {
@@ -1759,8 +1759,7 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "example": "en"
+              "type": "string"
             },
             "description": "The language code for surah translations."
           },
