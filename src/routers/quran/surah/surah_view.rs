@@ -1,8 +1,8 @@
 use super::{Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
-use crate::models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranSurah};
+use crate::models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranSurah, QuranWordBreaker};
 use crate::routers::multip;
+use crate::{calculate_breaks, AyahTy, AyahWord, SingleSurahMushaf, SurahName};
 use crate::{error::RouterError, DbPool};
-use crate::{AyahTy, AyahWord, SingleSurahMushaf, SurahName};
 use actix_web::web;
 use diesel::prelude::*;
 use uuid::Uuid;
@@ -52,16 +52,12 @@ pub async fn surah_view(
                 Option<QuranAyahBreaker>,
             )>(&mut conn)?;
 
-        let result = calculate_break(ayahs_words);
-        let ayahs_as_map = multip(result, |ayah| ayah);
+        let result = calculate_breaks(ayahs_words);
 
-        let final_ayahs = ayahs_as_map
+        let final_ayahs = result
             .into_iter()
             .map(|(ayah, words)| match query.format {
                 Format::Text => AyahTy::Text(crate::AyahWithText {
-                    hizb: ayah.hizb,
-                    juz: ayah.juz,
-                    page: ayah.page,
                     ayah,
                     text: words
                         .into_iter()

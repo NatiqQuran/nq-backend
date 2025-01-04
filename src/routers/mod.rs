@@ -8,7 +8,7 @@ pub mod quran;
 pub mod translation;
 pub mod user;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::hash::Hash;
 
 /// finds the relatives in the vector
@@ -41,11 +41,11 @@ where
     T: Sized + Clone,
     U: Sized + Clone,
     NT: Sized + Eq + Hash + Ord,
-    F: Fn(T) -> NT,
+    F: Fn(usize, T) -> NT,
 {
     let mut map: BTreeMap<NT, Vec<U>> = BTreeMap::new();
-    for item in vector {
-        map.entry(insert_data_type(item.clone().0))
+    for (index, item) in vector.into_iter().enumerate() {
+        map.entry(insert_data_type(index, item.clone().0))
             .and_modify(|c| {
                 if let Some(value) = item.1.clone() {
                     c.push(value.clone())
@@ -55,6 +55,18 @@ where
                 Some(val) => vec![val],
                 None => vec![],
             });
+    }
+
+    map
+}
+
+pub fn count<T>(data: Vec<T>) -> HashMap<T, u32>
+where
+    T: Sized + Hash + Eq,
+{
+    let mut map: HashMap<T, u32> = HashMap::new();
+    for v in data {
+        map.entry(v).and_modify(|v| *v += 1).or_insert(1);
     }
 
     map
