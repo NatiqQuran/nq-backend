@@ -138,6 +138,7 @@
     },
     "/user": {
       "get": {
+        "summary": "List of Users",
         "description": "Get the list of all users",
         "security": [
           {
@@ -198,6 +199,7 @@
         }
       },
       "post": {
+        "summary": "Add user",
         "description": "Create new account",
         "security": [
           {
@@ -278,6 +280,7 @@
     },
     "/user/{user_uuid}": {
       "get": {
+        "summary": "View user",
         "description": "Return's single user profile",
         "security": [
           {
@@ -302,6 +305,7 @@
         }
       },
       "post": {
+        "summary": "Edit user",
         "description": "Edit the user full profile",
         "security": [
           {
@@ -375,6 +379,7 @@
         }
       },
       "delete": {
+        "summary": "Delete user",
         "description": "Delete's single user profile",
         "security": [
           {
@@ -401,6 +406,7 @@
     },
     "/profile": {
       "get": {
+        "summary": "View Profile",
         "description": "Return's the user profile from auth token",
         "security": [
           {
@@ -410,12 +416,13 @@
         "tags": ["user"],
         "responses": {
           "200": {
-            "description": "Return's the user profile."
+            "description": "Return's the user Profile."
           }
         }
       },
       "post": {
-        "description": "Edit's the user profile from auth token",
+        "summary": "Edit Profile",
+        "description": "Edit's the user Profile from auth token",
         "security": [
           {
             "ApiKeyAuth": []
@@ -480,6 +487,7 @@
     },
     "/organization": {
       "get": {
+        "summary": "List of Organizations",
         "description": "Return the list of all organizations",
         "security": [
           {
@@ -532,6 +540,7 @@
         }
       },
       "post": {
+        "summary": "Add Organizations",
         "description": "Add the new organization",
         "security": [
           {
@@ -606,6 +615,7 @@
     },
     "/organization/{organization_uuid}": {
       "get": {
+        "summary": "View Organization",
         "description": "View organization with id you specified",
         "security": [
           {
@@ -667,6 +677,7 @@
         }
       },
       "post": {
+        "summary": "Edit Organization",
         "description": "Edit permission with id you specified",
         "security": [
           {
@@ -746,6 +757,7 @@
         }
       },
       "delete": {
+        "summary": "Delete Organization",
         "description": "Delete a single organization with id you specified",
         "security": [
           {
@@ -793,6 +805,7 @@
     },
     "/organization/name": {
       "get": {
+        "summary": "List of Organization name",
         "description": "Returns the list of organization names for the specified organization UUID",
         "security": [
           {
@@ -846,6 +859,7 @@
         }
       },
       "post": {
+        "summary": "Add Organization Name",
         "description": "Add the organization name in another language",
         "security": [
           {
@@ -902,7 +916,8 @@
     },
     "/organization/name/{name_uuid}": {
       "get": {
-        "description": "View the organization name in another language with id you specified",
+        "summary": "View Organization Name",
+        "description": "View the organization name in another language with name_uuid you specified",
         "security": [
           {
             "ApiKeyAuth": []
@@ -922,7 +937,7 @@
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "Returns the organization name in another language with the specified ID",
+            "description": "Returns the organization name in another language with the specified name_uuid",
             "content": {
               "application/json": {
                 "schema": {
@@ -952,7 +967,8 @@
         }
       },
       "post": {
-        "description": "Edit the organization name in another language with id you specified",
+        "summary": "Edit Organization Name",
+        "description": "Edit the organization name in another language with name_uuid you specified",
         "security": [
           {
             "ApiKeyAuth": []
@@ -992,7 +1008,7 @@
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "The organization name in another language with the specified ID has been edited successfully",
+            "description": "The organization name in another language with the specified name_uuid has been edited successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -1010,7 +1026,8 @@
         }
       },
       "delete": {
-        "description": "Delete the organization name in another language with id you specified",
+        "summary": "Delete Organization Name",
+        "description": "Delete the organization name in another language with name_uuid you specified",
         "security": [
           {
             "ApiKeyAuth": []
@@ -1029,7 +1046,7 @@
         "tags": ["organization"],
         "responses": {
           "200": {
-            "description": "The organization name in another language with id you specified deleted"
+            "description": "The organization name in another language with name_uuid you specified deleted"
           },
           "404": {
             "description": "Organization not found",
@@ -1047,6 +1064,7 @@
     },
     "/permission": {
       "get": {
+        "summary": "List of Permissions",
         "description": "Return the list of all permissions",
         "security": [
           {
@@ -1072,7 +1090,6 @@
                     "action": "delete",
                     "conditions": [
                       {
-                        "id": 1,
                         "name": "time_based",
                         "value": "true"
                       }
@@ -1085,6 +1102,7 @@
         }
       },
       "post": {
+        "summary": "Add new Permission",
         "description": "Add new permission",
         "security": [
           {
@@ -1100,7 +1118,6 @@
                   "subject": {
                     "type": "string",
                     "description": "The user uuid or * for all users",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1",
                     "nullable": true
                   },
                   "object": {
@@ -1177,6 +1194,7 @@
     },
     "/permission/{permission_uuid}": {
       "get": {
+        "summary": "View Permission",
         "description": "View permission with the UUID you specified",
         "security": [
           {
@@ -1277,6 +1295,7 @@
         }
       },
       "post": {
+        "summary": "Edit Permission",
         "description": "Edit permission with id you specified",
         "security": [
           {
@@ -1383,6 +1402,7 @@
         }
       },
       "delete": {
+        "summary": "Delete Permission",
         "description": "Delete permission with id you specified",
         "security": [
           {
@@ -1438,7 +1458,7 @@
     },
     "/mushaf": {
       "get": {
-        "summary": "Get the list of mushaf",
+        "summary": "List of Mushaf",
         "description": "Returns the list of mushafs",
         "parameters": [
           {
@@ -1526,6 +1546,7 @@
         }
       },
       "post": {
+        "summary": "Add Mushaf",
         "description": "Add a new mushaf",
         "security": [
           {
@@ -1577,6 +1598,7 @@
     },
     "/mushaf/{mushaf_uuid}": {
       "get": {
+        "summary": "View Mushaf",
         "description": "View mushaf with the id you specified",
         "parameters": [
           {
@@ -1586,8 +1608,7 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of the mushaf to view",
-              "example": "ccbd8806-53e8-4658-2381-3aed10b50898"
+              "description": "UUID of the mushaf to view"
             }
           }
         ],
@@ -1641,6 +1662,7 @@
         }
       },
       "post": {
+        "summary": "Edit Mushaf",
         "description": "Edit mushaf with the UUID you specified",
         "security": [
           {
@@ -1704,6 +1726,7 @@
         }
       },
       "delete": {
+        "summary": "Delete Mushaf",
         "description": "Delete a mushaf by the specified UUID",
         "security": [
           {
@@ -1741,7 +1764,7 @@
     },
     "/surah": {
       "get": {
-        "summary": "Get the list of surahs",
+        "summary": "List of surahs",
         "description": "This endpoint returns a list of surahs based on the provided query parameters.",
         "parameters": [
           {
@@ -1880,6 +1903,7 @@
         }
       },
       "post": {
+        "summary": "Add Surah",
         "description": "Add a new surah to the database.",
         "security": [
           {
@@ -1962,6 +1986,7 @@
     },
     "/surah/{surah_uuid}": {
       "get": {
+        "summary": "View Surah",
         "description": "Returns the single surah",
         "parameters": [
           {
@@ -2186,6 +2211,7 @@
         }
       },
       "post": {
+        "summary": "Edit Surah",
         "description": "Edit surah with the specified UUID.",
         "security": [
           {
@@ -2318,6 +2344,7 @@
         }
       },
       "delete": {
+        "summary": "Delete Surah",
         "description": "Deletes the surah identified by the specified UUID.",
         "security": [
           {
@@ -2345,8 +2372,9 @@
       }
     },
     "/ayah": {
-      "description": "Returns the list of ayahs",
       "get": {
+        "summary": "List of Ayahs",
+        "description": "Returns the list of ayahs",
         "parameters": [
           {
             "in": "query",
@@ -2440,6 +2468,7 @@
         }
       },
       "post": {
+        "summary": "Add Ayah",
         "description": "Add the new ayah",
         "security": [
           {
@@ -2455,8 +2484,7 @@
                 "properties": {
                   "surah_uuid": {
                     "type": "string",
-                    "description": "The UUID of the target surah",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                    "description": "The UUID of the target surah"
                   },
                   "sajdeh": {
                     "type": "string",
@@ -2483,8 +2511,9 @@
       }
     },
     "/ayah/{ayah_uuid}": {
-      "description": "Returns the single ayah",
       "get": {
+        "summary": "View Ayah",
+        "description": "Returns the single ayah",
         "parameters": [
           {
             "in": "path",
@@ -2529,6 +2558,7 @@
         }
       },
       "post": {
+        "summary": "Edit Ayah",
         "description": "Edit ayah with id you specified",
         "security": [
           {
@@ -2576,6 +2606,7 @@
         }
       },
       "delete": {
+        "summary": "Delete Ayah",
         "description": "Delete ayah with id you specified",
         "security": [
           {
@@ -2602,6 +2633,7 @@
     },
     "/word": {
       "post": {
+        "summary": "Add Word",
         "description": "Add a new Quran word.",
         "security": [
           {
@@ -2617,8 +2649,7 @@
                 "properties": {
                   "ayah_uuid": {
                     "type": "string",
-                    "description": "UUID of the ayah to which the word belongs.",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                    "description": "UUID of the ayah to which the word belongs."
                   },
                   "word": {
                     "type": "string",
@@ -2671,6 +2702,7 @@
     "/word/{word_uuid}": {
       "description": "Returns the single word",
       "get": {
+        "summary": "View Word",
         "description": "Returns the single word.",
         "parameters": [
           {
@@ -2722,6 +2754,7 @@
         }
       },
       "post": {
+        "summary": "Edit Word ",
         "description": "Edit word with id you specified",
         "security": [
           {
@@ -2747,8 +2780,7 @@
                 "properties": {
                   "ayah_uuid": {
                     "type": "string",
-                    "description": "The ayah_uuid of the word",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+                    "description": "The ayah_uuid of the word"
                   },
                   "word": {
                     "type": "string",
@@ -2797,6 +2829,7 @@
         }
       },
       "delete": {
+        "summary": "Delete Word",
         "description": "Delete word with id you specified",
         "security": [
           {
@@ -2853,6 +2886,7 @@
     },
     "/translation": {
       "get": {
+        "summary": "List of translations",
         "description": "Ruturn the list of all translations",
         "parameters": [
           {
@@ -2919,6 +2953,7 @@
         }
       },
       "post": {
+        "summary": "Add translation",
         "description": "Add new translation",
         "security": [
           {
@@ -2968,6 +3003,7 @@
     },
     "/translation/{translation_uuid}": {
       "get": {
+        "summary": "View translation",
         "description": "View translation with id you specified",
         "parameters": [
           {
@@ -2987,6 +3023,7 @@
         }
       },
       "post": {
+        "summary": "Edit translation",
         "description": "Edit translation with id you specified",
         "security": [
           {
@@ -3047,6 +3084,7 @@
         }
       },
       "delete": {
+        "summary": "Delete translation",
         "description": "Delete translation with id you specified",
         "security": [
           {
@@ -3073,6 +3111,7 @@
     },
     "/translation/text/{translation_uuid}": {
       "get": {
+        "summary": "List of Text Translation",
         "description": "View translation with id you specified",
         "parameters": [
           {
@@ -3100,6 +3139,7 @@
         }
       },
       "post": {
+        "summary": "Add Text Translation",
         "description": "Edit/Add translation_text with id you specified",
         "security": [
           {
@@ -3145,6 +3185,7 @@
         }
       },
       "delete": {
+        "summary": "Delete Text Translation",
         "description": "Delete a single translation_text",
         "security": [
           {
@@ -3179,6 +3220,7 @@
     },
     "/phrase": {
       "get": {
+        "summary": "List of Phrases",
         "description": "View list of phrases",
         "security": [
           {
@@ -3215,6 +3257,7 @@
         }
       },
       "post": {
+        "summary": "Add Phrase",
         "description": "Add new phrase",
         "security": [
           {
@@ -3248,6 +3291,7 @@
     },
     "/phrase/{language}": {
       "get": {
+        "summary": "View Phrase",
         "description": "Returns a list of phrases and their translations for the specified language code. If a translation is not available for a phrase, it will be returned as null.",
         "security": [
           {
@@ -3274,6 +3318,7 @@
         }
       },
       "post": {
+        "summary": "Edit Phrase",
         "description": "Edit or add phrases and their translations for the specified language.",
         "security": [
           {
@@ -3316,6 +3361,7 @@
         }
       },
       "delete": {
+        "summary": "Delete Phrase",
         "description": "Delete all phrases related to the specified language code",
         "security": [
           {
@@ -3342,6 +3388,7 @@
     },
     "/error": {
       "get": {
+        "summary": "List of Errors",
         "description": "View List of errors",
         "security": [
           {
