@@ -1,8 +1,10 @@
-use super::{Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
-use crate::models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranSurah, QuranWordBreaker};
+use std::collections::HashMap;
+
+use super::{AyahWord, Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
+use crate::models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranSurah, QuranWord};
 use crate::routers::multip;
-use crate::{calculate_breaks, AyahTy, AyahWord, SingleSurahMushaf, SurahName};
 use crate::{error::RouterError, DbPool};
+use crate::{AyahBismillah, AyahTy, Breaker, SingleSurahMushaf, SurahName};
 use actix_web::web;
 use diesel::prelude::*;
 use uuid::Uuid;
@@ -18,13 +20,11 @@ pub async fn surah_view(
     };
     use crate::schema::app_phrases::dsl::{app_phrases, phrase as p_phrase};
     use crate::schema::quran_ayahs::dsl::quran_ayahs;
+    use crate::schema::quran_ayahs_breakers::dsl::quran_ayahs_breakers;
     use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs};
     use crate::schema::quran_surahs::dsl::quran_surahs;
     use crate::schema::quran_surahs::dsl::uuid as surah_uuid;
-    use crate::schema::quran_words::dsl::{quran_words, word as q_word};
-    use crate::schema::quran_words_breakers::dsl::{name as word_break_name, quran_words_breakers};
-
-    use crate::schema::quran_ayahs_breakers::dsl::{name as ayah_break_name, quran_ayahs_breakers};
+    use crate::schema::quran_words::dsl::quran_words;
 
     let query = query.into_inner();
     let requested_surah_uuid = path.into_inner();
@@ -32,29 +32,62 @@ pub async fn surah_view(
     web::block(move || {
         let mut conn = pool.get().unwrap();
 
+        // [{ayah_id, name}...]
+        // Also need to count name
+        let breakers: Vec<QuranAyahBreaker> = quran_ayahs_breakers.get_results(&mut conn)?;
+        let mut breakers = breakers.into_iter();
+
+        let mut breakers_count: HashMap<String, u32> = HashMap::new();
+        let mut map = HashMap::<i32, Vec<Breaker>>::new();
+
+        while let Some(breaker) = breakers.next() {
+            breakers_count
+                .entry(breaker.name)
+                .and_modify(|v| *v += 1)
+                .or_insert(1);
+
+            let val = breakers_count
+                .clone()
+                .into_iter()
+                .map(|(k, v)| Breaker { name: k, number: v })
+                .collect::<Vec<Breaker>>();
+
+            map.entry(breaker.ayah_id).insert_entry(val);
+        }
+
         let ayahs_words = quran_surahs
             .filter(surah_uuid.eq(requested_surah_uuid))
             .inner_join(
                 quran_ayahs
-                    .inner_join(quran_words.left_join(quran_words_breakers))
+                    .inner_join(quran_words)
                     .left_join(quran_ayahs_breakers),
             )
-            .select((
-                QuranAyah::as_select(),
-                q_word,
-                Option::<QuranWordBreaker>::as_select(),
-                Option::<QuranAyahBreaker>::as_select(),
-            ))
-            .load::<(
-                QuranAyah,
-                String,
-                Option<QuranWordBreaker>,
-                Option<QuranAyahBreaker>,
-            )>(&mut conn)?;
+            .select((QuranAyah::as_select(), QuranWord::as_select()))
+            .load::<(QuranAyah, QuranWord)>(&mut conn)?;
 
-        let result = calculate_breaks(ayahs_words);
+        let ayahs_words = ayahs_words
+            .into_iter()
+            .map(|(ayah, word)| {
+                (
+                    SimpleAyah {
+                        id: ayah.id as u32,
+                        uuid: ayah.uuid,
+                        bismillah: AyahBismillah::from_ayah_fields(
+                            ayah.is_bismillah,
+                            ayah.bismillah_text,
+                        ),
+                        breakers: map.get(&ayah.id).clone().cloned(),
+                        number: ayah.ayah_number as u32,
+                        sajdah: ayah.sajdah,
+                    },
+                    word,
+                )
+            })
+            .collect::<Vec<(SimpleAyah, QuranWord)>>();
 
-        let final_ayahs = result
+        let ayahs_as_map = multip(ayahs_words, |a| a);
+
+        let final_ayahs = ayahs_as_map
             .into_iter()
             .map(|(ayah, words)| match query.format {
                 Format::Text => AyahTy::Text(crate::AyahWithText {
@@ -65,7 +98,17 @@ pub async fn surah_view(
                         .collect::<Vec<String>>()
                         .join(" "),
                 }),
-                Format::Word => AyahTy::Words(crate::AyahWithWords { ayah, words }),
+                Format::Word => AyahTy::Words(crate::AyahWithWords {
+                    ayah: ayah.clone(),
+                    words: words
+                        .into_iter()
+                        .map(|w| AyahWord {
+                            ayah_id: ayah.id,
+                            breakers: None,
+                            word: w.word,
+                        })
+                        .collect(),
+                }),
             })
             .collect::<Vec<AyahTy>>();
 
