@@ -271,7 +271,20 @@ pub struct NewQuranAyah {
     pub bismillah_text: Option<String>,
 }
 
-#[derive(Clone, Selectable, Identifiable, Associations, Queryable, PartialEq, Debug, Serialize)]
+#[derive(
+    Clone,
+    Selectable,
+    Identifiable,
+    Associations,
+    Queryable,
+    PartialEq,
+    Debug,
+    Serialize,
+    Hash,
+    Ord,
+    PartialOrd,
+    Eq,
+)]
 #[diesel(belongs_to(QuranAyah, foreign_key = ayah_id))]
 #[diesel(table_name = quran_words)]
 pub struct QuranWord {
@@ -668,7 +681,7 @@ pub struct QuranAyahBreaker {
     creator_user_id: i32,
 
     #[serde(skip_serializing)]
-    ayah_id: i32,
+    pub ayah_id: i32,
 
     #[serde(skip_serializing)]
     owner_account_id: Option<i32>,

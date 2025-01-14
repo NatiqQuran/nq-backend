@@ -4,18 +4,14 @@ pub mod surah_edit;
 pub mod surah_list;
 pub mod surah_view;
 
-use std::{
-    collections::{BTreeMap, HashMap},
-    hash::Hash,
-};
+use std::hash::Hash;
 
 use crate::{
     filter::{Filters, Order},
-    models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranWordBreaker},
-    routers::{count, maybe_multip, multip},
+    models::QuranMushaf,
 };
 use serde::{Deserialize, Serialize};
-use uuid::{fmt::Simple, Uuid};
+use uuid::Uuid;
 
 /// The quran text format Each word has its own uuid
 #[derive(Debug, Clone, Deserialize)]
@@ -89,109 +85,6 @@ impl AyahBismillah {
     }
 }
 
-fn calculate_word_break(word: String, breakers: Vec<QuranWordBreaker>) -> AyahWord {
-    // WARNING TODO: Hash and Eq impl for QuranWordBreaker is expensive
-    let breakers_map = count(breakers);
-
-    let breakers = breakers_map
-        .into_iter()
-        .map(|(key, value)| Breaker {
-            name: key.name,
-            number: value,
-        })
-        .collect::<Vec<Breaker>>();
-
-    AyahWord {
-        word,
-        breakers: if breakers.is_empty() {
-            None
-        } else {
-            Some(breakers)
-        },
-    }
-}
-
-pub fn calculate_words_break(input: Vec<(String, Option<QuranWordBreaker>)>) -> Vec<AyahWord> {
-    #[derive(PartialEq, PartialOrd, Eq, Ord, Hash)]
-    struct TempWordTy {
-        id: usize,
-        word: String,
-    }
-
-    // WARNING TODO: Change the |word| word, Could not be unique
-    let word_breakers = maybe_multip(input, |index, word| TempWordTy { id: index, word });
-
-    word_breakers
-        .into_iter()
-        .map(|(word, breakers)| calculate_word_break(word.word, breakers))
-        .collect()
-}
-
-fn calculate_ayah_break(ayah: QuranAyah, breakers: Vec<QuranAyahBreaker>) -> SimpleAyah {
-    let breakers_map = count(breakers);
-
-    let breakers = breakers_map
-        .into_iter()
-        .map(|(key, value)| Breaker {
-            name: key.name,
-            number: value,
-        })
-        .collect::<Vec<Breaker>>();
-
-    SimpleAyah {
-        bismillah: AyahBismillah::from_ayah_fields(ayah.is_bismillah, ayah.bismillah_text),
-        breakers: if breakers.is_empty() {
-            None
-        } else {
-            Some(breakers)
-        },
-        number: ayah.ayah_number as u32,
-        sajdah: ayah.sajdah,
-        uuid: ayah.uuid,
-    }
-}
-
-/// input: Vec<(Ayah, Breaks(name))>
-///
-/// Calculates ayahs breaks, and returns Vec of SimpleAyah's
-pub fn calculate_ayahs_break(input: Vec<(QuranAyah, Option<QuranAyahBreaker>)>) -> Vec<SimpleAyah> {
-    let ayah_breakers = maybe_multip(input, |index, ayah| (index, ayah));
-
-    ayah_breakers
-        .into_iter()
-        .map(|(ayah, breakers)| calculate_ayah_break(ayah.1, breakers))
-        .collect()
-}
-
-pub fn calculate_breaks(
-    input: Vec<(
-        QuranAyah,
-        String,
-        Option<QuranWordBreaker>,
-        Option<QuranAyahBreaker>,
-    )>,
-) -> BTreeMap<SimpleAyah, Vec<AyahWord>> {
-    let ayahs = input
-        .clone()
-        .into_iter()
-        .map(|(ayah, _, _, br)| (ayah, br))
-        .collect();
-
-    let ayahs_breaks = calculate_ayahs_break(ayahs);
-
-    let words = input
-        .into_iter()
-        .map(|(_, word, br, _)| (word, br))
-        .collect();
-
-    let words_breaks = calculate_words_break(words);
-
-    let ayahs_words: Vec<(SimpleAyah, AyahWord)> =
-        ayahs_breaks.into_iter().zip(words_breaks).collect();
-
-    multip(ayahs_words, |ayah| ayah)
-}
-
 #[derive(Serialize, Clone, Debug)]
 pub struct AyahBismillahInSurah {
     pub is_first_ayah: bool,
@@ -207,6 +100,8 @@ pub struct Breaker {
 /// The Ayah type that will return in the response
 #[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug)]
 pub struct SimpleAyah {
+    #[serde(skip_serializing)]
+    pub id: u32,
     pub number: u32,
     pub uuid: Uuid,
     pub sajdah: Option<String>,
@@ -224,6 +119,9 @@ pub struct AyahWithText {
 
 #[derive(Serialize, Clone, Debug)]
 pub struct AyahWord {
+    #[serde(skip_serializing)]
+    pub ayah_id: u32,
+
     pub word: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
