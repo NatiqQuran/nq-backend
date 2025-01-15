@@ -16,6 +16,103 @@
         "in": "header",
         "name": "Authorization"
       }
+    },
+    "schemas": {
+      "AccountSendCoderequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "\\.[Ii][Oo]$",
+            "description": "The email address"
+          }
+        },
+        "required": ["email"]
+      },
+      "AccountVerifyrequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address"
+          },
+          "code": {
+            "type": "number",
+            "minLength": 6,
+            "maxLength": 6,
+            "example": 123456,
+            "description": "The code"
+          }
+        },
+        "required": ["email", "code"]
+      },
+      "UserListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "format": "uuid",
+              "nullable": false,
+              "description": "Unique identifier of the user"
+            },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "pattern": "\\.[Ii][Oo]$",
+              "nullable": false,
+              "description": "Primary email address of the user, if available"
+            },
+            "username": {
+              "type": "string",
+              "nullable": false,
+              "example": "u012",
+              "description": "Username of the user"
+            },
+            "first_name": {
+              "type": "string",
+              "nullable": true,
+              "description": "First name of the user, if available"
+            },
+            "last_name": {
+              "type": "string",
+              "nullable": true,
+              "description": "Last name of the user, if available"
+            },
+            "birthday": {
+              "type": "string",
+              "format": "date",
+              "nullable": true,
+              "description": "Birthday of the user, if available"
+            },
+            "profile_image": {
+              "type": "string",
+              "nullable": true,
+              "example": "https://example.com/image.jpg",
+              "description": "URL of the user's profile image, if available"
+            },
+            "language": {
+              "type": "string",
+              "format": "language",
+              "nullable": false,
+              "example": "en",
+              "description": "Preferred language of the user, if available"
+            }
+          },
+          "required": [
+            "uuid",
+            "email",
+            "username",
+            "first_name",
+            "last_name",
+            "birthday",
+            "profile_image",
+            "language"
+          ]
+        }
+      }
     }
   },
   "tags": [
@@ -64,16 +161,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "pattern": "\\.[Ii][Oo]$",
-                    "description": "The email address",
-                    "example": "info@natiq.com"
-                  }
-                }
+                "$ref": "#/components/schemas/AccountSendCoderequestBody"
               }
             }
           }
@@ -81,7 +169,38 @@
         "tags": ["account"],
         "responses": {
           "200": {
-            "description": "Code sended."
+            "description": "Code sended.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Code sended"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request data is not valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "email: Validation error: email [{\"value\": String(\"info@gmail.\")}]"
+                    },
+                    "error_name": {
+                      "type": "string",
+                      "example": "VALIDATION_ERROR"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request data is not valid"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -93,21 +212,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "description": "The email address",
-                    "example": "info@natiq.com"
-                  },
-                  "code": {
-                    "type": "number",
-                    "description": "The code",
-                    "minLength": 6,
-                    "maxLength": 6,
-                    "example": 123456
-                  }
-                }
+                "$ref": "#/components/schemas/AccountVerifyrequestBody"
               }
             }
           }
@@ -115,7 +220,53 @@
         "tags": ["account"],
         "responses": {
           "200": {
-            "description": "Returns the new user token"
+            "description": "Returns the new user token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "UserToken"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Verification code is not valid!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error_name": {
+                      "type": "string",
+                      "example": "VERIFY_CODE_NOT_VALID"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Verification code is not valid!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "No verification code is sended to this email!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error_name": {
+                      "type": "string",
+                      "example": "VERIFY_CODE_NOT_SENDED"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "No verification code is sended to this email!"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -131,7 +282,35 @@
         "tags": ["account"],
         "responses": {
           "200": {
-            "description": "Expires the token of user"
+            "description": "Expires the token of user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Logged Out"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "the client lacks proper authentication credentials or has provided invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error_name": {
+                      "type": "string",
+                      "example": "AUTHN_TOKEN_INVALID"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token invalid"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -152,46 +331,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "uuid": {
-                        "type": "string",
-                        "description": "Unique identifier of the user"
-                      },
-                      "email": {
-                        "type": "string",
-                        "description": "Primary email address of the user, if available"
-                      },
-                      "username": {
-                        "type": "string",
-                        "description": "Username of the user"
-                      },
-                      "first_name": {
-                        "type": "string",
-                        "description": "First name of the user, if available"
-                      },
-                      "last_name": {
-                        "type": "string",
-                        "description": "Last name of the user, if available"
-                      },
-                      "birthday": {
-                        "type": "string",
-                        "format": "date",
-                        "description": "Birthday of the user, if available"
-                      },
-                      "profile_image": {
-                        "type": "string",
-                        "description": "URL of the user's profile image, if available"
-                      },
-                      "language": {
-                        "type": "string",
-                        "description": "Preferred language of the user, if available"
-                      }
-                    },
-                    "required": ["uuid", "username"]
-                  }
+                  "$ref": "#/components/schemas/UserListResponseData"
                 }
               }
             }
@@ -416,7 +556,71 @@
         "tags": ["user"],
         "responses": {
           "200": {
-            "description": "Return's the user Profile."
+            "description": "Return's the user Profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": false,
+                        "example": "c34ac6bb-b6ce-476a-bced-1bd93387eb30"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "pattern": "\\.[Ii][Oo]$",
+                        "nullable": false,
+                        "example": "example@gmail.com"
+                      },
+                      "username": {
+                        "type": "string",
+                        "nullable": false,
+                        "example": "u312"
+                      },
+                      "first_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "Abbas"
+                      },
+                      "last_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "hamid"
+                      },
+                      "birthday": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "2002/08/02"
+                      },
+                      "profile_image": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "language": {
+                        "type": "string",
+                        "nullable": false,
+                        "example": "en"
+                      }
+                    },
+                    "required": [
+                      "uuid",
+                      "email",
+                      "username",
+                      "first_name",
+                      "last_name",
+                      "birthday",
+                      "profile_image",
+                      "language"
+                    ]
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -1519,7 +1723,8 @@
                       },
                       "name": {
                         "type": "string",
-                        "description": "Full name of the mushaf"
+                        "description": "Full name of the mushaf",
+                        "example": "jafar"
                       },
                       "short_name": {
                         "type": "string",
@@ -1529,17 +1734,10 @@
                         "type": "string",
                         "description": "Source of the mushaf"
                       }
-                    }
+                    },
+                    "required": ["uuid", "name", "short_name", "source"]
                   }
-                },
-                "example": [
-                  {
-                    "uuid": "ccbd8806-53e8-4658-8281-3aed10b50898",
-                    "short_name": "hafs",
-                    "name": "Hafs an Asem",
-                    "source": "tanzil"
-                  }
-                ]
+                }
               }
             }
           }
@@ -1741,8 +1939,7 @@
             "description": "The UUID of the mushaf to delete",
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "example": "ccbd8806-53e8-4658-8281-3aed10b50898"
+              "format": "uuid"
             }
           }
         ],
@@ -1932,7 +2129,7 @@
                     "description": "The number of the surah in the Mushaf.",
                     "example": 1
                   },
-                  "mushaf_id": {
+                  "mushaf_uuid": {
                     "type": "string",
                     "description": "The UUID of the Mushaf in which the surah belongs.",
                     "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
@@ -2489,7 +2686,7 @@
                     "uuid": "123e4567-e89b-12d3-a456-426614174000",
                     "sajdah": null,
                     "text": "In the name of Allah, the Most Gracious, the Most Merciful.",
-                    "words": ["In", "the", "name", "of", "allah", "..."]
+                    "words": ["In", "the", "name", "of", "Allah", "..."]
                   }
                 ]
               }
