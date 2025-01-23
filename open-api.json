@@ -279,6 +279,223 @@
           "birthday",
           "language"
         ]
+      },
+      "OrganizationListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "format": "uuid",
+              "nullable": false,
+              "description": "Organization UUID"
+            },
+            "username": {
+              "type": "string",
+              "minLength": 6,
+              "maxLength": 12,
+              "nullable": false,
+              "description": " organization username"
+            },
+            "primary_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16,
+              "nullable": false,
+              "example": "Primary Organization Name"
+            },
+            "profile_image": {
+              "type": "string",
+              "nullable": true,
+              "example": "https://example.com/profile-image.jpg",
+              "description": "Organization profile image ."
+            },
+            "established_date": {
+              "type": "string",
+              "format": "date",
+              "nullable": false,
+              "description": "Company establishment date"
+            },
+            "national_id": {
+              "type": "integer",
+              "format": "int64",
+              "minLength": 11,
+              "maxLength": 11,
+              "nullable": false,
+              "example": "01234567891",
+              "description": "organization national id"
+            }
+          },
+          "required": [
+            "uuid",
+            "username",
+            "primary_name",
+            "primary_email",
+            "profile_image",
+            "established_date",
+            "national_id"
+          ]
+        }
+      },
+      "OrganizationAddrequestBody": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "example": "github",
+            "description": "The unique username for new organization"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "example": "github organization",
+            "description": "The full name of organization"
+          },
+          "primary_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "example": "github",
+            "description": "The primary name for organization"
+          },
+          "profile_image": {
+            "type": "string",
+            "nullable": true,
+            "example": "https://example.com/profile-image.jpg",
+            "description": "The url of a profile image"
+          },
+          "established_date": {
+            "type": "string",
+            "format": "date",
+            "description": "The established date of organization(company), minDate is 200 year past"
+          },
+          "national_id": {
+            "type": "integer",
+            "format": "int64",
+            "minLength": 11,
+            "maxLength": 11,
+            "example": "01234567891",
+            "description": "The national id of a company"
+          }
+        },
+        "required": [
+          "username",
+          "name",
+          "primary_name",
+          "established_date",
+          "national_id"
+        ]
+      },
+      "OrganizationViewResponseData": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "Organization UUID"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "nullable": false,
+            "description": " organization username"
+          },
+          "primary_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "nullable": false,
+            "example": "Primary Organization Name"
+          },
+          "profile_image": {
+            "type": "string",
+            "nullable": true,
+            "example": "https://example.com/profile-image.jpg",
+            "description": "Organization profile image ."
+          },
+          "established_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": false,
+            "description": "Company establishment date"
+          },
+          "national_id": {
+            "type": "integer",
+            "format": "int64",
+            "minLength": 11,
+            "maxLength": 11,
+            "nullable": false,
+            "example": "01234567891",
+            "description": "organization national id"
+          }
+        },
+        "required": [
+          "uuid",
+          "username",
+          "primary_name",
+          "primary_email",
+          "profile_image",
+          "established_date",
+          "national_id"
+        ]
+      },
+      "OrganizationEditrequestBody": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "example": "github",
+            "description": "The unique username for new organization"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "example": "github organization",
+            "description": "The full name of organization"
+          },
+          "primary_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "example": "github",
+            "description": "The primary name for organization"
+          },
+          "profile_image": {
+            "type": "string",
+            "nullable": true,
+            "example": "https://example.com/profile-image.jpg",
+            "description": "The url of a profile image"
+          },
+          "established_date": {
+            "type": "string",
+            "format": "date",
+            "description": "The established date of organization(company), minDate is 200 year past"
+          },
+          "national_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The national id of a company",
+            "minLength": 11,
+            "maxLength": 11,
+            "example": "01234567891"
+          }
+        },
+        "required": [
+          "username",
+          "name",
+          "primary_name",
+          "established_date",
+          "national_id"
+        ]
       }
     }
   },
@@ -687,38 +904,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "uuid": {
-                        "type": "string",
-                        "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                      },
-                      "username": {
-                        "type": "string",
-                        "example": "org-username"
-                      },
-                      "primary_name": {
-                        "type": "string",
-                        "example": "Primary Organization Name"
-                      },
-                      "profile_image": {
-                        "type": "string",
-                        "nullable": true,
-                        "example": "http://example.com/image.jpg"
-                      },
-                      "established_date": {
-                        "type": "string",
-                        "format": "date",
-                        "example": "2024-01-01"
-                      },
-                      "national_id": {
-                        "type": "string",
-                        "example": "123456789"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/OrganizationListResponseData"
                 }
               }
             }
@@ -738,55 +924,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string",
-                    "description": "The unique username for new organization",
-                    "example": "github",
-                    "minLength": 6,
-                    "maxLength": 12
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "The full name of organization",
-                    "example": "github organization",
-                    "minLength": 1,
-                    "maxLength": 16
-                  },
-                  "primary_name": {
-                    "type": "string",
-                    "description": "The primary name for organization",
-                    "example": "github",
-                    "minLength": 1,
-                    "maxLength": 16
-                  },
-                  "profile_image": {
-                    "type": "string",
-                    "nullable": true,
-                    "description": "The url of a profile image",
-                    "example": "https://..."
-                  },
-                  "established_date": {
-                    "type": "string",
-                    "description": "The established date of organization(company), minDate is 200 year past",
-                    "example": "1988-03-12"
-                  },
-                  "national_id": {
-                    "type": "string",
-                    "description": "The national id of a company",
-                    "minLength": 11,
-                    "maxLength": 11,
-                    "example": "12345678911"
-                  }
-                },
-                "required": [
-                  "username",
-                  "name",
-                  "primary_name",
-                  "established_date",
-                  "national_id"
-                ]
+                "$ref": "#/components/schemas/OrganizationAddrequestBody"
               }
             }
           }
@@ -826,36 +964,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "username": {
-                      "type": "string",
-                      "description": "The unique username of the organization",
-                      "example": "github"
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "The full name of the organization",
-                      "example": "GitHub Organization"
-                    },
-                    "profile_image": {
-                      "type": "string",
-                      "nullable": true,
-                      "description": "The URL of the organization's profile image",
-                      "example": "https://assets.natiq.com/example-profile-image.jpg"
-                    },
-                    "established_date": {
-                      "type": "string",
-                      "format": "date",
-                      "description": "The established date of the organization",
-                      "example": "2008-04-10"
-                    },
-                    "national_id": {
-                      "type": "string",
-                      "description": "The national ID of the organization",
-                      "example": "12345678911"
-                    }
-                  }
+                  "$ref": "#/components/schemas/OrganizationViewResponseData"
                 }
               }
             }
@@ -877,8 +986,7 @@
             "name": "organization_uuid",
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "example": "e0e1f46b-3b8c-4f9b-8c6f-467d31c60987"
+              "format": "uuid"
             },
             "description": "The unique identifier of the organization to be edited"
           }
@@ -888,49 +996,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string",
-                    "description": "The unique username for new organization",
-                    "example": "github",
-                    "minLength": 6,
-                    "maxLength": 12
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "The full name of organization",
-                    "example": "github organization",
-                    "minLength": 1,
-                    "maxLength": 16
-                  },
-                  "profile_image": {
-                    "type": "string",
-                    "format": "url",
-                    "nullable": true,
-                    "description": "The url of a profile image",
-                    "example": "https://..."
-                  },
-                  "established_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "The established date of organization(company), minYear is 200 year past",
-                    "example": "1988-03-12"
-                  },
-                  "national_id": {
-                    "type": "string",
-                    "description": "The national id of a company",
-                    "minLength": 11,
-                    "maxLength": 11,
-                    "example": "12345678911"
-                  }
-                },
-                "required": [
-                  "username",
-                  "name",
-                  "established_date",
-                  "national_id"
-                ]
+                "$ref": "#/components/schemas/OrganizationEditrequestBody"
               }
             }
           }
