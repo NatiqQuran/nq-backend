@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
-use super::{AyahWord, Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse};
+use super::{
+    AyahWord, Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse, SurahName,
+};
 use crate::models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranSurah, QuranWord};
 use crate::routers::multip;
 use crate::{error::RouterError, DbPool};
-use crate::{AyahBismillah, AyahTy, Breaker, SingleSurahMushaf, SurahName};
+use crate::{AyahBismillah, AyahTy, Breaker, SingleSurahMushaf};
 use actix_web::web;
 use diesel::prelude::*;
 use uuid::Uuid;
@@ -103,7 +105,6 @@ pub async fn surah_view(
                     words: words
                         .into_iter()
                         .map(|w| AyahWord {
-                            ayah_id: ayah.id,
                             breakers: None,
                             word: w.word,
                         })
@@ -140,7 +141,6 @@ pub async fn surah_view(
 
         Ok(web::Json(QuranResponseData {
             surah: SingleSurahResponse {
-                uuid: surah.uuid,
                 mushaf: SingleSurahMushaf::from(mushaf),
                 bismillah: final_ayahs.first().unwrap().format_bismillah_for_surah(),
                 names: vec![SurahName {
@@ -151,8 +151,8 @@ pub async fn surah_view(
                     transliteration: surah.name_transliteration,
                 }],
                 period: surah.period,
-                number: surah.number,
-                number_of_ayahs: final_ayahs.len() as i64,
+                number: surah.number as u32,
+                number_of_ayahs: final_ayahs.len() as u32,
             },
             ayahs: final_ayahs,
         }))

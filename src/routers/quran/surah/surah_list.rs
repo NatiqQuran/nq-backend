@@ -1,9 +1,9 @@
+use super::SurahName;
 use super::{SurahListQuery, SurahListResponse};
 use crate::error::RouterErrorDetailBuilder;
 use crate::filter::Filter;
 use crate::models::{QuranAyah, QuranMushaf, QuranSurah};
 use crate::schema::quran_ayahs::surah_id;
-use crate::SurahName;
 use crate::{error::RouterError, DbPool};
 use actix_web::{web, HttpRequest};
 use diesel::dsl::count;

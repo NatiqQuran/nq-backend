@@ -105,7 +105,6 @@ pub async fn ayah_list(
                     words: words
                         .into_iter()
                         .map(|w| AyahWord {
-                            ayah_id: ayah.id,
                             breakers: None,
                             word: w.word,
                         })
