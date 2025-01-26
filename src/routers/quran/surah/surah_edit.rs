@@ -15,7 +15,8 @@ pub async fn surah_edit(
     use crate::schema::quran_mushafs::dsl::{id as mushaf_id, quran_mushafs, uuid as mushaf_uuid};
     use crate::schema::quran_surahs::dsl::{
         mushaf_id as surah_mushaf_id, name, name_pronunciation, name_translation_phrase,
-        name_transliteration, number, period, quran_surahs, uuid as surah_uuid,
+        name_transliteration, number, period, quran_surahs, search_terms as surah_search_terms,
+        uuid as surah_uuid,
     };
 
     let new_surah = new_surah.into_inner();
@@ -31,6 +32,12 @@ pub async fn surah_edit(
             .select(mushaf_id)
             .get_result(&mut conn)?;
 
+        let search_terms = new_surah.search_terms.map(|v| {
+            v.into_iter()
+                .map(|s| Some(s))
+                .collect::<Vec<Option<String>>>()
+        });
+
         diesel::update(quran_surahs.filter(surah_uuid.eq(target_surah_uuid)))
             .set((
                 number.eq(new_surah.number),
@@ -40,6 +47,7 @@ pub async fn surah_edit(
                 name_pronunciation.eq(new_surah.name_pronunciation),
                 name_translation_phrase.eq(new_surah.name_translation_phrase),
                 name_transliteration.eq(new_surah.name_transliteration),
+                surah_search_terms.eq(search_terms),
             ))
             .execute(&mut conn)?;
 
