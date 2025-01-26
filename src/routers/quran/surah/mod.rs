@@ -27,41 +27,6 @@ impl Default for Format {
     }
 }
 
-// This is for Surah router
-// which is faster than SimpleAyah in sorting
-#[derive(Eq, Serialize, Clone, Debug)]
-pub struct SimpleAyahSurah {
-    pub number: u32,
-    pub uuid: Uuid,
-    pub sajdah: Option<String>,
-}
-
-// WARNING: Only hashing 'number' ?
-// This can lead to collisions in hashmap if the number is not unique
-impl Hash for SimpleAyahSurah {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.number.hash(state);
-    }
-}
-
-impl Ord for SimpleAyahSurah {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.number.cmp(&other.number)
-    }
-}
-
-impl PartialEq for SimpleAyahSurah {
-    fn eq(&self, other: &Self) -> bool {
-        self.number == other.number
-    }
-}
-
-impl PartialOrd for SimpleAyahSurah {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.number.cmp(&other.number))
-    }
-}
-
 #[derive(Hash, Ord, PartialOrd, PartialEq, Eq, Serialize, Clone, Debug, Deserialize)]
 pub struct AyahBismillah {
     pub is_ayah: bool,
@@ -102,10 +67,13 @@ pub struct Breaker {
 pub struct SimpleAyah {
     #[serde(skip_serializing)]
     pub id: u32,
-    pub number: u32,
     pub uuid: Uuid,
+    pub number: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sajdah: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bismillah: Option<AyahBismillah>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub breakers: Option<Vec<Breaker>>,
 }
 
@@ -119,9 +87,6 @@ pub struct AyahWithText {
 
 #[derive(Serialize, Clone, Debug)]
 pub struct AyahWord {
-    #[serde(skip_serializing)]
-    pub ayah_id: u32,
-
     pub word: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -261,12 +226,11 @@ impl From<QuranMushaf> for SingleSurahMushaf {
 /// The response type for /surah/{id}
 #[derive(Serialize, Clone, Debug)]
 pub struct SingleSurahResponse {
-    pub uuid: Uuid,
     pub mushaf: SingleSurahMushaf,
+    pub number: u32,
+    pub number_of_ayahs: u32,
     pub names: Vec<SurahName>,
     pub period: Option<String>,
-    pub number: i32,
-    pub number_of_ayahs: i64,
     pub bismillah: Option<AyahBismillahInSurah>,
 }
 

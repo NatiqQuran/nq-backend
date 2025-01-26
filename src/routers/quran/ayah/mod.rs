@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 use crate::{
     filter::{Filters, Order},
-    AyahBismillah, Format,
+    AyahBismillah, Format, SingleSurahMushaf, SurahName,
 };
 
 #[derive(Deserialize, Serialize)]
@@ -49,11 +49,16 @@ pub struct SimpleWord {
     word: String,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct AyahWithContent {
+#[derive(Serialize)]
+pub struct AyahWithContentSurah {
     uuid: Uuid,
-    mushaf: Uuid,
-    surah: Uuid,
+    names: Vec<SurahName>,
+}
+
+#[derive(Serialize)]
+pub struct AyahWithContent {
+    mushaf: SingleSurahMushaf,
+    surah: AyahWithContentSurah,
     ayah_number: i32,
     sajdah: Option<Sajdah>,
     text: String,
@@ -71,7 +76,6 @@ pub struct SimpleAyah {
 pub struct AyahListQuery {
     mushaf: String,
     format: Option<Format>,
-    break_data: Option<bool>,
 
     sort: Option<String>,
     order: Option<Order>,
