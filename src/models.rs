@@ -332,6 +332,8 @@ pub struct QuranSurah {
 
     pub name_transliteration: Option<String>,
 
+    pub search_terms: Option<Vec<Option<String>>>,
+
     #[serde(skip_serializing)]
     pub created_at: NaiveDateTime,
     #[serde(skip_serializing)]
@@ -349,6 +351,7 @@ pub struct NewQuranSurah {
     pub name_pronunciation: Option<String>,
     pub name_translation_phrase: Option<String>,
     pub name_transliteration: Option<String>,
+    pub search_terms: Option<Vec<Option<String>>>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Validate, Identifiable, Queryable, Selectable, Debug)]

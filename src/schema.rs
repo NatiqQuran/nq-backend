@@ -253,6 +253,7 @@ diesel::table! {
         name_pronunciation -> Nullable<Text>,
         name_translation_phrase -> Nullable<Text>,
         name_transliteration -> Nullable<Text>,
+        search_terms -> Nullable<Array<Nullable<Text>>>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }

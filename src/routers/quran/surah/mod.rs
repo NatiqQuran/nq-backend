@@ -232,6 +232,7 @@ pub struct SingleSurahResponse {
     pub names: Vec<SurahName>,
     pub period: Option<String>,
     pub bismillah: Option<AyahBismillahInSurah>,
+    pub search_terms: Option<Vec<String>>,
 }
 
 /// The response type for /surah
@@ -242,6 +243,7 @@ pub struct SurahListResponse {
     pub period: Option<String>,
     pub number_of_ayahs: i64,
     pub names: Vec<SurahName>,
+    pub search_terms: Option<Vec<String>>,
 }
 
 // TODO: Remove number. number must be generated at api runtime
@@ -253,6 +255,7 @@ pub struct SimpleSurah {
     pub name_translation_phrase: Option<String>,
     pub name_transliteration: Option<String>,
     pub period: Option<String>,
+    pub search_terms: Option<Vec<String>>,
     pub number: i32,
     pub mushaf_uuid: Uuid,
 }

@@ -9,6 +9,7 @@ CREATE TABLE quran_surahs (
     name_pronunciation TEXT,
     name_translation_phrase TEXT,
     name_transliteration TEXT,
+    search_terms TEXT ARRAY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT quran_surahs_id PRIMARY KEY (id),

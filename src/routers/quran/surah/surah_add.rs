@@ -54,6 +54,12 @@ pub async fn surah_add(
             }
         }
 
+        let search_terms = new_surah.search_terms.map(|v| {
+            v.into_iter()
+                .map(|s| Some(s))
+                .collect::<Vec<Option<String>>>()
+        });
+
         // Add a new surah
         NewQuranSurah {
             creator_user_id: user,
@@ -64,6 +70,7 @@ pub async fn surah_add(
             name_pronunciation: new_surah.name_pronunciation,
             name_translation_phrase: new_surah.name_translation_phrase,
             name_transliteration: new_surah.name_transliteration,
+            search_terms,
         }
         .insert_into(quran_surahs)
         .execute(&mut conn)?;

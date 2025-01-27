@@ -138,6 +138,11 @@ pub async fn surah_view(
         } else {
             None
         };
+        let surah_search_terms = surah.search_terms.map(|st| {
+            st.into_iter()
+                .map(|s| s.unwrap_or(String::new()))
+                .collect::<Vec<String>>()
+        });
 
         Ok(web::Json(QuranResponseData {
             surah: SingleSurahResponse {
@@ -153,6 +158,7 @@ pub async fn surah_view(
                 period: surah.period,
                 number: surah.number as u32,
                 number_of_ayahs: final_ayahs.len() as u32,
+                search_terms: surah_search_terms,
             },
             ayahs: final_ayahs,
         }))
