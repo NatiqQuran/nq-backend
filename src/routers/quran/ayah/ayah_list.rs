@@ -20,9 +20,10 @@ pub async fn ayah_list(
     web::Query(query): web::Query<AyahListQuery>,
     req: HttpRequest,
 ) -> Result<web::Json<Vec<AyahTy>>, RouterError> {
+    use crate::schema::quran_ayahs::dsl::ayah_number;
     use crate::schema::quran_ayahs_breakers::dsl::quran_ayahs_breakers;
     use crate::schema::quran_mushafs::dsl::{quran_mushafs, short_name as mushaf_short_name};
-    use crate::schema::quran_surahs::dsl::quran_surahs;
+    use crate::schema::quran_surahs::dsl::{number as quran_surah_number, quran_surahs};
     use crate::schema::quran_words::dsl::quran_words;
     use crate::schema::quran_words_breakers::dsl::quran_words_breakers;
 
@@ -65,6 +66,7 @@ pub async fn ayah_list(
             .left_outer_join(quran_surahs.left_outer_join(quran_mushafs))
             .inner_join(quran_words.left_join(quran_words_breakers))
             .filter(mushaf_short_name.eq(query.mushaf))
+            .order((quran_surah_number.asc(), ayah_number.asc()))
             .select((QuranAyah::as_select(), QuranWord::as_select()))
             .get_results::<(QuranAyah, QuranWord)>(&mut conn)?;
 
