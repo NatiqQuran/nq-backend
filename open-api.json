@@ -496,7 +496,1048 @@
           "established_date",
           "national_id"
         ]
-      }
+      },
+      "OrganizationNameListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16,
+              "nullable": false,
+              "example": "Example Organization",
+              "description": "The organization name"
+            },
+            "language": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2,
+              "nullable": false,
+              "example": "en",
+              "description": "Language of the organization name"
+            },
+            "uuid": {
+              "type": "string",
+              "format": "uuid",
+              "nullable": false,
+              "description": "UUID of the name entry"
+            }
+          },
+          "required": ["name", "language", "uuid"]
+        }
+      },
+      "OrganizationNameAddResponseData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "nullable": false,
+            "example": "ali",
+            "description": "The new name of the organization"
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "nullable": false,
+            "example": "en",
+            "description": "The language code for the name (2 characters, e.g., 'en' or 'ar')"
+          }
+        },
+        "required": ["name", "language"]
+      },
+      "OrganizationNameViewResponseData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "nullable": false,
+            "description": "The organization name",
+            "example": "Example Organization"
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "nullable": false,
+            "description": "Language of the organization name",
+            "example": "en"
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "UUID of the organization name entry"
+          }
+        },
+        "required": ["name", "language", "uuid"]
+      },
+      "PermissionListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Unique identifier of the permission"
+            },
+            "account": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the account"
+                },
+                "username": {
+                  "type": "string",
+                  "description": "Username of the account"
+                },
+                "first_name": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "First name of the account holder"
+                },
+                "last_name": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Last name of the account holder"
+                }
+              },
+              "required": ["uuid", "username", "first_name", "last_name"]
+            },
+            "object": {
+              "type": "string",
+              "description": "The object that the permission applies to"
+            },
+            "action": {
+              "type": "string",
+              "description": "The action allowed on the object"
+            },
+            "conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Condition name"
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Condition value"
+                  }
+                },
+                "required": ["name", "value"]
+              }
+            }
+          },
+          "required": ["uuid", "account", "object", "action", "conditions"]
+        }
+      },
+      "PermissionAddRequestData": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the permission"
+          },
+          "account": {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "UUID of the account"
+              },
+              "username": {
+                "type": "string",
+                "description": "Username of the account"
+              },
+              "first_name": {
+                "type": "string",
+                "nullable": true,
+                "description": "First name of the account holder"
+              },
+              "last_name": {
+                "type": "string",
+                "nullable": true,
+                "description": "Last name of the account holder"
+              }
+            },
+            "required": ["uuid", "username"]
+          },
+          "object": {
+            "type": "string",
+            "description": "The object that the permission applies to"
+          },
+          "action": {
+            "type": "string",
+            "description": "The action allowed on the object"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Condition name"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Condition value"
+                }
+              },
+              "required": ["name", "value"]
+            }
+          }
+        },
+        "required": ["uuid", "account", "object", "action"]
+      },
+      "PermissionViewResponseData": {
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the permission"
+          },
+          "account": {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "UUID of the account"
+              },
+              "username": {
+                "type": "string",
+                "description": "Username of the account"
+              },
+              "first_name": {
+                "type": "string",
+                "nullable": true,
+                "description": "First name of the account holder"
+              },
+              "last_name": {
+                "type": "string",
+                "nullable": true,
+                "description": "Last name of the account holder"
+              }
+            },
+            "required": ["uuid", "username"]
+          },
+          "object": {
+            "type": "string",
+            "description": "The object that the permission applies to"
+          },
+          "action": {
+            "type": "string",
+            "description": "The action allowed on the object"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Condition name"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Condition value"
+                }
+              },
+              "required": ["name", "value"]
+            }
+          }
+        },
+        "required": ["uuid", "account", "object", "action", "conditions"]
+      },
+      "PermissionEditRequestData": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "The user uuid or * for all users",
+            "nullable": true
+          },
+          "object": {
+            "type": "string",
+            "description": "The controller that the user needs to access",
+            "example": "Translation, Reciters & etc",
+            "nullable": false
+          },
+          "action": {
+            "type": "string",
+            "description": "The action for controller & etc",
+            "example": "Add, Edit, View, List, Delete & etc",
+            "nullable": false
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Unique ID of the condition. Nullable or auto-generated.",
+                  "nullable": true
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Condition name (e.g., isOwner)",
+                  "example": "isOwner",
+                  "nullable": false
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Condition value (e.g., true)",
+                  "example": "true",
+                  "nullable": false
+                }
+              },
+              "required": ["name", "value"]
+            },
+            "description": "Array of conditions, each condition is an object with a name & value. Currently, only the condition 'isOwner' is possible.",
+            "example": "[{ \"name\": \"isOwner\", \"value\": \"true\" }]"
+          }
+        },
+        "required": ["object", "action", "conditions"]
+      },
+      "MushafListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Unique identifier of the Mushaf"
+            },
+            "name": {
+              "type": "string",
+              "description": "Full name of the Mushaf",
+              "example": "Hafs an Asem"
+            },
+            "short_name": {
+              "type": "string",
+              "description": "Short name of the Mushaf",
+              "example": "hafs"
+            },
+            "source": {
+              "type": "string",
+              "description": "Source of the Mushaf",
+              "example": "tanzil"
+            }
+          },
+          "required": ["uuid", "name", "short_name", "source"]
+        }
+      },
+      "MushafAddRequestData": {
+        "type": "object",
+        "properties": {
+          "short_name": {
+            "type": "string",
+            "description": "The mushaf short name, must be one word with only '_' and {'1'..'9'}.",
+            "example": "hafs"
+          },
+          "name": {
+            "type": "string",
+            "description": "The full name of the mushaf.",
+            "example": "Hafs an Asem"
+          },
+          "source": {
+            "type": "string",
+            "description": "The source of the mushaf's text.",
+            "example": "tanzil"
+          }
+        },
+        "required": ["short_name", "name", "source"]
+      },
+      "MushafViewResponseData": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the Mushaf"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the Mushaf",
+            "example": "Hafs an Asem"
+          },
+          "short_name": {
+            "type": "string",
+            "description": "Short name of the Mushaf",
+            "example": "hafs"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of the Mushaf",
+            "example": "tanzil"
+          }
+        },
+        "required": ["uuid", "name", "short_name", "source"]
+      },
+      "MushafEditRequestData": {
+        "type": "object",
+        "properties": {
+          "short_name": {
+            "type": "string",
+            "description": "The mushaf short name, must be one word with only '_' and {'1'..'9'}.",
+            "example": "hafs"
+          },
+          "name": {
+            "type": "string",
+            "description": "The full name of the mushaf.",
+            "example": "Hafs an Asem"
+          },
+          "source": {
+            "type": "string",
+            "description": "The source of the mushaf's text.",
+            "example": "tanzil"
+          }
+        },
+        "required": ["short_name", "name", "source"]
+      },
+      "SurahListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Unique identifier for the surah."
+            },
+            "number": {
+              "type": "integer",
+              "description": "Surah number."
+            },
+            "period": {
+              "type": "string",
+              "enum": ["makki", "madani"],
+              "nullable": true,
+              "description": "The period of revelation (e.g., Makki or Madani)."
+            },
+            "number_of_ayahs": {
+              "type": "integer",
+              "description": "The number of ayahs in the surah."
+            },
+            "names": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "arabic": {
+                    "type": "string",
+                    "description": "The Arabic name of the surah."
+                  },
+                  "pronunciation": {
+                    "type": "string",
+                    "description": "The way in which a word is pronounced."
+                  },
+                  "translation_phrase": {
+                    "type": "string",
+                    "description": "A phrase that translates the meaning of the surah."
+                  },
+                  "translation": {
+                    "type": "string",
+                    "description": "Translation of the surah name."
+                  },
+                  "transliteration": {
+                    "type": "string",
+                    "description": "Transliteration of the surah name."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SurahAddRequestData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The surah name.",
+            "example": "الفاتحة"
+          },
+          "period": {
+            "type": "string",
+            "description": "Indicates whether the surah is Makki or Madani.",
+            "example": "makki"
+          },
+          "number": {
+            "type": "number",
+            "description": "The number of the surah in the Mushaf.",
+            "example": 1
+          },
+          "mushaf_uuid": {
+            "type": "string",
+            "description": "The UUID of the Mushaf in which the surah belongs.",
+            "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+          },
+          "bismillah_status": {
+            "type": "boolean",
+            "description": "Determines whether Bismillah exists in the surah.",
+            "example": true
+          },
+          "bismillah_as_first_ayah": {
+            "type": "boolean",
+            "description": "Determines if Bismillah is the first ayah of the surah.",
+            "example": false
+          },
+          "name_translation_phrase": {
+            "type": "string",
+            "description": "The translation phrase for the surah name in the desired language.",
+            "example": "Al-Fatiha"
+          },
+          "name_pronunciation": {
+            "type": "string",
+            "description": "The pronunciation of the surah name in Arabic.",
+            "example": "Al-Fatiha"
+          },
+          "name_transliteration": {
+            "type": "string",
+            "description": "The transliteration of the surah name from Arabic to Latin.",
+            "example": "Al-Fatiha"
+          }
+        },
+        "required": ["name", "period", "number", "mushaf_uuid"]
+      },
+      "SurahViewResponseData": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "UUID of the surah"
+          },
+          "mushaf": {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid",
+                "nullable": false,
+                "description": "UUID of the mushaf",
+                "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
+              },
+              "short_name": {
+                "type": "string",
+                "description": "Short name of the mushaf",
+                "example": "hafs"
+              },
+              "name": {
+                "type": "string",
+                "description": "Full name of the mushaf",
+                "example": "Hafs an Asem"
+              },
+              "source": {
+                "type": "string",
+                "description": "Source of the mushaf",
+                "example": "tanzil"
+              }
+            }
+          },
+          "names": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "arabic": {
+                  "type": "string",
+                  "description": "Arabic name of the surah",
+                  "example": "الفاتحة"
+                },
+                "translation": {
+                  "type": "string",
+                  "description": "Translation of the surah name",
+                  "example": "The Opening"
+                },
+                "translation_phrase": {
+                  "type": "string",
+                  "description": "Translation phrase for the surah name",
+                  "example": "Al-Fatiha"
+                },
+                "pronunciation": {
+                  "type": "string",
+                  "description": "Pronunciation of the surah name",
+                  "example": "Al-Fatiha"
+                },
+                "transliteration": {
+                  "type": "string",
+                  "description": "Transliteration of the surah name",
+                  "example": "Al-Fātiḥa"
+                }
+              }
+            }
+          },
+          "period": {
+            "type": "string",
+            "enum": ["makki", "madani"],
+            "description": "Period of the surah (e.g., Makki or Madani)",
+            "example": "Makki"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1,
+            "description": "Surah number"
+          },
+          "bismillah_status": {
+            "type": "boolean",
+            "description": "Indicates if the surah contains 'Bismillah'",
+            "example": true
+          },
+          "bismillah_as_first_ayah": {
+            "type": "boolean",
+            "description": "Indicates if 'Bismillah' is the first ayah of the surah",
+            "example": true
+          },
+          "bismillah_text": {
+            "type": "string",
+            "description": "Text of 'Bismillah' if it is the first ayah",
+            "example": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+          },
+          "number_of_ayahs": {
+            "type": "integer",
+            "description": "Number of ayahs in the surah",
+            "example": 7
+          },
+          "ayahs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "format": "int64",
+                  "nullable": false,
+                  "example": 1,
+                  "description": "Ayah number in the surah"
+                },
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": false,
+                  "description": "UUID of the ayah"
+                },
+                "sajdah": {
+                  "type": "string",
+                  "enum": ["vajib", "mostahab"],
+                  "nullable": true,
+                  "description": "Indicates if the ayah has sajdah"
+                },
+                "text": {
+                  "type": "string",
+                  "nullable": false,
+                  "description": "Text of the ayah (if format is 'text')",
+                  "example": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+                },
+                "words": {
+                  "type": "string",
+                  "nullable": false,
+                  "example": ["بِسْمِ", "اللَّهِ", "الرَّحْمَنِ", "الرَّحِيمِ"],
+                  "description": "Words of the ayah"
+                }
+              },
+              "required": ["number", "uuid", "sajdah", "text", "words"]
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "mushaf",
+          "names",
+          "period",
+          "number",
+          "bismillah_status",
+          "bismillah_as_first_ayah",
+          "bismillah_text",
+          "number_of_ayahs",
+          "ayahs"
+        ]
+      },
+      "SurahEditRequestData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": false,
+            "description": "The surah name in Arabic.",
+            "example": "الفاتحة"
+          },
+          "name_pronunciation": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional pronunciation of the surah name.",
+            "example": "Al-Fatiha"
+          },
+          "name_translation_phrase": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional translation phrase of the surah name.",
+            "example": "The Opening"
+          },
+          "name_transliteration": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional transliteration of the surah name.",
+            "example": "Al-Fātiḥah"
+          },
+          "period": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["makki", "madani"],
+            "description": "Indicates whether the surah is Makki or Madani."
+          },
+          "number": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": false,
+            "description": "The surah number."
+          },
+          "bismillah_status": {
+            "type": "boolean",
+            "nullable": false,
+            "description": "Determines if Bismillah is present in the surah.",
+            "example": true
+          },
+          "bismillah_as_first_ayah": {
+            "type": "boolean",
+            "nullable": false,
+            "description": "Indicates if Bismillah is treated as the first ayah.",
+            "example": false
+          },
+          "mushaf_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "The UUID of the Mushaf associated with the surah."
+          }
+        },
+        "required": [
+          "name",
+          "number",
+          "bismillah_status",
+          "bismillah_as_first_ayah",
+          "mushaf_uuid"
+        ]
+      },
+      "AyahListResponseData": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": false,
+            "description": "Ayah number within the surah"
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "Unique identifier for the ayah"
+          },
+          "sajdah": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["mostahab", "vajib"],
+            "description": "Type of sajdah if applicable, otherwise null"
+          },
+          "text": {
+            "type": "string",
+            "nullable": false,
+            "example": "In the name of Allah, the Most Gracious, the Most Merciful.",
+            "description": "Full text of the ayah"
+          },
+          "words": {
+            "type": "string",
+            "nullable": false,
+            "example": ["In", "the", "name", "of", "Allah", "..."],
+            "description": "List of words contained in the ayah"
+          }
+        },
+        "required": ["number", "uuid", "sajdah", "text", "words"]
+      },
+      "AyahAddRequestData": {
+        "type": "object",
+        "properties": {
+          "surah_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "The UUID of the target surah"
+          },
+          "sajdah": {
+            "type": "string",
+            "nullable": true,
+            "description": "Ayah has sajdah or not",
+            "enum": ["vajib", "mustahab"]
+          },
+          "text": {
+            "type": "string",
+            "nullable": false,
+            "description": "The text of the ayah.",
+            "example": "In the name of Allah, the Most Gracious, the Most Merciful."
+          }
+        },
+        "required": ["surah_uuid", "text"]
+      },
+      "AyahViewResponseData": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "example": "uuid-of-ayah",
+            "description": "Unique identifier for the ayah"
+          },
+          "mushaf": {
+            "type": "string",
+            "format": "uuid",
+            "example": "uuid-of-mushaf",
+            "description": "Unique identifier for the mushaf"
+          },
+          "surah": {
+            "type": "string",
+            "format": "uuid",
+            "example": "uuid-of-surah",
+            "description": "Unique identifier for the surah"
+          },
+          "ayah_number": {
+            "type": "integer",
+            "description": "Ayah number within the surah54"
+          },
+          "sajdah": {
+            "type": "string",
+            "enum": ["vajib", "mostahab"],
+            "description": "Indicates whether the ayah has a sajdah"
+          },
+          "text": {
+            "type": "string",
+            "example": "هُدًى وَبُشْرَىٰ لِلْمُؤْمِنِينَ",
+            "description": "The full text of the ayah"
+          },
+          "words": {
+            "type": "array",
+            "description": "List of words contained within the ayah",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Unique identifier for the word"
+                },
+                "word": {
+                  "type": "string",
+                  "example": "هُدًى",
+                  "description": "The word text"
+                }
+              },
+              "required": ["uuid", "word"]
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "mushaf",
+          "surah",
+          "ayah_number",
+          "sajdah",
+          "text",
+          "words"
+        ]
+      },
+      "AyahEditRequestData": {
+        "type": "object",
+        "properties": {
+          "ayah_number": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": false,
+            "description": "Number of ayah"
+          },
+          "sajdeh": {
+            "type": "string",
+            "nullable": false,
+            "enum": ["mostahab", "vajib"],
+            "example": "vajib | mustahab | null",
+            "description": "Ayah have sajdeh or no"
+          }
+        }
+      },
+      "WordAddRequestData": {
+        "type": "object",
+        "properties": {
+          "ayah_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "UUID of the ayah to which the word belongs."
+          },
+          "word": {
+            "type": "string",
+            "nullable": false,
+            "description": "The word text to be added.",
+            "example": "الیوم"
+          }
+        },
+        "required": ["ayah_uuid", "word"]
+      },
+      "WordViewResponseData": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "Unique identifier for the word"
+          },
+          "creator_user_id": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": false,
+            "example": "1",
+            "description": "ID of the user who created the word"
+          },
+          "word": {
+            "type": "string",
+            "nullable": false,
+            "example": "ٱلْحَمْدُ",
+            "description": "The actual word text"
+          }
+        },
+        "required": ["uuid", "creator_user_id", "word"]
+      },
+      "WordEditRequestData": {
+        "type": "object",
+        "properties": {
+          "ayah_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The ayah_uuid of the word"
+          },
+          "word": {
+            "type": "string",
+            "example": "الْحَمْدُ",
+            "description": "New word that want to replace"
+          }
+        },
+        "required": ["ayah_uuid", "word"]
+      },
+      "TranslationListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Unique identifier for the translation"
+            },
+            "language": {
+              "type": "string",
+              "description": "Language of the translation",
+              "example": "English"
+            },
+            "release_date": {
+              "type": "string",
+              "format": "date",
+              "nullable": true,
+              "description": "Release date of the translation"
+            },
+            "source": {
+              "type": "string",
+              "nullable": true,
+              "description": "Source of the translation",
+              "example": "Tanzil"
+            },
+            "approved": {
+              "type": "boolean",
+              "description": "Indicates whether the translation content is approved",
+              "example": true
+            },
+            "bismillah": {
+              "type": "string",
+              "nullable": true,
+              "description": "Translated Bismillah text",
+              "example": "In the name of Allah, the Most Gracious, the Most Merciful."
+            },
+            "translator": {
+              "type": "object",
+              "properties": {
+                "account_uuid": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": false,
+                  "description": "Unique identifier of the translator's account",
+                  "example": "f1d1e3b5-55a9-4f9b-96a1-8d3e8b7d9a27"
+                },
+                "username": {
+                  "type": "string",
+                  "nullable": false,
+                  "description": "Username of the translator",
+                  "example": "translator123"
+                },
+                "first_name": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "First name of the translator",
+                  "example": "John"
+                },
+                "last_name": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Last name of the translator",
+                  "example": "Doe"
+                }
+              },
+              "required": [
+                "account_uuid",
+                "username",
+                "first_name",
+                "last_name"
+              ]
+            }
+          },
+          "required": [
+            "uuid",
+            "language",
+            "release_date",
+            "source",
+            "approved",
+            "bismillah",
+            "translator"
+          ]
+        }
+      },
+      "TranslationAddRequestData": {},
+      "TranslationViewResponseData": {},
+      "TranslationEditRequestData": {},
+      "TranslationTextListResponseData": {},
+      "TranslationTextAddRequestData": {},
+      "TranslationTextViewResponseData": {},
+      "TranslationTextEditRequestData": {},
+      "PhraseListResponseData": {},
+      "PhraseAddRequestData": {},
+      "PhraseViewResponseData": {},
+      "PhraseEditRequestData": {}
     }
   },
   "tags": [
@@ -1071,28 +2112,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string",
-                        "description": "The organization name",
-                        "example": "Example Organization"
-                      },
-                      "language": {
-                        "type": "string",
-                        "description": "Language of the organization name",
-                        "example": "en"
-                      },
-                      "uuid": {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "UUID of the name entry",
-                        "example": "123e4567-e89b-12d3-a456-426614174001"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/OrganizationNameListResponseData"
                 }
               }
             }
@@ -1123,24 +2143,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "The new name of the organization",
-                    "example": "ali",
-                    "minLength": 1,
-                    "maxLength": 16
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "The language code for the name (2 characters, e.g., 'en' or 'ar')",
-                    "minLength": 2,
-                    "maxLength": 2,
-                    "example": "en"
-                  }
-                },
-                "required": ["name", "language"]
+                "$ref": "#/components/schemas/OrganizationNameAddResponseData"
               }
             }
           }
@@ -1193,120 +2196,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "description": "The organization name",
-                      "example": "Example Organization"
-                    },
-                    "language": {
-                      "type": "string",
-                      "description": "Language of the organization name",
-                      "example": "en"
-                    },
-                    "uuid": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "UUID of the organization name entry",
-                      "example": "123e4567-e89b-12d3-a456-426614174000"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Edit Organization Name",
-        "description": "Edit the organization name in another language with name_uuid you specified",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "required": true,
-            "name": "name_uuid",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "New name",
-                    "example": "ali",
-                    "minLength": 1,
-                    "maxLength": 16
-                  }
-                },
-                "required": ["name"]
-              }
-            }
-          }
-        },
-        "tags": ["organization"],
-        "responses": {
-          "200": {
-            "description": "The organization name in another language with the specified name_uuid has been edited successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Edited"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Organization Name",
-        "description": "Delete the organization name in another language with name_uuid you specified",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "required": true,
-            "name": "name_uuid",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "tags": ["organization"],
-        "responses": {
-          "200": {
-            "description": "The organization name in another language with name_uuid you specified deleted"
-          },
-          "404": {
-            "description": "Organization not found",
-            "content": {
-              "application/json": {
-                "example": {
-                  "error": "NOT_FOUND",
-                  "message": "Not found!."
+                  "$ref": "#/components/schemas/OrganizationNameViewResponseData"
                 }
               }
             }
@@ -1329,25 +2219,9 @@
             "description": "Returns the list of all permissions",
             "content": {
               "application/json": {
-                "example": [
-                  {
-                    "uuid": "c7a4c02c-fdf7-4f66-90cf-5fd417fc7bcf",
-                    "account": {
-                      "uuid": "3b28d18b-13a9-46d6-b4c9-b3452b7280db",
-                      "username": "admin",
-                      "first_name": "Admin",
-                      "last_name": "User"
-                    },
-                    "object": "resource",
-                    "action": "delete",
-                    "conditions": [
-                      {
-                        "name": "time_based",
-                        "value": "true"
-                      }
-                    ]
-                  }
-                ]
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionListResponseData"
+                }
               }
             }
           }
@@ -1365,55 +2239,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "subject": {
-                    "type": "string",
-                    "description": "The user uuid or * for all users",
-                    "nullable": true
-                  },
-                  "object": {
-                    "type": "string",
-                    "description": "The controller that the user needs to access",
-                    "example": "Translation, Reciters & etc",
-                    "nullable": false
-                  },
-                  "action": {
-                    "type": "string",
-                    "description": "The action for controller & etc",
-                    "example": "Add, Edit, View, List, Delete & etc",
-                    "nullable": false
-                  },
-                  "conditions": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer",
-                          "description": "Unique ID of the condition. Nullable or auto-generated.",
-                          "nullable": true
-                        },
-                        "name": {
-                          "type": "string",
-                          "description": "Condition name (e.g., isOwner)",
-                          "example": "isOwner",
-                          "nullable": false
-                        },
-                        "value": {
-                          "type": "string",
-                          "description": "Condition value (e.g., true)",
-                          "example": "true",
-                          "nullable": false
-                        }
-                      },
-                      "required": ["name", "value"]
-                    },
-                    "description": "Array of conditions, each condition is an object with a name & value. Currently, only the condition 'isOwner' is possible.",
-                    "example": "[{ \"name\": \"isOwner\", \"value\": \"true\" }]"
-                  }
-                },
-                "required": ["object", "action", "conditions"]
+                "$ref": "#/components/schemas/PermissionAddRequestData"
               }
             }
           }
@@ -1460,8 +2286,7 @@
             "name": "permission_uuid",
             "schema": {
               "type": "string",
-              "description": "The unique UUID of the permission you want to view",
-              "example": "4454f3fc-acf5-4933-ac14-1ce0b055b523"
+              "description": "The unique UUID of the permission you want to view"
             }
           }
         ],
@@ -1472,74 +2297,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "uuid": {
-                      "type": "string",
-                      "description": "Unique UUID of the permission",
-                      "example": "4454f3fc-acf5-4933-ac14-1ce0b055b523"
-                    },
-                    "account": {
-                      "type": "object",
-                      "properties": {
-                        "uuid": {
-                          "type": "string",
-                          "description": "UUID of the account",
-                          "example": "456lj070-21ac-0d3j-0000-ac0s3n47ed08"
-                        },
-                        "username": {
-                          "type": "string",
-                          "description": "Username of the account",
-                          "example": "curator"
-                        },
-                        "first_name": {
-                          "type": "string",
-                          "description": "First name of the account holder",
-                          "nullable": true,
-                          "example": null
-                        },
-                        "last_name": {
-                          "type": "string",
-                          "description": "Last name of the account holder",
-                          "nullable": true,
-                          "example": null
-                        }
-                      },
-                      "required": ["uuid", "username"]
-                    },
-                    "object": {
-                      "type": "string",
-                      "description": "The object that the permission applies to",
-                      "example": "permission"
-                    },
-                    "action": {
-                      "type": "string",
-                      "description": "The action allowed on the object",
-                      "example": "create"
-                    },
-                    "conditions": {
-                      "type": "array",
-                      "description": "Array of conditions associated with the permission",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string",
-                            "description": "Condition name",
-                            "example": "isOwner"
-                          },
-                          "value": {
-                            "type": "string",
-                            "description": "Condition value",
-                            "example": "true"
-                          }
-                        },
-                        "required": ["name", "value"]
-                      },
-                      "example": []
-                    }
-                  },
-                  "required": ["uuid", "account", "object", "action"]
+                  "$ref": "#/components/schemas/PermissionViewResponseData"
                 }
               }
             }
@@ -1569,50 +2327,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": ["subject", "object", "action"],
-                "properties": {
-                  "subject": {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "The user uuid or * for all users",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                  },
-                  "object": {
-                    "type": "string",
-                    "description": "The controller that the user need to access",
-                    "example": "Translation"
-                  },
-                  "action": {
-                    "type": "string",
-                    "description": "The action for controller",
-                    "example": "Edit"
-                  },
-                  "conditions": {
-                    "type": "array",
-                    "description": "Array of conditions",
-                    "items": {
-                      "type": "object",
-                      "required": ["name", "value"],
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "Name of the condition"
-                        },
-                        "value": {
-                          "type": "string",
-                          "description": "Value of the condition"
-                        }
-                      }
-                    },
-                    "example": [
-                      {
-                        "name": "isOwner",
-                        "value": "true"
-                      }
-                    ]
-                  }
-                }
+                "$ref": "#/components/schemas/PermissionEditRequestData"
               }
             }
           }
@@ -1761,30 +2476,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "uuid": {
-                        "type": "string",
-                        "description": "UUID of the mushaf"
-                      },
-                      "name": {
-                        "type": "string",
-                        "description": "Full name of the mushaf",
-                        "example": "jafar"
-                      },
-                      "short_name": {
-                        "type": "string",
-                        "description": "Short name of the mushaf"
-                      },
-                      "source": {
-                        "type": "string",
-                        "description": "Source of the mushaf"
-                      }
-                    },
-                    "required": ["uuid", "name", "short_name", "source"]
-                  }
+                  "$ref": "#/components/schemas/MushafListResponseData"
                 }
               }
             }
@@ -1804,24 +2496,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "short_name": {
-                    "type": "string",
-                    "description": "The mushaf short name, must be one word with only '_' and {'1'..'9'}.",
-                    "example": "hafs"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "The full name of the mushaf.",
-                    "example": "Hafs an Asem"
-                  },
-                  "source": {
-                    "type": "string",
-                    "description": "The source of the mushaf's text.",
-                    "example": "tanzil"
-                  }
-                }
+                "$ref": "#/components/schemas/MushafAddRequestData"
               }
             }
           }
@@ -1865,31 +2540,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "uuid": {
-                      "type": "string",
-                      "description": "UUID of the mushaf"
-                    },
-                    "short_name": {
-                      "type": "string",
-                      "description": "Short name of the mushaf"
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "Full name of the mushaf"
-                    },
-                    "source": {
-                      "type": "string",
-                      "description": "Source of the mushaf"
-                    }
-                  }
-                },
-                "example": {
-                  "uuid": "ccbd8806-53e8-4658-8281-3aed10b50898",
-                  "short_name": "hafs",
-                  "name": "Hafs an Asem",
-                  "source": "tanzil"
+                  "$ref": "#/components/schemas/MushafViewResponseData"
                 }
               }
             }
@@ -1923,8 +2574,7 @@
             "description": "The UUID of the mushaf to edit",
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "example": "ccbd8806-53e8-4658-8281-3aed10b50898"
+              "format": "uuid"
             }
           }
         ],
@@ -1933,25 +2583,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "short_name": {
-                    "type": "string",
-                    "description": "The mushaf short name, must be one word with only '_' and {'1'..'9'}.",
-                    "example": "hafs"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "The full name of the mushaf.",
-                    "example": "Hafs an Asem"
-                  },
-                  "source": {
-                    "type": "string",
-                    "description": "The source of the mushaf's text.",
-                    "example": "tanzil"
-                  }
-                },
-                "required": ["short_name", "name", "source"]
+                "$ref": "#/components/schemas/MushafEditRequestData"
               }
             }
           }
@@ -2079,56 +2711,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "uuid": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "Unique identifier for the surah."
-                    },
-                    "number": {
-                      "type": "integer",
-                      "description": "Surah number."
-                    },
-                    "period": {
-                      "type": "string",
-                      "enum": ["makki", "madani"],
-                      "nullable": true,
-                      "description": "The period of revelation (e.g., Makki or Madani)."
-                    },
-                    "number_of_ayahs": {
-                      "type": "integer",
-                      "description": "The number of ayahs in the surah."
-                    },
-                    "names": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "arabic": {
-                            "type": "string",
-                            "description": "The Arabic name of the surah."
-                          },
-                          "pronunciation": {
-                            "type": "string",
-                            "description": "The way in which a word is pronounced.."
-                          },
-                          "translation_phrase": {
-                            "type": "string",
-                            "description": "A phrase that translates the meaning of the surah."
-                          },
-                          "translation": {
-                            "type": "string",
-                            "description": "Translation of the surah name."
-                          },
-                          "transliteration": {
-                            "type": "string",
-                            "description": "Transliteration of the surah name."
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/SurahListResponseData"
                 }
               }
             }
@@ -2160,55 +2743,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "The surah name.",
-                    "example": "الفاتحة"
-                  },
-                  "period": {
-                    "type": "string",
-                    "description": "Indicates whether the surah is Makki or Madani.",
-                    "example": "makki"
-                  },
-                  "number": {
-                    "type": "number",
-                    "description": "The number of the surah in the Mushaf.",
-                    "example": 1
-                  },
-                  "mushaf_uuid": {
-                    "type": "string",
-                    "description": "The UUID of the Mushaf in which the surah belongs.",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                  },
-                  "bismillah_status": {
-                    "type": "boolean",
-                    "description": "Determines whether Bismillah exists in the surah.",
-                    "example": true
-                  },
-                  "bismillah_as_first_ayah": {
-                    "type": "boolean",
-                    "description": "Determines if Bismillah is the first ayah of the surah.",
-                    "example": false
-                  },
-                  "name_translation_phrase": {
-                    "type": "string",
-                    "description": "The translation phrase for the surah name in the desired language.",
-                    "example": "Al-Fatiha"
-                  },
-                  "name_pronunciation": {
-                    "type": "string",
-                    "description": "The pronunciation of the surah name in Arabic.",
-                    "example": "Al-Fatiha"
-                  },
-                  "name_transliteration": {
-                    "type": "string",
-                    "description": "The transliteration of the surah name from Arabic to Latin.",
-                    "example": "Al-Fatiha"
-                  }
-                },
-                "required": ["name", "period", "number", "mushaf_id"]
+                "$ref": "#/components/schemas/SurahAddRequestData"
               }
             }
           }
@@ -2269,188 +2804,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "uuid": {
-                      "type": "string",
-                      "format": "uuid",
-                      "nullable": false,
-                      "description": "UUID of the surah"
-                    },
-                    "mushaf": {
-                      "type": "object",
-                      "properties": {
-                        "uuid": {
-                          "type": "string",
-                          "format": "uuid",
-                          "nullable": false,
-                          "description": "UUID of the mushaf"
-                        },
-                        "short_name": {
-                          "type": "string",
-                          "description": "Short name of the mushaf"
-                        },
-                        "name": {
-                          "type": "string",
-                          "description": "Full name of the mushaf"
-                        },
-                        "source": {
-                          "type": "string",
-                          "description": "Source of the mushaf"
-                        }
-                      }
-                    },
-                    "names": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "arabic": {
-                            "type": "string",
-                            "description": "Arabic name of the surah"
-                          },
-                          "translation": {
-                            "type": "string",
-                            "description": "Translation of the surah name"
-                          },
-                          "translation_phrase": {
-                            "type": "string",
-                            "description": "Translation phrase for the surah name"
-                          },
-                          "pronunciation": {
-                            "type": "string",
-                            "description": "Pronunciation of the surah name"
-                          },
-                          "transliteration": {
-                            "type": "string",
-                            "description": "Transliteration of the surah name"
-                          }
-                        }
-                      }
-                    },
-                    "period": {
-                      "type": "string",
-                      "description": "Period of the surah (e.g., Makki or Madani)"
-                    },
-                    "number": {
-                      "type": "integer",
-                      "description": "Surah number"
-                    },
-                    "bismillah_status": {
-                      "type": "boolean",
-                      "description": "Indicates if the surah contains 'Bismillah'"
-                    },
-                    "bismillah_as_first_ayah": {
-                      "type": "boolean",
-                      "description": "Indicates if 'Bismillah' is the first ayah of the surah"
-                    },
-                    "bismillah_text": {
-                      "type": "string",
-                      "description": "Text of 'Bismillah' if it is the first ayah"
-                    },
-                    "number_of_ayahs": {
-                      "type": "integer",
-                      "description": "Number of ayahs in the surah"
-                    },
-                    "ayahs": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "number": {
-                            "type": "integer",
-                            "description": "Ayah number in the surah"
-                          },
-                          "uuid": {
-                            "type": "string",
-                            "format": "uuid",
-                            "nullable": false,
-                            "description": "UUID of the ayah"
-                          },
-                          "sajdah": {
-                            "type": "boolean",
-                            "description": "Indicates if the ayah has sajdah"
-                          },
-                          "text": {
-                            "type": "string",
-                            "description": "Text of the ayah (if format is 'text')"
-                          },
-                          "words": {
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "description": "Words of the ayah (if format is 'word')"
-                            }
-                          }
-                        },
-                        "required": ["uuid", "number", "text"]
-                      }
-                    }
-                  },
-                  "required": [
-                    "uuid",
-                    "mushaf",
-                    "names",
-                    "period",
-                    "number",
-                    "bismillah_status",
-                    "bismillah_as_first_ayah",
-                    "bismillah_text",
-                    "number_of_ayahs",
-                    "ayahs"
-                  ]
-                },
-                "example": {
-                  "surah": {
-                    "uuid": "ccbd8806-53e8-4658-8281-3aed10b50898",
-                    "mushaf": {
-                      "uuid": "f9339c7a-749a-408e-a03e-a22cd87fe3a1",
-                      "short_name": "hafs",
-                      "name": "Hafs an Asem",
-                      "source": "tanzil"
-                    },
-                    "names": [
-                      {
-                        "arabic": "الفاتحة",
-                        "translation": "The Opening",
-                        "translation_phrase": "Al-Fatiha",
-                        "pronunciation": "Al-Fatiha",
-                        "transliteration": "Al-Fātiḥa"
-                      }
-                    ],
-                    "period": "Makki",
-                    "number": 1,
-                    "bismillah_status": true,
-                    "bismillah_as_first_ayah": true,
-                    "bismillah_text": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
-                    "number_of_ayahs": 7
-                  },
-                  "ayahs": [
-                    {
-                      "number": 1,
-                      "uuid": "a2b23cd4-6f0f-4ecb-b9e0-abe34d928f12",
-                      "sajdah": false,
-                      "text": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
-                      "words": [
-                        "بِسْمِ",
-                        "اللَّهِ",
-                        "الرَّحْمَنِ",
-                        "الرَّحِيمِ"
-                      ]
-                    },
-                    {
-                      "number": 2,
-                      "uuid": "b4c3d5f4-36a8-4e99-aab9-7dba0de3e351",
-                      "sajdah": false,
-                      "text": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
-                      "words": [
-                        "الْحَمْدُ",
-                        "لِلَّهِ",
-                        "رَبِّ",
-                        "الْعَالَمِينَ"
-                      ]
-                    }
-                  ]
+                  "$ref": "#/components/schemas/SurahViewResponseData"
                 }
               }
             }
@@ -2494,62 +2848,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "The surah name in Arabic.",
-                    "example": "الفاتحة"
-                  },
-                  "name_pronunciation": {
-                    "type": "string",
-                    "description": "Optional pronunciation of the surah name.",
-                    "example": "Al-Fatiha"
-                  },
-                  "name_translation_phrase": {
-                    "type": "string",
-                    "description": "Optional translation phrase of the surah name.",
-                    "example": "The Opening"
-                  },
-                  "name_transliteration": {
-                    "type": "string",
-                    "description": "Optional transliteration of the surah name.",
-                    "example": "Al-Fātiḥah"
-                  },
-                  "period": {
-                    "type": "string",
-                    "description": "Indicates whether the surah is Makki or Madani.",
-                    "example": "makki | madani"
-                  },
-                  "number": {
-                    "type": "integer",
-                    "description": "The surah number.",
-                    "example": 1
-                  },
-                  "bismillah_status": {
-                    "type": "boolean",
-                    "description": "Determines if Bismillah is present in the surah.",
-                    "example": true
-                  },
-                  "bismillah_as_first_ayah": {
-                    "type": "boolean",
-                    "description": "Indicates if Bismillah is treated as the first ayah.",
-                    "example": false
-                  },
-                  "mushaf_uuid": {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "The UUID of the Mushaf associated with the surah.",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                  }
-                },
-                "required": [
-                  "name",
-                  "number",
-                  "bismillah_status",
-                  "bismillah_as_first_ayah",
-                  "mushaf_uuid"
-                ]
+                "$ref": "#/components/schemas/SurahEditRequestData"
               }
             }
           }
@@ -2701,42 +3000,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "number": {
-                      "type": "integer",
-                      "description": "-----"
-                    },
-                    "uuid": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "-----"
-                    },
-                    "sajdah": {
-                      "type": "string",
-                      "enum": ["mostahab", "vajib"],
-                      "nullable": true,
-                      "description": "-----"
-                    },
-                    "text": {
-                      "type": "string",
-                      "description": "-----"
-                    },
-                    "words": {
-                      "type": "string",
-                      "description": "-----"
-                    }
-                  }
-                },
-                "example": [
-                  {
-                    "number": 1,
-                    "uuid": "123e4567-e89b-12d3-a456-426614174000",
-                    "sajdah": null,
-                    "text": "In the name of Allah, the Most Gracious, the Most Merciful.",
-                    "words": ["In", "the", "name", "of", "Allah", "..."]
-                  }
-                ]
+                  "$ref": "#/components/schemas/AyahListResponseData"
+                }
               }
             }
           },
@@ -2766,24 +3031,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "surah_uuid": {
-                    "type": "string",
-                    "description": "The UUID of the target surah"
-                  },
-                  "sajdeh": {
-                    "type": "string",
-                    "description": "Ayah have sajdeh or no",
-                    "example": "vajib | mustahab | null"
-                  },
-                  "text": {
-                    "type": "string",
-                    "description": "The text of the ayah.",
-                    "example": "In the name of Allah, the Most Gracious, the Most Merciful."
-                  }
-                },
-                "required": ["surah_uuid", "text"]
+                "$ref": "#/components/schemas/AyahAddRequestData"
               }
             }
           }
@@ -2816,27 +3064,8 @@
             "description": "Returns the single ayah",
             "content": {
               "application/json": {
-                "example": {
-                  "uuid": "ae819d56-5071-4ca1-b964-9e170fac1118",
-                  "mushaf": "uuid-of-mushaf",
-                  "surah": "uuid-of-surah",
-                  "ayah_number": 1,
-                  "sajdah": null,
-                  "text": "هُدًى وَبُشْرَىٰ لِلْمُؤْمِنِينَ",
-                  "words": [
-                    {
-                      "uuid": "5743e20c-ed23-443c-be2d-7ee41fa1032e",
-                      "word": "هُدًى"
-                    },
-                    {
-                      "uuid": "e3d68b7c-ef58-4598-9c4a-c96fdfe8f7b4",
-                      "word": "وَبُشْرَىٰ"
-                    },
-                    {
-                      "uuid": "b1088c7c-8eae-42a7-9741-5c37b3d11526",
-                      "word": "لِلْمُؤْمِنِينَ"
-                    }
-                  ]
+                "schema": {
+                  "$ref": "#/components/schemas/AyahViewResponseData"
                 }
               }
             }
@@ -2867,19 +3096,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "ayah_number": {
-                    "type": "integer",
-                    "description": "Number of ayah",
-                    "example": 1
-                  },
-                  "sajdeh": {
-                    "type": "string",
-                    "description": "Ayah have sajdeh or no",
-                    "example": "vajib | mustahab | null"
-                  }
-                }
+                "$ref": "#/components/schemas/AyahEditRequestData"
               }
             }
           }
@@ -2931,19 +3148,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "ayah_uuid": {
-                    "type": "string",
-                    "description": "UUID of the ayah to which the word belongs."
-                  },
-                  "word": {
-                    "type": "string",
-                    "description": "The word text to be added.",
-                    "example": "الیوم"
-                  }
-                },
-                "required": ["ayah_uuid", "word"]
+                "$ref": "#/components/schemas/WordAddRequestData"
               }
             }
           }
@@ -3007,10 +3212,8 @@
             "description": "The word was successfully retrieved.",
             "content": {
               "application/json": {
-                "example": {
-                  "uuid": "3ecb2468-4c4e-4adb-b172-064b9eb65ad0",
-                  "creator_user_id": 1,
-                  "word": "ٱلْحَمْدُ"
+                "schema": {
+                  "$ref": "#/components/schemas/WordViewResponseData"
                 }
               }
             }
@@ -3062,18 +3265,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "ayah_uuid": {
-                    "type": "string",
-                    "description": "The ayah_uuid of the word"
-                  },
-                  "word": {
-                    "type": "string",
-                    "description": "New word that want to replace",
-                    "example": "الْحَمْدُ"
-                  }
-                }
+                "$ref": "#/components/schemas/WordEditRequestData"
               }
             }
           }
@@ -3234,7 +3426,14 @@
         "tags": ["translation", "general"],
         "responses": {
           "200": {
-            "description": "Returns the list of all translations"
+            "description": "Returns the list of all translations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationListResponseData"
+                }
+              }
+            }
           }
         }
       },
