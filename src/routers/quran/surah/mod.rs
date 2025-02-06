@@ -13,6 +13,8 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::word::WordBreaker;
+
 /// The quran text format Each word has its own uuid
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -90,7 +92,7 @@ pub struct AyahWord {
     pub word: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub breakers: Option<Vec<Breaker>>,
+    pub breakers: Option<Vec<WordBreaker>>,
 }
 
 #[derive(Serialize, Clone, Debug)]
