@@ -3,8 +3,11 @@ use std::collections::HashMap;
 use super::{
     AyahWord, Format, GetSurahQuery, QuranResponseData, SimpleAyah, SingleSurahResponse, SurahName,
 };
-use crate::models::{QuranAyah, QuranAyahBreaker, QuranMushaf, QuranSurah, QuranWord};
+use crate::models::{
+    QuranAyah, QuranAyahBreaker, QuranMushaf, QuranSurah, QuranWord, QuranWordBreaker,
+};
 use crate::routers::multip;
+use crate::routers::quran::word::WordBreaker;
 use crate::{error::RouterError, DbPool};
 use crate::{AyahBismillah, AyahTy, Breaker, SingleSurahMushaf};
 use actix_web::web;
@@ -27,6 +30,7 @@ pub async fn surah_view(
     use crate::schema::quran_surahs::dsl::quran_surahs;
     use crate::schema::quran_surahs::dsl::uuid as surah_uuid;
     use crate::schema::quran_words::dsl::quran_words;
+    use crate::schema::quran_words_breakers::dsl::quran_words_breakers;
 
     let query = query.into_inner();
     let requested_surah_uuid = path.into_inner();
@@ -89,6 +93,28 @@ pub async fn surah_view(
 
         let ayahs_as_map = multip(ayahs_words, |a| a);
 
+        let words_breakers = if matches!(query.format, Format::Word) {
+            let breakers: Vec<QuranWordBreaker> = quran_words_breakers.get_results(&mut conn)?;
+            let mut breakers = breakers.into_iter();
+            // (i32)
+            let mut collected_breakers: HashMap<i32, Vec<WordBreaker>> = HashMap::new();
+
+            while let Some(breaker) = breakers.next() {
+                collected_breakers
+                    .entry(breaker.word_id)
+                    .and_modify(|v| {
+                        v.push(WordBreaker {
+                            name: breaker.name.clone(),
+                        })
+                    })
+                    .or_insert(vec![WordBreaker { name: breaker.name }]);
+            }
+
+            Some(collected_breakers)
+        } else {
+            None
+        };
+
         let final_ayahs = ayahs_as_map
             .into_iter()
             .map(|(ayah, words)| match query.format {
@@ -105,7 +131,7 @@ pub async fn surah_view(
                     words: words
                         .into_iter()
                         .map(|w| AyahWord {
-                            breakers: None,
+                            breakers: words_breakers.clone().unwrap().get(&w.id).clone().cloned(),
                             word: w.word,
                         })
                         .collect(),

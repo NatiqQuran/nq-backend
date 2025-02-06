@@ -2,8 +2,9 @@ use std::collections::HashMap;
 
 use crate::error::{RouterError, RouterErrorDetailBuilder};
 use crate::filter::Filter;
-use crate::models::{QuranAyah, QuranAyahBreaker, QuranWord};
+use crate::models::{QuranAyah, QuranAyahBreaker, QuranWord, QuranWordBreaker};
 use crate::routers::multip;
+use crate::routers::quran::word::WordBreaker;
 use crate::{
     routers::quran::surah::{AyahTy, AyahWord, Format, SimpleAyah},
     DbPool,
@@ -57,6 +58,29 @@ pub async fn ayah_list(
             map.entry(breaker.ayah_id).insert_entry(val);
         }
 
+        // TODO: this gets every word's breaker. (not efficient)
+        let words_breakers = if matches!(query.format, Some(Format::Word)) {
+            let breakers: Vec<QuranWordBreaker> = quran_words_breakers.get_results(&mut conn)?;
+            let mut breakers = breakers.into_iter();
+            // (i32)
+            let mut collected_breakers: HashMap<i32, Vec<WordBreaker>> = HashMap::new();
+
+            while let Some(breaker) = breakers.next() {
+                collected_breakers
+                    .entry(breaker.word_id)
+                    .and_modify(|v| {
+                        v.push(WordBreaker {
+                            name: breaker.name.clone(),
+                        })
+                    })
+                    .or_insert(vec![WordBreaker { name: breaker.name }]);
+            }
+
+            Some(collected_breakers)
+        } else {
+            None
+        };
+
         let filtered_ayahs = match QuranAyah::filter(Box::from(query.clone())) {
             Ok(filtered) => filtered,
             Err(err) => return Err(err.log_to_db(pool, error_detail)),
@@ -64,6 +88,7 @@ pub async fn ayah_list(
 
         let ayahs_words = filtered_ayahs
             .left_outer_join(quran_surahs.left_outer_join(quran_mushafs))
+            // TODO: currently we dont use quran_words_breakers join
             .inner_join(quran_words.left_join(quran_words_breakers))
             .filter(mushaf_short_name.eq(query.mushaf))
             .order((quran_surah_number.asc(), ayah_number.asc()))
@@ -107,7 +132,8 @@ pub async fn ayah_list(
                     words: words
                         .into_iter()
                         .map(|w| AyahWord {
-                            breakers: None,
+                            // TODO: Very expensive operation. remove .clone()
+                            breakers: words_breakers.clone().unwrap().get(&w.id).clone().cloned(),
                             word: w.word,
                         })
                         .collect(),

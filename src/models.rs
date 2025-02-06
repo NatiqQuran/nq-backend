@@ -722,7 +722,7 @@ pub struct QuranWordBreaker {
     creator_user_id: i32,
 
     #[serde(skip_serializing)]
-    word_id: i32,
+    pub word_id: i32,
 
     #[serde(skip_serializing)]
     owner_account_id: Option<i32>,
