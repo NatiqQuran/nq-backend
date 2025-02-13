@@ -2031,7 +2031,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserAddRequesAccountVerifyRequestBodytBody"
+                "$ref": "#/components/schemas/AccountVerifyRequestBody"
               }
             }
           }
