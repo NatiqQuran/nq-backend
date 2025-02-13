@@ -586,6 +586,7 @@
             "uuid": {
               "type": "string",
               "format": "uuid",
+              "nullable": false,
               "description": "Unique identifier of the permission"
             },
             "account": {
@@ -594,10 +595,12 @@
                 "uuid": {
                   "type": "string",
                   "format": "uuid",
+                  "nullable": false,
                   "description": "UUID of the account"
                 },
                 "username": {
                   "type": "string",
+                  "nullable": false,
                   "description": "Username of the account"
                 },
                 "first_name": {
@@ -615,10 +618,12 @@
             },
             "object": {
               "type": "string",
+              "nullable": false,
               "description": "The object that the permission applies to"
             },
             "action": {
               "type": "string",
+              "nullable": false,
               "description": "The action allowed on the object"
             },
             "conditions": {
@@ -628,10 +633,12 @@
                 "properties": {
                   "name": {
                     "type": "string",
+                    "nullable": false,
                     "description": "Condition name"
                   },
                   "value": {
                     "type": "string",
+                    "nullable": false,
                     "description": "Condition value"
                   }
                 },
@@ -645,69 +652,55 @@
       "PermissionAddRequestData": {
         "type": "object",
         "properties": {
-          "uuid": {
+          "subject": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier of the permission"
-          },
-          "account": {
-            "type": "object",
-            "properties": {
-              "uuid": {
-                "type": "string",
-                "format": "uuid",
-                "description": "UUID of the account"
-              },
-              "username": {
-                "type": "string",
-                "description": "Username of the account"
-              },
-              "first_name": {
-                "type": "string",
-                "nullable": true,
-                "description": "First name of the account holder"
-              },
-              "last_name": {
-                "type": "string",
-                "nullable": true,
-                "description": "Last name of the account holder"
-              }
-            },
-            "required": ["uuid", "username"]
+            "nullable": false,
+            "description": "Unique identifier of the subject (account) receiving the permission"
           },
           "object": {
             "type": "string",
-            "description": "The object that the permission applies to"
+            "nullable": false,
+            "description": "Object on which the permission is granted",
+            "example": "document"
           },
           "action": {
             "type": "string",
-            "description": "The action allowed on the object"
+            "nullable": false,
+            "description": "Action allowed on the object",
+            "example": "read"
           },
           "conditions": {
             "type": "array",
+            "description": "List of conditions associated with the permission",
             "items": {
               "type": "object",
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "Condition name"
+                  "nullable": false,
+                  "description": "Condition name",
+                  "example": "time_restricted"
                 },
                 "value": {
                   "type": "string",
-                  "description": "Condition value"
+                  "nullable": false,
+                  "description": "Condition value",
+                  "example": "08:00-18:00"
                 }
               },
               "required": ["name", "value"]
             }
           }
         },
-        "required": ["uuid", "account", "object", "action"]
+        "required": ["subject", "object", "action", "conditions"]
       },
       "PermissionViewResponseData": {
         "properties": {
           "uuid": {
             "type": "string",
             "format": "uuid",
+            "nullable": false,
             "description": "Unique identifier of the permission"
           },
           "account": {
@@ -716,10 +709,12 @@
               "uuid": {
                 "type": "string",
                 "format": "uuid",
+                "nullable": false,
                 "description": "UUID of the account"
               },
               "username": {
                 "type": "string",
+                "nullable": false,
                 "description": "Username of the account"
               },
               "first_name": {
@@ -737,10 +732,12 @@
           },
           "object": {
             "type": "string",
+            "nullable": false,
             "description": "The object that the permission applies to"
           },
           "action": {
             "type": "string",
+            "nullable": false,
             "description": "The action allowed on the object"
           },
           "conditions": {
@@ -750,10 +747,12 @@
               "properties": {
                 "name": {
                   "type": "string",
+                  "nullable": false,
                   "description": "Condition name"
                 },
                 "value": {
                   "type": "string",
+                  "nullable": false,
                   "description": "Condition value"
                 }
               },
@@ -1527,17 +1526,412 @@
           ]
         }
       },
-      "TranslationAddRequestData": {},
-      "TranslationViewResponseData": {},
-      "TranslationEditRequestData": {},
-      "TranslationTextListResponseData": {},
-      "TranslationTextAddRequestData": {},
-      "TranslationTextViewResponseData": {},
-      "TranslationTextEditRequestData": {},
-      "PhraseListResponseData": {},
-      "PhraseAddRequestData": {},
-      "PhraseViewResponseData": {},
-      "PhraseEditRequestData": {}
+      "TranslationAddRequestData": {
+        "type": "object",
+        "properties": {
+          "translator_account_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "The translator account uuid"
+          },
+          "source": {
+            "type": "string",
+            "nullable": false,
+            "example": "tanzil",
+            "description": "The translation text source"
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "nullable": false,
+            "example": "en",
+            "description": "The language of translation text"
+          },
+          "release_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": false,
+            "description": "translation release date"
+          }
+        },
+        "required": [
+          "translator_account_uuid",
+          "source",
+          "language",
+          "release_date"
+        ]
+      },
+      "TranslationViewResponseData": {
+        "type": "object",
+        "properties": {
+          "mushaf_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "Unique identifier of the mushaf"
+          },
+          "language": {
+            "type": "string",
+            "nullable": false,
+            "description": "Language of the translation",
+            "example": "English"
+          },
+          "release_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Release date of the translation"
+          },
+          "source": {
+            "type": "string",
+            "nullable": true,
+            "description": "Source of the translation",
+            "example": "Tanzil"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ok", "notapproved", "incomplete"],
+            "nullable": false,
+            "description": "Translation status"
+          },
+          "bismillah": {
+            "type": "string",
+            "nullable": false,
+            "description": "Translated Bismillah text",
+            "example": "In the name of Allah, the Most Gracious, the Most Merciful."
+          },
+          "translator": {
+            "type": "object",
+            "properties": {
+              "account_uuid": {
+                "type": "string",
+                "format": "uuid",
+                "nullable": false,
+                "description": "Unique identifier of the translator's account"
+              },
+              "username": {
+                "type": "string",
+                "nullable": false,
+                "description": "Username of the translator",
+                "example": "translator123"
+              },
+              "first_name": {
+                "type": "string",
+                "nullable": true,
+                "description": "First name of the translator",
+                "example": "translator"
+              },
+              "last_name": {
+                "type": "string",
+                "nullable": true,
+                "description": "Last name of the translator",
+                "example": "man"
+              }
+            },
+            "required": ["account_uuid", "username"]
+          },
+          "ayahs": {
+            "type": "array",
+            "description": "List of translated ayahs",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": false,
+                  "description": "Unique identifier of the ayah"
+                },
+                "text_uuid": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true,
+                  "description": "Unique identifier of the translation text"
+                },
+                "number": {
+                  "type": "integer",
+                  "nullable": false,
+                  "description": "Ayah number within the surah"
+                },
+                "surah_number": {
+                  "type": "integer",
+                  "nullable": false,
+                  "description": "Surah number"
+                },
+                "text": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Translated text of the ayah",
+                  "example": "Praise be to Allah, the Lord of all worlds."
+                }
+              },
+              "required": ["uuid", "number", "surah_number"]
+            }
+          }
+        },
+        "required": [
+          "mushaf_uuid",
+          "language",
+          "source",
+          "status",
+          "bismillah",
+          "translator",
+          "ayahs"
+        ]
+      },
+      "TranslationEditRequestData": {
+        "type": "object",
+        "properties": {
+          "translator_account_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Unique identifier of the translator's account"
+          },
+          "language": {
+            "type": "string",
+            "nullable": false,
+            "description": "Updated language of the translation",
+            "example": "English"
+          },
+          "release_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Updated release date of the translation"
+          },
+          "source": {
+            "type": "string",
+            "nullable": true,
+            "description": "Updated source of the translation",
+            "example": "Tanzil"
+          },
+          "bismillah": {
+            "type": "string",
+            "nullable": false,
+            "description": "Updated translated Bismillah text",
+            "example": "In the name of Allah, the Most Gracious, the Most Merciful."
+          }
+        },
+        "required": ["language", "bismillah"]
+      },
+      "TranslationTextViewResponseData": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "Unique identifier for the translation text"
+          },
+          "translation_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "UUID of the translation to which this text belongs"
+          },
+          "ayah_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "UUID of the ayah this translation corresponds to"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Translated text of the ayah",
+            "example": "Praise be to Allah, the Lord of all worlds."
+          }
+        },
+        "required": ["uuid", "translation_uuid", "ayah_uuid", "text"]
+      },
+      "TranslationTextEditRequestData": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "nullable": false,
+            "example": "Praise be to Allah, the Lord of all worlds.",
+            "description": "Updated or newly added translation text"
+          },
+          "translation_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "Unique identifier of the translation"
+          },
+          "ayah_uuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false,
+            "description": "Unique identifier of the ayah being translated"
+          },
+          "creator_user_id": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": false,
+            "description": "ID of the user modifying or adding the translation text"
+          }
+        },
+        "required": ["text", "translation_uuid", "ayah_uuid", "creator_user_id"]
+      },
+      "PhraseListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "language": {
+              "type": "string",
+              "nullable": true,
+              "example": "en",
+              "description": "The language code"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["complete", "incomplete"],
+              "nullable": true,
+              "example": "complete",
+              "description": "The status of the language phrases"
+            }
+          },
+          "required": ["language", "status"]
+        }
+      },
+      "PhraseAddRequestData": {
+        "type": "object",
+        "properties": {
+          "phrase": {
+            "type": "string",
+            "nullable": false,
+            "description": "A unique phrase from the Quran to be added to the database.",
+            "example": "كتب"
+          }
+        },
+        "required": ["phrase"]
+      },
+      "PhraseViewResponseData": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string",
+          "example": {
+            "ٱلصَّلَوٰةَ": "The prayer",
+            "ٱللَّهَ": "God"
+          }
+        }
+      },
+      "PhraseEditRequestData": {
+        "type": "object",
+        "properties": {
+          "ٱلصَّلَوٰةَ": {
+            "type": "string",
+            "description": "Translation of the word 'ٱلصَّلَوٰةَ'",
+            "example": "The prayer"
+          },
+          "ٱللَّهَ": {
+            "type": "string",
+            "description": "Translation of the word 'ٱللَّهَ'",
+            "example": "God"
+          }
+        }
+      },
+      "ErrorListResponseData": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Unique identifier for the error entry",
+              "example": 1
+            },
+            "uuid": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Unique UUID for the error entry",
+              "example": "uuid-example"
+            },
+            "error_name": {
+              "type": "string",
+              "description": "The name of the error (e.g., AUTHN_TOKEN_INVALID)",
+              "example": "AUTHN_TOKEN_INVALID"
+            },
+            "status_code": {
+              "type": "integer",
+              "description": "HTTP status code associated with the error",
+              "example": 401
+            },
+            "message": {
+              "type": "string",
+              "description": "A brief message describing the error",
+              "example": "Token invalid!"
+            },
+            "detail": {
+              "type": "string",
+              "nullable": true,
+              "description": "Detailed description of the error, if available",
+              "example": null
+            },
+            "account_id": {
+              "type": "string",
+              "nullable": true,
+              "description": "The account ID related to the error, if available",
+              "example": null
+            },
+            "request_token": {
+              "type": "string",
+              "nullable": true,
+              "description": "Token associated with the request, if available",
+              "example": null
+            },
+            "request_user_agent": {
+              "type": "string",
+              "description": "User agent of the request that triggered the error",
+              "example": "Next.js Middleware"
+            },
+            "request_ipv4": {
+              "type": "string",
+              "description": "IPv4 address of the request origin",
+              "example": "110.12.104.409/00"
+            },
+            "request_url": {
+              "type": "string",
+              "description": "URL path where the error occurred",
+              "example": "/profile"
+            },
+            "request_controller": {
+              "type": "string",
+              "description": "Controller handling the request at the time of the error",
+              "example": "profile"
+            },
+            "request_action": {
+              "type": "string",
+              "nullable": true,
+              "description": "Specific action associated with the request, if available",
+              "example": null
+            },
+            "request_id": {
+              "type": "string",
+              "nullable": true,
+              "description": "Unique identifier for the request, if available",
+              "example": null
+            },
+            "request_body": {
+              "type": "string",
+              "nullable": true,
+              "description": "Body of the request that caused the error, if available",
+              "example": null
+            },
+            "request_body_content_type": {
+              "type": "string",
+              "nullable": true,
+              "description": "Content type of the request body, if available",
+              "example": null
+            }
+          }
+        }
+      }
     }
   },
   "tags": [
@@ -3449,31 +3843,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "translator_account_uuid": {
-                    "type": "string",
-                    "description": "The translator account uuid",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                  },
-                  "source": {
-                    "type": "string",
-                    "description": "The translation text source",
-                    "example": "tanzil"
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "The language of translation text",
-                    "example": "en",
-                    "minLength": 2,
-                    "maxLength": 2
-                  },
-                  "release_date": {
-                    "type": "string",
-                    "description": "translation release date",
-                    "example": "2023-01-01"
-                  }
-                }
+                "$ref": "#/components/schemas/TranslationAddRequestData"
               }
             }
           }
@@ -3503,7 +3873,14 @@
         "tags": ["translation", "general"],
         "responses": {
           "200": {
-            "description": "Returns the translation with id you specified"
+            "description": "Returns the list of all translations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationViewResponseData"
+                }
+              }
+            }
           }
         }
       },
@@ -3529,34 +3906,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "translator_account_uuid": {
-                    "type": "string",
-                    "description": "The translator account uuid",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                  },
-                  "source": {
-                    "type": "string",
-                    "description": "The translation text source",
-                    "example": "tanzil"
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "The language of translation text",
-                    "example": "English"
-                  },
-                  "release_date": {
-                    "type": "string",
-                    "description": "Release day of the translation",
-                    "example": "2023-01-01"
-                  },
-                  "bismillah": {
-                    "type": "string",
-                    "description": "The translation bismillah text",
-                    "example": "بسم الله الرحمن الرحيم"
-                  }
-                }
+                "$ref": "#/components/schemas/TranslationEditRequestData"
               }
             }
           }
@@ -3619,7 +3969,14 @@
         "tags": ["translation"],
         "responses": {
           "200": {
-            "description": "Returns the translation_text with id you specified"
+            "description": "Returns the translation_text with id you specified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationTextViewResponseData"
+                }
+              }
+            }
           }
         }
       },
@@ -3645,19 +4002,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "ayah_uuid": {
-                    "type": "string",
-                    "description": "ayah_uuid",
-                    "example": "f9339c7a-749a-408e-a03e-a22cd87fe3a1"
-                  },
-                  "text": {
-                    "type": "string",
-                    "description": "The translation text",
-                    "example": "----"
-                  }
-                }
+                "$ref": "#/components/schemas/TranslationTextEditRequestData"
               }
             }
           }
@@ -3719,22 +4064,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "language": {
-                        "type": "string",
-                        "description": "The language code",
-                        "example": "en"
-                      },
-                      "status": {
-                        "type": "string",
-                        "description": "The status of the language phrases",
-                        "example": "complete"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/PhraseListResponseData"
                 }
               }
             }
@@ -3754,15 +4084,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "phrase": {
-                    "type": "string",
-                    "description": "A unique phrase from the Quran to be added to the database.",
-                    "example": "كتب"
-                  }
-                },
-                "required": ["phrase"]
+                "$ref": "#/components/schemas/PhraseAddRequestData"
               }
             }
           }
@@ -3798,7 +4120,14 @@
         "tags": ["phrase"],
         "responses": {
           "200": {
-            "description": "Return's list of phrases related to language"
+            "description": "Return's list of phrases related to language",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhraseViewResponseData"
+                }
+              }
+            }
           }
         }
       },
@@ -3841,7 +4170,14 @@
         "tags": ["phrase"],
         "responses": {
           "200": {
-            "description": "Phrases edited or added successfully"
+            "description": "Phrases edited or added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhraseEditRequestData"
+                }
+              }
+            }
           }
         }
       },
@@ -3921,7 +4257,14 @@
         "tags": ["report"],
         "responses": {
           "200": {
-            "description": "Returns the errors list in array"
+            "description": "Returns the errors list in array",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponseData"
+                }
+              }
+            }
           }
         }
       }
