@@ -2,8 +2,10 @@ name: docker-publish
 
 on:
   push:
-    branches:
+    branches: 
       - "main"
+      - "test"
+      - "dev"
 
 jobs:
   build:
