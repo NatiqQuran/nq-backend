@@ -15,7 +15,6 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -23,8 +22,8 @@ jobs:
 
     - name: Build the Docker image
       run: |
-        if [ "${GITHUB_REF}" == "refs/heads/main" ]; then
-          TAG="$(date +%s)"
+        if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+          TAG="latest"
         else
           TAG="${GITHUB_REF##*/}"
         fi
