@@ -24,12 +24,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Set Docker tags
+        id: set_tags
+        run: |
+          base_tag="${{ secrets.DOCKER_HUB_USERNAME }}/nq-api"
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "tags=${base_tag}:latest" >> $GITHUB_ENV
+          else
+            echo "tags=${base_tag}:${GITHUB_REF##*/}" >> $GITHUB_ENV
+          fi
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/nq-api:latest
-            ${{ secrets.DOCKER_HUB_USERNAME }}/nq-api:${{ github.ref_name }}
+          tags: ${{ env.tags }}
